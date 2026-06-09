@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useCaseStudy } from '@/hooks/useCaseStudy'
-import { CtaButton } from '@/components/ui/cta-button'
 import { PersonalNav } from '@/components/blocks/personal-nav'
 import { PersonalCta } from '@/components/blocks/personal-cta'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
@@ -300,6 +299,3 @@ export default function CaseStudy() {
   )
 }
 
-// Unused import kept for potential future use
-const _CtaButton = CtaButton
-void _CtaButton
