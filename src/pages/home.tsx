@@ -588,9 +588,26 @@ function CvDownloadButton() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Home() {
+  const [emailCopied, setEmailCopied] = useState(false)
+
   useEffect(() => {
     document.title = 'Cristobal Lemoine — Product Designer'
     trackEvent('page_view', { page: '/', title: 'Cristobal Lemoine' })
+  }, [])
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement).tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return
+      if (e.key === 'e' || e.key === 'E') {
+        navigator.clipboard.writeText('cristoballemoine88@gmail.com')
+        trackEvent('email_copy', { method: 'keyboard' })
+        setEmailCopied(true)
+        setTimeout(() => setEmailCopied(false), 2000)
+      }
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
   }, [])
 
   const pStyle: React.CSSProperties = {
@@ -707,6 +724,43 @@ export default function Home() {
       </main>
 
       <PersonalFooter />
+
+      {/* Floating email hint — bottom right */}
+      <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
+        <AnimatePresence mode="wait">
+          {emailCopied ? (
+            <motion.p
+              key="copied"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              style={{ fontSize: 12, fontWeight: 500, color: 'rgba(0,0,0,0.4)', margin: 0 }}
+            >
+              ✓ Copied to clipboard
+            </motion.p>
+          ) : (
+            <motion.p
+              key="hint"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 500, color: 'rgba(0,0,0,0.35)', margin: 0 }}
+            >
+              Press{' '}
+              <kbd style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(0,0,0,0.07)', borderRadius: 5,
+                padding: '1px 6px', fontSize: 11, fontWeight: 600,
+                fontFamily: 'inherit', color: 'rgba(0,0,0,0.45)',
+                border: '1px solid rgba(0,0,0,0.10)',
+              }}>E</kbd>{' '}
+              to copy my email
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }
