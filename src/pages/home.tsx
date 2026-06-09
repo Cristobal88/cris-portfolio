@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowUpRight, CreditCard, Sparkles, Layers, Linkedin } from 'lucide-react'
+import { ArrowUpRight, CreditCard, Sparkles, Layers, Linkedin, Download, ChevronDown, ChevronUp } from 'lucide-react'
 import { trackEvent } from '@/lib/analytics'
 import { CtaButton } from '@/components/ui/cta-button'
 import { Card } from '@/components/ui/card'
@@ -495,6 +495,96 @@ function StackSection() {
   )
 }
 
+// ─── CV Download Button ───────────────────────────────────────────────────────
+
+function CvDownloadButton() {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [open])
+
+  function download(lang: 'en' | 'es') {
+    // TODO: replace with real CV files once ready
+    const urls = { en: '/Cristobal-Lemoine-CV-EN.pdf', es: '/Cristobal-Lemoine-CV-ES.pdf' }
+    trackEvent('cv_download', { language: lang })
+    window.open(urls[lang], '_blank')
+    setOpen(false)
+  }
+
+  return (
+    <div ref={ref} style={{ position: 'absolute', top: 20, right: 24, zIndex: 10 }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          background: '#ffffff',
+          border: `1px solid ${open ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.10)'}`,
+          borderRadius: 9999, padding: '7px 14px',
+          fontSize: 13, fontWeight: 500,
+          color: open ? '#111' : 'rgba(0,0,0,0.55)',
+          cursor: 'pointer', transition: 'border-color 0.2s, color 0.2s',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.borderColor = 'rgba(0,0,0,0.22)'
+          e.currentTarget.style.color = '#111'
+        }}
+        onMouseLeave={e => {
+          if (open) return
+          e.currentTarget.style.borderColor = 'rgba(0,0,0,0.10)'
+          e.currentTarget.style.color = 'rgba(0,0,0,0.55)'
+        }}
+      >
+        <Download size={13} />
+        Download CV
+        {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'absolute', top: 'calc(100% + 4px)', right: 0,
+              background: '#ffffff', borderRadius: 10,
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
+              overflow: 'hidden', width: '100%',
+            }}
+          >
+            {(['en', 'es'] as const).map(lang => (
+              <button
+                key={lang}
+                onClick={() => download(lang)}
+                style={{
+                  display: 'block', width: '100%', textAlign: 'left',
+                  padding: '10px 16px', fontSize: 13, fontWeight: 500,
+                  color: '#111', background: 'transparent',
+                  border: 'none', cursor: 'pointer',
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                {lang === 'en' ? 'English' : 'Español'}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Home() {
@@ -520,7 +610,9 @@ export default function Home() {
       <main style={{ paddingTop: 116 }}>
         <div className="mx-auto w-full max-w-6xl px-6">
 
-          <Card style={{ padding: '40px 48px', margin: '0 auto 80px', maxWidth: 680 }}>
+          <Card style={{ padding: '40px 48px', margin: '0 auto 80px', maxWidth: 680, position: 'relative' }}>
+
+            <CvDownloadButton />
 
             {/* Photo */}
             <div style={{ marginBottom: 24 }}>
