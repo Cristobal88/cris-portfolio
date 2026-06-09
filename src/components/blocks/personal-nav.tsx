@@ -25,10 +25,7 @@ export function PersonalNav({ variant = 'light' }: PersonalNavProps) {
       <div style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: 8 }}>
 
         <CtaButton
-          href="https://cal.com/cris-y-caro-uxbs-zuy29e/30min"
-          data-cal-link="cris-y-caro-uxbs-zuy29e/30min"
-          data-cal-namespace="30min"
-          data-cal-config='{"layout":"month_view","theme":"dark"}'
+          href="https://calendar.app.google/q37dZacRGpmM2wgy7"
           variant="primary"
           gaLabel="book_a_call_nav"
         >

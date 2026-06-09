@@ -42,10 +42,7 @@ export function PersonalCta() {
 
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
         <a
-          href="https://cal.com/cris-y-caro-uxbs-zuy29e/30min"
-          data-cal-link="cris-y-caro-uxbs-zuy29e/30min"
-          data-cal-namespace="30min"
-          data-cal-config='{"layout":"month_view","theme":"dark"}'
+          href="https://calendar.app.google/q37dZacRGpmM2wgy7"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: '#ffffff', color: '#111',

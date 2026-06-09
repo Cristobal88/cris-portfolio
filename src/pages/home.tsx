@@ -586,10 +586,7 @@ export default function Home() {
             {/* CTA row */}
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
               <CtaButton
-                href="https://cal.com/cris-y-caro-uxbs-zuy29e/30min"
-                data-cal-link="cris-y-caro-uxbs-zuy29e/30min"
-                data-cal-namespace="30min"
-                data-cal-config='{"layout":"month_view","theme":"dark"}'
+                href="https://calendar.app.google/q37dZacRGpmM2wgy7"
                 variant="primary"
                 gaLabel="book_a_call_home_cta"
               >
