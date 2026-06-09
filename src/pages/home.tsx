@@ -7,6 +7,8 @@ import { Card } from '@/components/ui/card'
 import { PersonalNav } from '@/components/blocks/personal-nav'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
 import { InteractiveWord } from '@/components/ui/interactive-text'
+import { useCaseStudies } from '@/hooks/useCaseStudies'
+import type { Project } from '@/types/content'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -121,43 +123,102 @@ function ExperienceSection() {
   )
 }
 
-// ─── Work ─────────────────────────────────────────────────────────────────────
+// ─── Work cards ───────────────────────────────────────────────────────────────
 
-const WORK_IMAGES = [
-  { src: 'https://hpnfqxxapukjtaoewckv.supabase.co/storage/v1/object/public/cris-bio/Work%20Cris%201.webp', alt: 'Product design work', href: '/work/fintech-tipping-flow' },
-  { src: 'https://hpnfqxxapukjtaoewckv.supabase.co/storage/v1/object/public/cris-bio/Work%20Cris%202.webp', alt: 'UX research work', href: '/work/loyalty-club-payments' },
-  { src: 'https://hpnfqxxapukjtaoewckv.supabase.co/storage/v1/object/public/cris-bio/Work%20Cris%203.webp', alt: 'Design systems work', href: null },
-]
+function cardSrc(project: Project, index: number): string {
+  if (project.cardImage) return project.cardImage
+  return `/card-${index + 1}.webp`
+}
 
-function WorkSection() {
+function WorkCards() {
+  const { data: projects, loading } = useCaseStudies()
+  const visible = projects?.filter(p => !p.locked) ?? []
+
+  if (loading) {
+    return (
+      <div>
+        <SectionLabel>Some of my work</SectionLabel>
+        <div className="grid grid-cols-3 gap-2">
+          {[0, 1, 2].map(i => (
+            <div key={i} style={{ height: 120, borderRadius: 12, background: 'rgba(0,0,0,0.05)', animation: 'pulse 1.5s ease-in-out infinite' }} />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <SectionLabel>Some of my work</SectionLabel>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        {WORK_IMAGES.map((img) => {
-          const inner = (
-            <img
-              src={img.src}
-              alt={img.alt}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            />
-          )
-          const containerStyle: React.CSSProperties = {
-            height: 120, borderRadius: 12, overflow: 'hidden',
-            transition: 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)',
-            cursor: img.href ? 'pointer' : 'default',
-            textDecoration: 'none', display: 'block',
-          }
-          const handlers = {
-            onMouseEnter: (e: React.MouseEvent<HTMLElement>) => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.03)' },
-            onMouseLeave: (e: React.MouseEvent<HTMLElement>) => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)' },
-          }
-          return img.href
-            ? <a key={img.src} href={img.href} style={containerStyle} {...handlers}>{inner}</a>
-            : <div key={img.src} style={containerStyle} {...handlers}>{inner}</div>
-        })}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 8,
+        }}
+      >
+        {visible.map((project, i) => (
+          <ProjectCard key={project.slug} project={project} index={i} />
+        ))}
       </div>
     </div>
+  )
+}
+
+function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <a
+      href={`/work/${project.slug}`}
+      style={{
+        display: 'block',
+        borderRadius: 12,
+        overflow: 'hidden',
+        position: 'relative',
+        aspectRatio: '4/3',
+        textDecoration: 'none',
+        transform: hovered ? 'scale(1.03)' : 'scale(1)',
+        transition: 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+        boxShadow: hovered ? '0 8px 24px rgba(0,0,0,0.14)' : '0 2px 8px rgba(0,0,0,0.06)',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <picture>
+        <source srcSet={cardSrc(project, index)} type="image/webp" />
+        <img
+          src={`/card-${index + 1}.png`}
+          alt={project.label}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      </picture>
+
+      {/* Hover label overlay */}
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to top, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.20) 50%, transparent 100%)',
+              display: 'flex', alignItems: 'flex-end',
+              padding: '12px',
+            }}
+          >
+            <span style={{
+              fontSize: 11, fontWeight: 600, color: '#ffffff',
+              letterSpacing: '-0.1px', lineHeight: 1.3,
+            }}>
+              {project.label}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </a>
   )
 }
 
@@ -515,7 +576,7 @@ export default function Home() {
             <StackSection />
 
             <Divider />
-            <WorkSection />
+            <WorkCards />
 
             <Divider />
             <PersonalSection />
