@@ -27,7 +27,6 @@ export function PersonalNav({ variant = 'light' }: PersonalNavProps) {
         <CtaButton
           href="https://calendar.app.google/q37dZacRGpmM2wgy7"
           variant="primary"
-          gaLabel="book_a_call_nav"
         >
           Book a Call
         </CtaButton>

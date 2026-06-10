@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUpRight, CreditCard, Sparkles, Layers, Linkedin, Download, ChevronDown, ChevronUp } from 'lucide-react'
-import { trackEvent } from '@/lib/analytics'
 import { CtaButton } from '@/components/ui/cta-button'
 import { Card } from '@/components/ui/card'
 import { PersonalNav } from '@/components/blocks/personal-nav'
@@ -497,7 +496,7 @@ function StackSection() {
 
 // ─── CV Download Button ───────────────────────────────────────────────────────
 
-function CvDownloadButton() {
+function CvDownloadButton({ mode = 'absolute' }: { mode?: 'absolute' | 'inline' }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -513,13 +512,16 @@ function CvDownloadButton() {
   function download(lang: 'en' | 'es') {
     // TODO: replace with real CV files once ready
     const urls = { en: '/Cristobal-Lemoine-CV-EN.pdf', es: '/Cristobal-Lemoine-CV-ES.pdf' }
-    trackEvent('cv_download', { language: lang })
     window.open(urls[lang], '_blank')
     setOpen(false)
   }
 
+  const wrapperStyle: React.CSSProperties = mode === 'absolute'
+    ? { position: 'absolute', top: 20, right: 24, zIndex: 10 }
+    : { position: 'relative', display: 'inline-block', marginTop: 12 }
+
   return (
-    <div ref={ref} style={{ position: 'absolute', top: 20, right: 24, zIndex: 10 }}>
+    <div ref={ref} className={mode === 'absolute' ? 'cv-btn-desktop' : 'cv-btn-mobile'} style={wrapperStyle}>
       <button
         onClick={() => setOpen(o => !o)}
         style={{
@@ -592,7 +594,6 @@ export default function Home() {
 
   useEffect(() => {
     document.title = 'Cristobal Lemoine — Product Designer'
-    trackEvent('page_view', { page: '/', title: 'Cristobal Lemoine' })
   }, [])
 
   useEffect(() => {
@@ -601,7 +602,6 @@ export default function Home() {
       if (tag === 'INPUT' || tag === 'TEXTAREA') return
       if (e.key === 'e' || e.key === 'E') {
         navigator.clipboard.writeText('cristoballemoine88@gmail.com')
-        trackEvent('email_copy', { method: 'keyboard' })
         setEmailCopied(true)
         setTimeout(() => setEmailCopied(false), 2000)
       }
@@ -651,6 +651,7 @@ export default function Home() {
               <p style={{ fontSize: 16, fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
                 Staff Product Designer
               </p>
+              <CvDownloadButton mode="inline" />
             </div>
 
             {/* Bio */}
@@ -697,7 +698,6 @@ export default function Home() {
               <CtaButton
                 href="https://calendar.app.google/q37dZacRGpmM2wgy7"
                 variant="primary"
-                gaLabel="book_a_call_home_cta"
               >
                 Book a Call
               </CtaButton>
@@ -725,8 +725,8 @@ export default function Home() {
 
       <PersonalFooter />
 
-      {/* Floating email hint — bottom right */}
-      <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
+      {/* Floating email hint — bottom right (desktop/keyboard only) */}
+      <div className="email-hint" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
         <AnimatePresence mode="wait">
           {emailCopied ? (
             <motion.p
