@@ -18,7 +18,7 @@ const T4 = 'rgba(255,255,255,0.40)'
 
 const PAGE_TITLES: Record<string, string> = {
   'fintech-tipping-flow': 'Digital Tipping — Cristobal Lemoine',
-  'loyalty-platform':     'Loyalty Platform — Cristobal Lemoine',
+  'loyalty-club-payments': 'Loyalty Platform — Cristobal Lemoine',
 }
 
 export default function CaseStudy() {
