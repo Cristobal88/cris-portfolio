@@ -30,8 +30,15 @@ function Divider() {
 
 const EXPERIENCE = [
   {
-    dates: '2025 — Present',
-    role: 'Product Lead',
+    dates: '2026 — Present',
+    role: 'Lead Product Designer',
+    company: 'EY',
+    description: 'Enterprise product design for AI-enabled platforms used by 400K+ professionals globally.',
+    logo: '/logos/ey.svg',
+  },
+  {
+    dates: '2025 — 2026',
+    role: 'Lead Product Designer',
     company: 'HeySam',
     description: 'Product Design 0→1 for an AI-native sales tool.',
     logo: '/logos/heysam-preview.svg',
@@ -449,7 +456,6 @@ const STACK = [
   { name: 'Figma',    slug: 'figma',      hex: '000000', iconColor: 'ffffff', custom: 'figma'   as const },
   { name: 'VS Code',  slug: 'vscode',     hex: 'FFFFFF', iconColor: 'ffffff', custom: 'vscode'  as const },
   { name: 'Claude',   slug: 'anthropic',  hex: 'C96B49', iconColor: 'ffffff', custom: 'claude'  as const },
-  { name: 'YouTube',  slug: 'youtube',    hex: 'FF0000', iconColor: 'ffffff' },
   { name: 'V0',       slug: 'v0',         hex: '000000', iconColor: 'ffffff' },
   { name: 'Supabase', slug: 'supabase',   hex: '1C1C1E', iconColor: '3ECF8E' },
   { name: 'GitHub',   slug: 'github',     hex: '181717', iconColor: 'ffffff', href: 'https://github.com/Cristobal88' },
@@ -600,7 +606,7 @@ export default function Home() {
   const [emailCopied, setEmailCopied] = useState(false)
 
   useEffect(() => {
-    document.title = 'Cristobal Lemoine — Product Designer'
+    document.title = 'Cristobal Lemoine — Staff Product Designer'
   }, [])
 
   useEffect(() => {
@@ -642,7 +648,7 @@ export default function Home() {
             <div style={{ marginBottom: 24 }}>
               <div style={{ width: 88, height: 88, borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.10)', flexShrink: 0 }}>
                 <img
-                  src="/team/member2.webp"
+                  src="/team/cristobal-lemoine.webp"
                   alt="Cristobal Lemoine"
                   width={88} height={88}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '60% 0%', transform: 'scale(1.35) translateY(-8%)', transformOrigin: '60% 0%' }}
@@ -684,6 +690,9 @@ export default function Home() {
             </div>
 
             <Divider />
+            <WorkCards />
+
+            <Divider />
             <ExperienceSection />
 
             <Divider />
@@ -691,9 +700,6 @@ export default function Home() {
 
             <Divider />
             <StackSection />
-
-            <Divider />
-            <WorkCards />
 
             <Divider />
             <PersonalSection />

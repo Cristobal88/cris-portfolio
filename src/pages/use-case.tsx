@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom'
+import { useEffect } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useCaseStudy } from '@/hooks/useCaseStudy'
 import { PersonalNav } from '@/components/blocks/personal-nav'
@@ -15,9 +16,19 @@ const T2 = 'rgba(255,255,255,0.78)'
 const T3 = 'rgba(255,255,255,0.55)'
 const T4 = 'rgba(255,255,255,0.40)'
 
+const PAGE_TITLES: Record<string, string> = {
+  'fintech-tipping-flow': 'Digital Tipping — Cristobal Lemoine',
+  'loyalty-platform':     'Loyalty Platform — Cristobal Lemoine',
+}
+
 export default function CaseStudy() {
   const { slug } = useParams<{ slug: string }>()
   const { data: project, nextProject, loading, notFound } = useCaseStudy(slug)
+
+  useEffect(() => {
+    if (!slug) return
+    document.title = PAGE_TITLES[slug] ?? 'Cristobal Lemoine — Staff Product Designer'
+  }, [slug])
 
   if (loading) {
     return (
