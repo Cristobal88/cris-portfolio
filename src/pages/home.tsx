@@ -34,7 +34,6 @@ const EXPERIENCE = [
     role: 'Lead Product Designer',
     company: 'EY',
     description: 'Enterprise product design for AI-enabled platforms used by 400K+ professionals globally.',
-    logo: '/logos/ey.svg',
   },
   {
     dates: '2025 — 2026',
