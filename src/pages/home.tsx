@@ -30,21 +30,28 @@ function Divider() {
 
 const EXPERIENCE = [
   {
-    dates: '2023 — 2026',
+    dates: '2025 — Present',
     role: 'Product Lead',
     company: 'HeySam',
     description: 'Product Design 0→1 for an AI-native sales tool.',
     logo: '/logos/heysam-preview.svg',
   },
   {
-    dates: '2021 — 2024',
-    role: 'Tech Product Lead',
+    dates: 'Feb–Aug 2025',
+    role: 'Tech Lead Product Designer',
     company: 'MODO',
-    description: "Led UX for Argentina's leading digital payments platform. 6M+ active users.",
+    description: 'Led QR and NFC payment experiences across 2 squads and 30+ partner banks.',
     logo: '/logos/modo.webp',
   },
   {
-    dates: '2019 — 2021',
+    dates: '2022 — 2025',
+    role: 'Product Designer',
+    company: 'MODO',
+    description: 'Designed digital tipping, transit top-ups and loyalty experiences for a 6M+ user fintech ecosystem.',
+    logo: '/logos/modo.webp',
+  },
+  {
+    dates: '2020 — 2022',
     role: 'Product Designer',
     company: 'Drixit',
     description: 'Shipped IoT and Industry 4.0 products across 2 product ecosystems.',
@@ -100,7 +107,7 @@ function ExperienceSection() {
       <SectionLabel>Highlighted experience</SectionLabel>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {EXPERIENCE.map((item) => (
-          <div key={item.company} style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: '0 16px' }}>
+          <div key={item.company} style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: '0 16px' }}>
             <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(0,0,0,0.35)', paddingTop: 2, whiteSpace: 'nowrap' }}>
               {item.dates}
             </span>
