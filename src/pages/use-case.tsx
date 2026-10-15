@@ -42,8 +42,8 @@ export default function CaseStudy() {
   if (notFound || !project) {
     return (
       <div style={{ background: '#050505', color: T1, minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Barlow, sans-serif', gap: 16 }}>
-        <p style={{ color: T3, fontSize: 14 }}>Project not found.</p>
-        <a href="/" style={{ color: BLUE, fontSize: 14, textDecoration: 'none' }}>← Back to home</a>
+        <p style={{ color: T3, fontSize: '0.875rem' }}>Project not found.</p>
+        <a href="/" style={{ color: BLUE, fontSize: '0.875rem', textDecoration: 'none' }}>← Back to home</a>
       </div>
     )
   }
@@ -71,7 +71,7 @@ export default function CaseStudy() {
             href="/"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              color: T3, textDecoration: 'none', fontSize: 13, fontWeight: 500,
+              color: T3, textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 500,
               transition: 'color 0.2s ease', pointerEvents: 'auto',
             }}
             onMouseEnter={e => (e.currentTarget.style.color = T1)}
@@ -90,7 +90,7 @@ export default function CaseStudy() {
           {/* Back link — mobile only (scrolls with content) */}
           <a href="/"
             className="cs-back-mobile"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: T3, textDecoration: 'none', fontSize: 13, fontWeight: 500, marginBottom: 20, transition: 'color 0.2s ease' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: T3, textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 500, marginBottom: 20, transition: 'color 0.2s ease' }}
             onMouseEnter={e => (e.currentTarget.style.color = T1)}
             onMouseLeave={e => (e.currentTarget.style.color = T3)}
           >
@@ -100,13 +100,13 @@ export default function CaseStudy() {
 
           {/* Scope pill */}
           <div style={{ marginBottom: 28 }}>
-            <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, letterSpacing: '0.3px', color: T4, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, padding: '5px 14px' }}>
+            <span style={{ display: 'inline-block', fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.027em', color: T4, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, padding: '5px 14px' }}>
               {project.scopePill}
             </span>
           </div>
 
           {/* Headline */}
-          <h1 style={{ fontFamily: 'Instrument Serif, serif', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(40px, 4.5vw, 72px)', lineHeight: 1.08, letterSpacing: '-1px', color: T1, maxWidth: 900, margin: '0 0 48px' }}>
+          <h1 style={{ fontFamily: 'Instrument Serif, serif', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(40px, 4.5vw, 72px)', lineHeight: 1.08, letterSpacing: '-0.025em', textWrap: 'balance', color: T1, maxWidth: 900, margin: '0 0 48px' }}>
             {project.outcomeHeadline}
           </h1>
 
@@ -115,9 +115,9 @@ export default function CaseStudy() {
             {project.stats.map((stat, i) => (
               <div key={i} style={{ paddingRight: i < 2 ? 48 : 0, paddingLeft: i > 0 ? 48 : 0, borderRight: i < 2 ? `1px solid ${BORDER}` : 'none' }}>
                 <div style={{ marginBottom: 6 }}>
-                  <AnimatedNumber value={stat.value} style={{ fontFamily: 'Barlow, sans-serif', fontSize: 'clamp(28px, 3vw, 44px)', fontWeight: 700, letterSpacing: '-2px', color: T1, lineHeight: 1 }} />
+                  <AnimatedNumber value={stat.value} style={{ fontFamily: 'Barlow, sans-serif', fontSize: 'clamp(28px, 3vw, 44px)', fontWeight: 700, letterSpacing: '-0.06em', fontVariantNumeric: 'tabular-nums', color: T1, lineHeight: 1 }} />
                 </div>
-                <div style={{ fontSize: 12, color: T4, fontWeight: 500 }}>{stat.label}</div>
+                <div style={{ fontSize: '0.75rem', color: T4, fontWeight: 500 }}>{stat.label}</div>
               </div>
             ))}
           </div>
@@ -144,13 +144,13 @@ export default function CaseStudy() {
           <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 64, alignItems: 'start' }}>
               <div>
-                <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-1.5px', color: T1, lineHeight: 1.1, margin: 0 }}>
+                <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, lineHeight: 1.1, margin: 0 }}>
                   {project.contextTitle ?? 'The context'}
                 </h2>
               </div>
               <div>
                 {project.context.split('\n\n').map((para, i, arr) => (
-                  <p key={i} style={{ fontSize: 17, lineHeight: 1.8, color: T2, marginBottom: i < arr.length - 1 ? 18 : 0 }}>{para}</p>
+                  <p key={i} style={{ fontSize: '1.0625rem', lineHeight: 1.8, textWrap: 'pretty', color: T2, marginBottom: i < arr.length - 1 ? 18 : 0 }}>{para}</p>
                 ))}
               </div>
             </div>
@@ -164,21 +164,21 @@ export default function CaseStudy() {
           {project.problemHeadline ? (
             <>
               <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center', marginBottom: 64 }}>
-                <h2 style={{ fontFamily: 'Instrument Serif, serif', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(30px, 3.2vw, 52px)', lineHeight: 1.12, letterSpacing: '-0.8px', color: T1, marginBottom: 28 }}>
+                <h2 style={{ fontFamily: 'Instrument Serif, serif', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(30px, 3.2vw, 52px)', lineHeight: 1.12, letterSpacing: '-0.02em', textWrap: 'balance', color: T1, marginBottom: 28 }}>
                   {project.problemHeadline}
                 </h2>
                 {project.problemExpanded.split('\n\n').map((para, i, arr) => (
-                  <p key={i} style={{ fontSize: 16, lineHeight: 1.75, color: T3, marginBottom: i < arr.length - 1 ? 12 : 0 }}>{para}</p>
+                  <p key={i} style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T3, marginBottom: i < arr.length - 1 ? 12 : 0 }}>{para}</p>
                 ))}
               </div>
               {project.problemInsights && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 48 }}>
                   {project.problemInsights.map((insight, i) => (
                     <div key={i}>
-                      <p style={{ fontSize: 15, fontWeight: 600, color: T1, marginBottom: 12, letterSpacing: '-0.2px' }}>
+                      <p style={{ fontSize: '0.9375rem', fontWeight: 600, color: T1, marginBottom: 12, letterSpacing: '-0.013em' }}>
                         {i + 1}. {insight.title}
                       </p>
-                      <p style={{ fontSize: 14, lineHeight: 1.7, color: T3, margin: 0 }}>{insight.desc}</p>
+                      <p style={{ fontSize: '0.875rem', lineHeight: 1.7, color: T3, margin: 0 }}>{insight.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -187,22 +187,22 @@ export default function CaseStudy() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 64 }}>
               <div>
-                <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-1.5px', color: T1, marginBottom: 20, lineHeight: 1.2 }}>
+                <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 20, lineHeight: 1.2 }}>
                   What was broken
                 </h2>
                 {project.problemExpanded.split('\n\n').map((para, i, arr) => (
-                  <p key={i} style={{ fontSize: 16, lineHeight: 1.75, color: T2, marginBottom: i < arr.length - 1 ? 16 : 0 }}>{para}</p>
+                  <p key={i} style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, marginBottom: i < arr.length - 1 ? 16 : 0 }}>{para}</p>
                 ))}
               </div>
               <div>
-                <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-1.5px', color: T1, marginBottom: 20, lineHeight: 1.2 }}>
+                <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 20, lineHeight: 1.2 }}>
                   Our role
                 </h2>
-                <p style={{ fontSize: 16, lineHeight: 1.75, color: T2, marginBottom: 32 }}>{project.ourRole}</p>
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.3px', color: T4, marginBottom: 14 }}>Deliverables</p>
+                <p style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, marginBottom: 32 }}>{project.ourRole}</p>
+                <p style={{ fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.027em', color: T4, marginBottom: 14 }}>Deliverables</p>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {project.deliverables.map((item, i) => (
-                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 15, color: T2 }}>
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: '0.9375rem', lineHeight: 1.6, color: T2 }}>
                       <span style={{ display: 'inline-block', width: 5, height: 5, borderRadius: '50%', background: BLUE, flexShrink: 0, marginTop: 7 }} />
                       {item}
                     </li>
@@ -218,10 +218,10 @@ export default function CaseStudy() {
       <section className="cs-section" style={{ background: '#080808', borderTop: `1px solid rgba(255,255,255,0.05)` }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 64 }}>
-            <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-1.5px', color: T1, margin: 0 }}>
+            <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, margin: 0 }}>
               {project.designTitle ?? 'The design'}
             </h2>
-            <span style={{ fontSize: 12, color: T4, fontWeight: 500 }}>Some visuals and values have been altered to comply with NDA. The outcomes and decisions shown are real.</span>
+            <span style={{ fontSize: '0.75rem', color: T4, fontWeight: 500 }}>Some visuals and values have been altered to comply with NDA. The outcomes and decisions shown are real.</span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 80 }}>
@@ -236,11 +236,11 @@ export default function CaseStudy() {
                   </div>
                   <div style={{ order: imageLeft ? 1 : 0 }}>
                     {visual.title && (
-                      <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.8px', color: T1, marginBottom: 16, lineHeight: 1.25 }}>
+                      <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 16, lineHeight: 1.25 }}>
                         {visual.title}
                       </h3>
                     )}
-                    <p style={{ fontSize: 16, lineHeight: 1.75, color: T2, margin: 0 }}>{visual.caption}</p>
+                    <p style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: 0 }}>{visual.caption}</p>
                   </div>
                 </div>
               )
@@ -253,11 +253,11 @@ export default function CaseStudy() {
                 <div key={i}>
                   <div style={{ maxWidth: 680, marginBottom: 32 }}>
                     {visual.title && (
-                      <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.8px', color: T1, marginBottom: 14, lineHeight: 1.25 }}>
+                      <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 14, lineHeight: 1.25 }}>
                         {visual.title}
                       </h3>
                     )}
-                    <p style={{ fontSize: 16, lineHeight: 1.75, color: T2, margin: 0 }}>{visual.caption}</p>
+                    <p style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: 0 }}>{visual.caption}</p>
                   </div>
                   <div style={{ borderRadius: 16, overflow: 'hidden', border: `1px solid ${BORDER}`, background: SURFACE, aspectRatio: '21/9' }}>
                     <img src={visual.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
@@ -272,7 +272,7 @@ export default function CaseStudy() {
       {/* ── Key Decisions ── */}
       <section className="cs-section" style={{ borderTop: `1px solid rgba(255,255,255,0.05)` }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
-          <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-1.5px', color: T1, marginBottom: 48 }}>
+          <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 48 }}>
             {project.decisionTitle ?? 'The decision'}
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -280,9 +280,9 @@ export default function CaseStudy() {
               <div key={i} className="decision-grid decision-row" style={{ padding: '48px 0', borderTop: `1px solid ${BORDER}`, alignItems: 'start' }}>
                 <div>
                   <div style={{ marginBottom: 16 }}>
-                    <AnimatedNumber value={`0${i + 1}`} style={{ fontFamily: 'Barlow, sans-serif', fontSize: 11, fontWeight: 700, letterSpacing: '1px', color: T4 }} />
+                    <AnimatedNumber value={`0${i + 1}`} style={{ fontFamily: 'Barlow, sans-serif', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.09em', color: T4 }} />
                   </div>
-                  <p style={{ fontSize: 15, lineHeight: 1.6, color: T3, margin: 0 }}>{decision.challenge}</p>
+                  <p style={{ fontSize: '0.9375rem', lineHeight: 1.6, color: T3, margin: 0 }}>{decision.challenge}</p>
                 </div>
                 <p style={{ fontSize: 'clamp(16px, 1.5vw, 19px)', lineHeight: 1.75, color: T2, margin: 0 }}>{decision.solution}</p>
               </div>
@@ -294,21 +294,21 @@ export default function CaseStudy() {
       {/* ── Results ── */}
       <section className="cs-section" style={{ background: '#080808', borderTop: `1px solid rgba(255,255,255,0.05)` }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
-          <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-1.5px', color: T1, marginBottom: 48 }}>
+          <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 48 }}>
             {project.proofTitle ?? 'The proof'}
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 48, marginBottom: 48 }}>
             {project.results.map((result, i) => (
               <div key={i}>
                 <div style={{ marginBottom: 10 }}>
-                  <AnimatedNumber value={result.value} style={{ fontFamily: 'Barlow, sans-serif', fontSize: 'clamp(34px, 3.5vw, 52px)', fontWeight: 700, letterSpacing: '-2.5px', color: T1, lineHeight: 1 }} />
+                  <AnimatedNumber value={result.value} style={{ fontFamily: 'Barlow, sans-serif', fontSize: 'clamp(34px, 3.5vw, 52px)', fontWeight: 700, letterSpacing: '-0.06em', fontVariantNumeric: 'tabular-nums', color: T1, lineHeight: 1 }} />
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: T3, marginBottom: 10 }}>{result.label}</div>
-                <p style={{ fontSize: 13, lineHeight: 1.6, color: T4, margin: 0 }}>{result.context}</p>
+                <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: T3, marginBottom: 10 }}>{result.label}</div>
+                <p style={{ fontSize: '0.8125rem', lineHeight: 1.6, color: T4, margin: 0 }}>{result.context}</p>
               </div>
             ))}
           </div>
-          <p style={{ fontSize: 17, lineHeight: 1.75, color: T2, maxWidth: 680 }}>{project.resultsParagraph}</p>
+          <p style={{ fontSize: '1.0625rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, maxWidth: 680 }}>{project.resultsParagraph}</p>
         </div>
       </section>
 
@@ -316,13 +316,13 @@ export default function CaseStudy() {
       {nextProject && (
         <section className="cs-section--sm" style={{ borderTop: `1px solid rgba(255,255,255,0.05)` }}>
           <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
-            <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.3px', color: T4, marginBottom: 20 }}>Up next</p>
-            <p style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.8px', color: T1, marginBottom: 20, lineHeight: 1.3, maxWidth: 640 }}>
+            <p style={{ fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.027em', color: T4, marginBottom: 20 }}>Up next</p>
+            <p style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 20, lineHeight: 1.3, maxWidth: 640 }}>
               {nextProject.problem}
             </p>
             <a
               href={`/work/${nextProject.slug}`}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: T3, textDecoration: 'none', fontSize: 14, fontWeight: 500, transition: 'color 0.2s ease' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: T3, textDecoration: 'none', fontSize: '0.875rem', fontWeight: 500, transition: 'color 0.2s ease' }}
               onMouseEnter={e => (e.currentTarget.style.color = T1)}
               onMouseLeave={e => (e.currentTarget.style.color = T3)}
             >

@@ -13,7 +13,7 @@ import type { Project } from '@/types/content'
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p style={{
-      fontSize: 11, fontWeight: 600, letterSpacing: '0.14em',
+      fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.14em',
       textTransform: 'uppercase', color: 'rgba(0,0,0,0.42)', margin: '0 0 16px',
     }}>
       {children}
@@ -89,7 +89,7 @@ const EXPERIENCE: ExperienceEntry[] = [
 ]
 
 const dateStyle: React.CSSProperties = {
-  fontSize: 12, fontWeight: 500, color: 'rgba(0,0,0,0.50)', paddingTop: 2, whiteSpace: 'nowrap',
+  fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.50)', paddingTop: 2, whiteSpace: 'nowrap',
 }
 
 function ExperienceSection() {
@@ -103,30 +103,30 @@ function ExperienceSection() {
 
             {item.kind === 'single' ? (
               <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>
+                <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>
                   {item.role}{' '}
                   <span style={{ fontWeight: 400, color: 'rgba(0,0,0,0.45)' }}>· {item.company}</span>
                 </p>
-                <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, margin: '3px 0 0' }}>
+                <p style={{ fontSize: '0.8125rem', color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, margin: '3px 0 0' }}>
                   {item.description}
                 </p>
               </div>
             ) : (
               <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#0d0d0d', margin: '0 0 8px', lineHeight: 1.3 }}>
+                <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: '0 0 8px', lineHeight: 1.3 }}>
                   {item.company}{' '}
                   <span style={{ fontWeight: 400, color: 'rgba(0,0,0,0.38)' }}>· {item.category}</span>
                 </p>
                 <div style={{ borderLeft: '2px solid rgba(0,0,0,0.08)', paddingLeft: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {item.roles.map((r) => (
                     <div key={r.role}>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>
+                      <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>
                         {r.role}
                       </p>
-                      <p style={{ fontSize: 12, color: 'rgba(0,0,0,0.40)', margin: '2px 0 3px', lineHeight: 1 }}>
-                        {r.dates}{r.tag && <span style={{ marginLeft: 6, background: 'rgba(0,0,0,0.05)', borderRadius: 4, padding: '1px 6px', fontSize: 11, fontWeight: 500 }}>{r.tag}</span>}
+                      <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.40)', margin: '2px 0 3px', lineHeight: 1 }}>
+                        {r.dates}{r.tag && <span style={{ marginLeft: 6, background: 'rgba(0,0,0,0.05)', borderRadius: 4, padding: '1px 6px', fontSize: '0.6875rem', fontWeight: 500 }}>{r.tag}</span>}
                       </p>
-                      <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, margin: 0 }}>
+                      <p style={{ fontSize: '0.8125rem', color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, margin: 0 }}>
                         {r.description}
                       </p>
                     </div>
@@ -233,8 +233,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.22, delay: 0.04 }}
                 style={{
-                  fontSize: 28, fontWeight: 700, color: '#ffffff',
-                  letterSpacing: '-1px', lineHeight: 1,
+                  fontSize: '1.75rem', fontWeight: 700, color: '#ffffff',
+                  letterSpacing: '-0.035em', fontVariantNumeric: 'tabular-nums', lineHeight: 1,
                   marginBottom: 3,
                 }}
               >
@@ -247,7 +247,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.22, delay: 0.08 }}
                 style={{
-                  fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.70)',
+                  fontSize: '0.6875rem', fontWeight: 500, color: 'rgba(255,255,255,0.70)',
                   lineHeight: 1.3, marginBottom: 8,
                 }}
               >
@@ -283,9 +283,9 @@ function PersonalSection() {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 0', alignItems: 'center', marginBottom: 16 }}>
         {PERSONAL_FACTS.map((fact, i) => (
           <span key={fact} style={{ display: 'inline-flex', alignItems: 'center' }}>
-            <span style={{ fontSize: 14, color: 'rgba(0,0,0,0.55)' }}>{fact}</span>
+            <span style={{ fontSize: '0.875rem', color: 'rgba(0,0,0,0.55)' }}>{fact}</span>
             {i < PERSONAL_FACTS.length - 1 && (
-              <span style={{ fontSize: 14, color: 'rgba(0,0,0,0.2)', margin: '0 10px' }}>·</span>
+              <span style={{ fontSize: '0.875rem', color: 'rgba(0,0,0,0.2)', margin: '0 10px' }}>·</span>
             )}
           </span>
         ))}
@@ -371,17 +371,17 @@ function GitHubActivitySection() {
     }
   })
 
-  const labelStyle: React.CSSProperties = { fontSize: 10, color: 'rgba(0,0,0,0.38)', fontWeight: 500, userSelect: 'none' }
+  const labelStyle: React.CSSProperties = { fontSize: '0.625rem', color: 'rgba(0,0,0,0.38)', fontWeight: 500, userSelect: 'none' }
 
   return (
     <div ref={containerRef}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
         <a href="https://github.com/Cristobal88" target="_blank" rel="noopener noreferrer"
-          style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.28)', textDecoration: 'none' }}>
+          style={{ fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.28)', textDecoration: 'none' }}>
           GitHub Activity
         </a>
         {total !== null && (
-          <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.35)', fontWeight: 500 }}>
+          <span style={{ fontSize: '0.6875rem', color: 'rgba(0,0,0,0.35)', fontWeight: 500 }}>
             {total.toLocaleString()} contributions in the last year
           </span>
         )}
@@ -512,7 +512,7 @@ function StackSection() {
                       : <img src={`https://cdn.simpleicons.org/${tool.slug}/${tool.iconColor}`} alt={tool.name} width={28} height={28} style={{ display: 'block', width: 28, height: 28 }} />
                 }
               </div>
-              <span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(0,0,0,0.4)', letterSpacing: '0.01em' }}>
+              <span style={{ fontSize: '0.625rem', fontWeight: 500, color: 'rgba(0,0,0,0.4)', letterSpacing: '0.01em' }}>
                 {tool.name}
               </span>
             </>
@@ -556,7 +556,7 @@ function CvDownloadButton({ mode = 'absolute' }: { mode?: 'absolute' | 'inline' 
           background: '#ffffff',
           border: `1px solid ${hovered ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.10)'}`,
           borderRadius: 9999, padding: '7px 14px',
-          fontSize: 13, fontWeight: 500,
+          fontSize: '0.8125rem', fontWeight: 500,
           color: hovered ? '#111' : 'rgba(0,0,0,0.55)',
           textDecoration: 'none',
           transition: 'border-color 0.2s, color 0.2s',
@@ -607,10 +607,10 @@ export default function Home() {
   }, [])
 
   const pStyle: React.CSSProperties = {
-    fontSize: 16,
+    fontSize: '1rem',
     lineHeight: 1.7,
     fontWeight: 400,
-    letterSpacing: '-0.1px',
+    textWrap: 'pretty',
     margin: '0 0 20px',
     color: 'rgba(0,0,0,0.65)',
   }
@@ -642,10 +642,10 @@ export default function Home() {
 
             {/* Name */}
             <div style={{ margin: '0 0 32px' }}>
-              <h1 style={{ fontSize: 16, fontWeight: 700, color: '#0d0d0d', lineHeight: 1.4, margin: 0 }}>
+              <h1 style={{ fontSize: '1rem', fontWeight: 700, color: '#0d0d0d', lineHeight: 1.4, margin: 0 }}>
                 Cristobal Lemoine
               </h1>
-              <p style={{ fontSize: 16, fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
+              <p style={{ fontSize: '1rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
                 Staff Product Designer
               </p>
               <CvDownloadButton mode="inline" />
@@ -700,7 +700,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 6 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              style={{ fontSize: 12, fontWeight: 500, color: 'rgba(0,0,0,0.4)', margin: 0 }}
+              style={{ fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.4)', margin: 0 }}
             >
               ✓ Copied to clipboard
             </motion.p>
@@ -711,13 +711,13 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 6 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 500, color: 'rgba(0,0,0,0.35)', margin: 0 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.35)', margin: 0 }}
             >
               Press{' '}
               <kbd style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 background: 'rgba(0,0,0,0.07)', borderRadius: 5,
-                padding: '1px 6px', fontSize: 11, fontWeight: 600,
+                padding: '1px 6px', fontSize: '0.6875rem', fontWeight: 600,
                 fontFamily: 'inherit', color: 'rgba(0,0,0,0.45)',
                 border: '1px solid rgba(0,0,0,0.10)',
               }}>E</kbd>{' '}

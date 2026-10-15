@@ -10,7 +10,7 @@ export function PersonalCta() {
       }}
     >
       <p style={{
-        fontSize: 11, fontWeight: 600, letterSpacing: '0.3px',
+        fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.06em',
         color: 'rgba(255,255,255,0.38)', marginBottom: 20,
         textTransform: 'uppercase',
       }}>
@@ -22,7 +22,8 @@ export function PersonalCta() {
         fontStyle: 'italic',
         fontWeight: 400,
         fontSize: 'clamp(32px, 4vw, 56px)',
-        letterSpacing: '-1px',
+        letterSpacing: '-0.025em',
+        textWrap: 'balance',
         color: '#ffffff',
         lineHeight: 1.1,
         marginBottom: 20,
@@ -31,7 +32,7 @@ export function PersonalCta() {
       </h2>
 
       <p style={{
-        fontSize: 16,
+        fontSize: '1rem',
         color: 'rgba(255,255,255,0.50)',
         maxWidth: 480,
         margin: '0 auto 40px',
@@ -46,7 +47,7 @@ export function PersonalCta() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: '#ffffff', color: '#111',
-            fontSize: 14, fontWeight: 600, textDecoration: 'none',
+            fontSize: '0.875rem', fontWeight: 600, textDecoration: 'none',
             padding: '12px 24px', borderRadius: 9999,
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
@@ -68,7 +69,7 @@ export function PersonalCta() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             color: 'rgba(255,255,255,0.70)',
-            fontSize: 14, fontWeight: 500, textDecoration: 'none',
+            fontSize: '0.875rem', fontWeight: 500, textDecoration: 'none',
             padding: '12px 24px', borderRadius: 9999,
             border: '1px solid rgba(255,255,255,0.12)',
             transition: 'color 0.2s, border-color 0.2s',

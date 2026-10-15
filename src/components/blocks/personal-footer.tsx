@@ -3,7 +3,7 @@ export function PersonalFooter() {
     color: 'rgba(255,255,255,0.35)',
     textDecoration: 'none',
     transition: 'color 0.2s',
-    fontSize: 13,
+    fontSize: '0.8125rem',
   }
 
   const handleEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -24,7 +24,7 @@ export function PersonalFooter() {
       gap: 16,
       fontFamily: 'Barlow, sans-serif',
     }}>
-      <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>
+      <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8125rem' }}>
         © 2026 Cristobal Lemoine
       </span>
       <div style={{ display: 'flex', gap: 24 }}>

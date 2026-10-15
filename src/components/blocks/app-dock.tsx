@@ -79,7 +79,7 @@ function DockTextButton({
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         padding: '0 12px', height: BTN_H, borderRadius: 8,
         textDecoration: 'none',
-        fontSize: 13, fontWeight: 500,
+        fontSize: '0.8125rem', fontWeight: 500,
         color:      textColor(isDark, hov),
         background: btnBg(isDark, hov),
         transition: 'background 0.18s ease, color 0.18s ease',
@@ -121,7 +121,7 @@ function WorkDockButton({
         style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           padding: '0 12px', height: BTN_H, borderRadius: 8,
-          fontSize: 13, fontWeight: 500,
+          fontSize: '0.8125rem', fontWeight: 500,
           color:      textColor(isDark, hov),
           background: btnBg(isDark, hov),
           transition: 'background 0.18s ease, color 0.18s ease',
@@ -235,7 +235,7 @@ export function AppDock({ variant = 'light' }: AppDockProps) {
           <CtaButton
             href="https://calendar.app.google/q37dZacRGpmM2wgy7"
             variant="primary"
-            style={{ fontSize: 12, borderRadius: 8 }}
+            style={{ fontSize: '0.75rem', borderRadius: 8 }}
           >
             Let's talk
           </CtaButton>
