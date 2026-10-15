@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { CtaButton } from '@/components/ui/cta-button'
 import { useCaseStudies } from '@/hooks/useCaseStudies'
+import { chime } from '@/lib/chime'
 import type { Project } from '@/types/content'
 
 // ── Spring ────────────────────────────────────────────────────────────────────
@@ -112,7 +113,7 @@ function WorkDockButton({
   return (
     <div
       style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
-      onMouseEnter={() => setHov(true)}
+      onMouseEnter={() => { setHov(true); chime.workHover() }}
       onMouseLeave={() => setHov(false)}
     >
       {/* "Work" text label */}
@@ -173,7 +174,7 @@ function WorkDockButton({
               scale:   hov ? 1 : 0.72,
             }}
             transition={{ ...SPRING, delay: hov ? i * 0.04 : 0 }}
-            onClick={e => e.stopPropagation()}
+            onClick={e => { e.stopPropagation(); chime.thumbClick() }}
           >
             <img
               src={imgSrc}
@@ -230,7 +231,7 @@ export function AppDock({ variant = 'light' }: AppDockProps) {
         <DockTextButton href="/" label="Home" variant={variant} />
         <WorkDockButton dockProjects={dockProjects} variant={variant} />
 
-        <div className="dock-cta" style={{ marginLeft: 8 }}>
+        <div className="dock-cta" style={{ marginLeft: 8 }} onClick={() => chime.bookCall()}>
           <CtaButton
             href="https://calendar.app.google/q37dZacRGpmM2wgy7"
             variant="primary"

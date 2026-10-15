@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CreditCard, Sparkles, Layers, Linkedin, Download } from 'lucide-react'
-import { CtaButton } from '@/components/ui/cta-button'
+import { Download } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { AppDock } from '@/components/blocks/app-dock'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
-import { InteractiveWord } from '@/components/ui/interactive-text'
 import { useCaseStudies } from '@/hooks/useCaseStudies'
+import { chime } from '@/lib/chime'
 import type { Project } from '@/types/content'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -201,7 +200,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         transition: 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)',
         boxShadow: hovered ? '0 8px 24px rgba(0,0,0,0.14)' : '0 2px 8px rgba(0,0,0,0.06)',
       }}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={() => { setHovered(true); chime.cardHover() }}
       onMouseLeave={() => setHovered(false)}
     >
       <picture>
@@ -213,27 +212,48 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         />
       </picture>
 
-      {/* Hover label overlay */}
+      {/* Hover metric hero overlay */}
       <AnimatePresence>
         {hovered && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
+            transition={{ duration: 0.2 }}
             style={{
               position: 'absolute', inset: 0,
-              background: 'linear-gradient(to top, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.20) 50%, transparent 100%)',
-              display: 'flex', alignItems: 'flex-end',
-              padding: '12px',
+              background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.40) 55%, transparent 100%)',
+              display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+              padding: '14px',
             }}
           >
-            <span style={{
-              fontSize: 11, fontWeight: 600, color: '#ffffff',
-              letterSpacing: '-0.1px', lineHeight: 1.3,
-            }}>
-              {project.label}
-            </span>
+            {project.metric && (
+              <motion.span
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.22, delay: 0.04 }}
+                style={{
+                  fontSize: 28, fontWeight: 700, color: '#ffffff',
+                  letterSpacing: '-1px', lineHeight: 1,
+                  marginBottom: 3,
+                }}
+              >
+                {project.metric}
+              </motion.span>
+            )}
+            {project.metricLabel && (
+              <motion.span
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.22, delay: 0.08 }}
+                style={{
+                  fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.70)',
+                  lineHeight: 1.3, marginBottom: 8,
+                }}
+              >
+                {project.metricLabel}
+              </motion.span>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -530,6 +550,7 @@ function CvDownloadButton({ mode = 'absolute' }: { mode?: 'absolute' | 'inline' 
         rel="noopener noreferrer"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        onClick={() => chime.cvDownload()}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           background: '#ffffff',
@@ -558,11 +579,25 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) {
+    async function handleKey(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement).tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA') return
       if (e.key === 'e' || e.key === 'E') {
-        navigator.clipboard.writeText('cristoballemoine88@gmail.com')
+        const email = 'cristoballemoine88@gmail.com'
+        try {
+          await navigator.clipboard.writeText(email)
+        } catch {
+          // fallback for browsers that block clipboard without HTTPS
+          const el = document.createElement('textarea')
+          el.value = email
+          el.style.position = 'fixed'
+          el.style.opacity = '0'
+          document.body.appendChild(el)
+          el.select()
+          document.execCommand('copy')
+          document.body.removeChild(el)
+        }
+        chime.emailCopy()
         setEmailCopied(true)
         setTimeout(() => setEmailCopied(false), 2000)
       }
@@ -619,16 +654,10 @@ export default function Home() {
             {/* Bio */}
             <div style={{ marginBottom: 0 }}>
               <p style={pStyle}>
-                For 9+ years, I've been designing and scaling product experiences across{' '}
-                <InteractiveWord icon={CreditCard} preview="/logos/modo.webp">Fintech</InteractiveWord>
-                {', '}IoT, SaaS, and{' '}
-                <InteractiveWord icon={Sparkles} preview="/logos/heysam-preview.svg">AI-native</InteractiveWord>
-                {' '}companies. Over 6 million users interact daily with products I've shaped, mostly in industries where a confusing flow isn't just frustrating: it breaks compliance, loses a transaction, or kills trust overnight.
+                For 9+ years, I've been designing and scaling product experiences across Fintech, IoT, SaaS, and AI-native companies. Over 6 million users interact daily with products I've shaped, mostly in industries where a confusing flow isn't just frustrating: it breaks compliance, loses a transaction, or kills trust overnight.
               </p>
               <p style={pStyle}>
-                That context shapes how I work. I lead design from the ground up, from early discovery and UX research through{' '}
-                <InteractiveWord icon={Layers} preview="/logos/figma-preview.svg">high-fidelity UI</InteractiveWord>
-                {' '}and delivery, staying close to the details that matter in complex, regulated environments.
+                That context shapes how I work. I lead design from the ground up, from early discovery and UX research through high-fidelity UI and delivery, staying close to the details that matter in complex, regulated environments.
               </p>
               <p style={pStyle}>
                 I partner with Product, Engineering, and Data not just to execute, but to help define strategy, move adoption metrics, and connect design decisions to outcomes that show up in the business.
@@ -654,34 +683,6 @@ export default function Home() {
 
             <Divider />
             <PersonalSection />
-
-            <Divider />
-
-            {/* CTA row */}
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-              <CtaButton
-                href="https://calendar.app.google/q37dZacRGpmM2wgy7"
-                variant="primary"
-              >
-                Book a Call
-              </CtaButton>
-              <a
-                href="https://www.linkedin.com/in/cristoballemoine"
-                target="_blank" rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  color: '#111', fontSize: 14, fontWeight: 500, textDecoration: 'none',
-                  padding: '10px 20px', borderRadius: 9999,
-                  border: '1px solid rgba(0,0,0,0.12)',
-                  transition: 'background 0.2s ease, border-color 0.2s ease',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.22)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)' }}
-              >
-                <Linkedin size={14} />
-                LinkedIn
-              </a>
-            </div>
 
           </Card>
         </div>

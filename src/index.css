@@ -159,7 +159,7 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 
 /* Main content padding */
 .home-main { padding-top: 24px; }
-@media (min-width: 768px) { .home-main { padding-top: 144px; } }
+@media (min-width: 768px) { .home-main { padding-top: 120px; } }
 
 /* Case study hero padding */
 .cs-hero { padding-top: 24px; }
