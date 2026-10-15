@@ -547,7 +547,8 @@ function CvDownloadButton({ mode = 'absolute' }: { mode?: 'absolute' | 'inline' 
     <div className={mode === 'absolute' ? 'cv-btn-desktop' : 'cv-btn-mobile'} style={wrapperStyle}>
       <a
         href="/Cristobal-Lemoine-CV-EN.pdf"
-        download="Cristobal-Lemoine-CV.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={() => chime.cvDownload()}
