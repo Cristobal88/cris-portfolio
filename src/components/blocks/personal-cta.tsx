@@ -37,7 +37,7 @@ export function PersonalCta() {
         margin: '0 auto 40px',
         lineHeight: 1.65,
       }}>
-        I'm available for senior product design roles and consulting engagements.
+        I'm available for staff and principal design roles and consulting engagements.
       </p>
 
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>

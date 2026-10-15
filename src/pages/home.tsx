@@ -95,7 +95,7 @@ const dateStyle: React.CSSProperties = {
 function ExperienceSection() {
   return (
     <div>
-      <SectionLabel>Highlighted experience</SectionLabel>
+      <SectionLabel>Selected experience</SectionLabel>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {EXPERIENCE.map((item) => (
           <div key={item.kind === 'single' ? item.company + item.dates : item.company} className="exp-row" style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '0 16px' }}>
@@ -660,10 +660,10 @@ export default function Home() {
                 That context shapes how I work. I lead design from the ground up, from early discovery and UX research through high-fidelity UI and delivery, staying close to the details that matter in complex, regulated environments.
               </p>
               <p style={pStyle}>
-                I partner with Product, Engineering, and Data not just to execute, but to help define strategy, move adoption metrics, and connect design decisions to outcomes that show up in the business.
+                I partner with Product, Engineering, and Data not just to execute, but to help define strategy, shift adoption metrics, and connect design decisions to outcomes that show up in the business.
               </p>
               <p style={{ ...pStyle, margin: 0 }}>
-                Behind all of it is a simple belief. I'm a maker at heart, and I care deeply about building products with the potential to leave a positive mark on the world. Design is the best tool I've found for that.
+                Behind all of it is a simple conviction: I'm a maker at heart, and I care deeply about building products with the potential to leave a positive mark on the world. Design is the best tool I've found for that.
               </p>
             </div>
 
