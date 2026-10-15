@@ -94,8 +94,6 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 .nav-link { text-decoration: none; color: #000; font-size: 0.875rem; font-weight: 500; padding: 6px 12px; border-radius: 999px; transition: background 0.2s ease; }
 .nav-link:hover { background: rgba(0, 0, 0, 0.06); }
 
-.cv-btn-desktop { display: none; }
-.cv-btn-mobile { display: inline-block; }
 
 .cta-primary { display: flex; align-items: center; gap: 16px; background-color: var(--brand-blue); color: #ffffff; text-decoration: none; border-radius: 9999px; padding: 6px 6px 6px 20px; font-size: 0.875rem; font-weight: 600; box-shadow: 0 8px 24px rgba(0, 68, 212, 0.5), 0 2px 8px rgba(0, 68, 212, 0.3); transition: background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
 .cta-primary:hover { background-color: var(--brand-blue-dark); transform: translateY(-2px); box-shadow: 0 8px 24px var(--brand-blue-glow); }

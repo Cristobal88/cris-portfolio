@@ -107,7 +107,7 @@ function WorkDockButton({
 
   // On touch devices: plain link, no thumbnail interaction
   if (isTouch) {
-    return <DockTextButton href="/#work" label="Work" variant={variant} />
+    return <DockTextButton href="/#work" label="Projects" variant={variant} />
   }
 
   const spreadW = total > 0 ? total * TW + (total - 1) * TG : 0
@@ -132,7 +132,7 @@ function WorkDockButton({
           cursor: 'default',
         }}
       >
-        Work
+        Projects
       </div>
 
       {/* Thumbnail strip — height matches BTN_H so dock stays 48 px;
@@ -233,6 +233,7 @@ export function AppDock({ variant = 'light' }: AppDockProps) {
       >
         <DockTextButton href="/" label="Home" variant={variant} />
         <WorkDockButton dockProjects={dockProjects} variant={variant} />
+        <DockTextButton href="/resume" label="Resume" variant={variant} />
 
         <div className="dock-cta" style={{ marginLeft: 8 }}>
           <CtaButton

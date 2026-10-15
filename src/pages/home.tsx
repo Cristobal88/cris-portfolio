@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { Download } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { AppDock } from '@/components/blocks/app-dock'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
@@ -534,42 +533,6 @@ function StackSection() {
   )
 }
 
-// ─── CV Download Button ───────────────────────────────────────────────────────
-
-function CvDownloadButton({ mode = 'absolute' }: { mode?: 'absolute' | 'inline' }) {
-  const [hovered, setHovered] = useState(false)
-
-  const wrapperStyle: React.CSSProperties = mode === 'absolute'
-    ? { position: 'absolute', top: 20, right: 24, zIndex: 10 }
-    : { display: 'inline-block', marginTop: 12 }
-
-  return (
-    <div className={mode === 'absolute' ? 'cv-btn-desktop' : 'cv-btn-mobile'} style={wrapperStyle}>
-      <a
-        href="/Cristobal-Lemoine-CV-EN.pdf"
-        target="_blank"
-        rel="noopener noreferrer"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={() => chime.cvDownload()}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          background: '#ffffff',
-          border: `1px solid ${hovered ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.10)'}`,
-          borderRadius: 8, padding: '7px 14px',
-          fontSize: '0.8125rem', fontWeight: 500,
-          color: hovered ? '#111' : 'rgba(0,0,0,0.55)',
-          textDecoration: 'none',
-          transition: 'border-color 0.2s, color 0.2s',
-        }}
-      >
-        Download CV
-        <Download size={13} />
-      </a>
-    </div>
-  )
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Home() {
@@ -626,9 +589,7 @@ export default function Home() {
       <main id="main-content" className="home-main" tabIndex={-1} style={{ outline: 'none' }}>
         <div className="mx-auto w-full max-w-6xl px-6">
 
-          <Card style={{ padding: '40px 48px', margin: '0 auto 100px', maxWidth: 680, position: 'relative' }}>
-
-            <CvDownloadButton />
+          <Card style={{ padding: '40px 48px', margin: '0 auto 100px', maxWidth: 680 }}>
 
             {/* Photo */}
             <div style={{ marginBottom: 24 }}>
@@ -650,7 +611,6 @@ export default function Home() {
               <p style={{ fontSize: '1rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
                 Staff Product Designer
               </p>
-              <CvDownloadButton mode="inline" />
             </div>
 
             {/* Bio */}

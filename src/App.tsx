@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 
 const Home     = lazy(() => import('./pages/home'))
 const CaseStudy = lazy(() => import('./pages/use-case'))
+const Resume   = lazy(() => import('./pages/resume'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -26,6 +27,7 @@ function AppRoutes() {
         <Routes>
           <Route path="/"            element={<Home />} />
           <Route path="/work/:slug"  element={<CaseStudy />} />
+          <Route path="/resume"      element={<Resume />} />
         </Routes>
       </Suspense>
     </>
