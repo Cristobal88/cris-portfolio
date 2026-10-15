@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowUpRight, CreditCard, Sparkles, Layers, Linkedin, Download, ChevronDown, ChevronUp } from 'lucide-react'
+import { CreditCard, Sparkles, Layers, Linkedin, Download } from 'lucide-react'
 import { CtaButton } from '@/components/ui/cta-button'
 import { Card } from '@/components/ui/card'
 import { PersonalNav } from '@/components/blocks/personal-nav'
@@ -14,8 +14,8 @@ import type { Project } from '@/types/content'
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p style={{
-      fontSize: 10, fontWeight: 600, letterSpacing: '0.14em',
-      textTransform: 'uppercase', color: 'rgba(0,0,0,0.28)', margin: '0 0 16px',
+      fontSize: 11, fontWeight: 600, letterSpacing: '0.14em',
+      textTransform: 'uppercase', color: 'rgba(0,0,0,0.42)', margin: '0 0 16px',
     }}>
       {children}
     </p>
@@ -28,83 +28,69 @@ function Divider() {
 
 // ─── Experience ───────────────────────────────────────────────────────────────
 
-const EXPERIENCE = [
+type SingleRole = {
+  kind: 'single'
+  dates: string
+  role: string
+  company: string
+  description: string
+}
+
+type GroupedRoles = {
+  kind: 'group'
+  dates: string
+  company: string
+  category: string
+  roles: { role: string; dates: string; tag?: string; description: string }[]
+}
+
+type ExperienceEntry = SingleRole | GroupedRoles
+
+const EXPERIENCE: ExperienceEntry[] = [
   {
+    kind: 'single',
     dates: '2026 — Present',
     role: 'Lead Product Designer',
     company: 'EY',
     description: 'Enterprise product design for AI-enabled platforms used by 400K+ professionals globally.',
   },
   {
+    kind: 'single',
     dates: '2025 — 2026',
     role: 'Lead Product Designer',
     company: 'HeySam',
     description: 'Product Design 0→1 for an AI-native sales tool.',
-    logo: '/logos/heysam-preview.svg',
   },
   {
-    dates: 'Feb–Aug 2025',
-    role: 'Tech Lead Product Designer',
-    company: 'MODO',
-    description: 'Led QR and NFC payment experiences across 2 squads and 30+ partner banks.',
-    logo: '/logos/modo.webp',
-  },
-  {
+    kind: 'group',
     dates: '2022 — 2025',
-    role: 'Product Designer',
     company: 'MODO',
-    description: 'Designed digital tipping, transit top-ups and loyalty experiences for a 6M+ user fintech ecosystem.',
-    logo: '/logos/modo.webp',
+    category: 'Fintech',
+    roles: [
+      {
+        role: 'Tech Lead Product Designer',
+        dates: '2025',
+        tag: 'Promoted',
+        description: 'Led QR and NFC payment experiences across 2 squads and 30+ partner banks.',
+      },
+      {
+        role: 'Product Designer',
+        dates: '2022 — 2025',
+        description: 'Designed digital tipping, transit top-ups and loyalty experiences for a 6M+ user fintech ecosystem.',
+      },
+    ],
   },
   {
+    kind: 'single',
     dates: '2020 — 2022',
     role: 'Product Designer',
     company: 'Drixit',
     description: 'Shipped IoT and Industry 4.0 products across 2 product ecosystems.',
-    logo: '/logos/drixit.png',
-    logoStyle: { objectFit: 'contain' as const, padding: '24px 40px' },
   },
 ]
 
-const canHoverDevice = typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches
-
-function CompanyPreview({ name, logo, logoStyle }: { name: string; logo: string; logoStyle?: React.CSSProperties }) {
-  const [hovered, setHovered] = useState(false)
-  return (
-    <span style={{ position: 'relative', display: 'inline' }}>
-      <span
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >· {name}</span>
-      {canHoverDevice && (
-        <AnimatePresence>
-          {hovered && (
-            <motion.div
-              initial={{ opacity: 0, y: 6, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 6, scale: 0.96 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              style={{
-                position: 'absolute',
-                bottom: 'calc(100% + 8px)',
-                left: '50%',
-                translateX: '-50%',
-                width: 220,
-                borderRadius: 14,
-                overflow: 'hidden',
-                background: '#ffffff',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)',
-                pointerEvents: 'none',
-                zIndex: 50,
-              }}
-            >
-              <img src={logo} alt={name} style={{ display: 'block', width: '100%', height: 140, objectFit: 'cover', ...logoStyle }} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      )}
-    </span>
-  )
+const dateStyle: React.CSSProperties = {
+  fontSize: 12, fontWeight: 500, color: 'rgba(0,0,0,0.50)', paddingTop: 2, whiteSpace: 'nowrap',
 }
 
 function ExperienceSection() {
@@ -113,21 +99,42 @@ function ExperienceSection() {
       <SectionLabel>Highlighted experience</SectionLabel>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {EXPERIENCE.map((item) => (
-          <div key={item.company} style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: '0 16px' }}>
-            <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(0,0,0,0.35)', paddingTop: 2, whiteSpace: 'nowrap' }}>
-              {item.dates}
-            </span>
-            <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>
-                {item.role}{' '}
-                <span style={{ fontWeight: 400, color: 'rgba(0,0,0,0.45)' }}>
-                  <CompanyPreview name={item.company} logo={item.logo} logoStyle={item.logoStyle} />
-                </span>
-              </p>
-              <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, margin: '3px 0 0' }}>
-                {item.description}
-              </p>
-            </div>
+          <div key={item.kind === 'single' ? item.company + item.dates : item.company} className="exp-row" style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '0 16px' }}>
+            <span className="exp-date" style={dateStyle}>{item.dates}</span>
+
+            {item.kind === 'single' ? (
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>
+                  {item.role}{' '}
+                  <span style={{ fontWeight: 400, color: 'rgba(0,0,0,0.45)' }}>· {item.company}</span>
+                </p>
+                <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, margin: '3px 0 0' }}>
+                  {item.description}
+                </p>
+              </div>
+            ) : (
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#0d0d0d', margin: '0 0 8px', lineHeight: 1.3 }}>
+                  {item.company}{' '}
+                  <span style={{ fontWeight: 400, color: 'rgba(0,0,0,0.38)' }}>· {item.category}</span>
+                </p>
+                <div style={{ borderLeft: '2px solid rgba(0,0,0,0.08)', paddingLeft: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {item.roles.map((r) => (
+                    <div key={r.role}>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>
+                        {r.role}
+                      </p>
+                      <p style={{ fontSize: 12, color: 'rgba(0,0,0,0.40)', margin: '2px 0 3px', lineHeight: 1 }}>
+                        {r.dates}{r.tag && <span style={{ marginLeft: 6, background: 'rgba(0,0,0,0.05)', borderRadius: 4, padding: '1px 6px', fontSize: 11, fontWeight: 500 }}>{r.tag}</span>}
+                      </p>
+                      <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, margin: 0 }}>
+                        {r.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -509,92 +516,34 @@ function StackSection() {
 // ─── CV Download Button ───────────────────────────────────────────────────────
 
 function CvDownloadButton({ mode = 'absolute' }: { mode?: 'absolute' | 'inline' }) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [open])
-
-  function download(lang: 'en' | 'es') {
-    // TODO: replace with real CV files once ready
-    const urls = { en: '/Cristobal-Lemoine-CV-EN.pdf', es: '/Cristobal-Lemoine-CV-ES.pdf' }
-    window.open(urls[lang], '_blank')
-    setOpen(false)
-  }
+  const [hovered, setHovered] = useState(false)
 
   const wrapperStyle: React.CSSProperties = mode === 'absolute'
     ? { position: 'absolute', top: 20, right: 24, zIndex: 10 }
-    : { position: 'relative', display: 'inline-block', marginTop: 12 }
+    : { display: 'inline-block', marginTop: 12 }
 
   return (
-    <div ref={ref} className={mode === 'absolute' ? 'cv-btn-desktop' : 'cv-btn-mobile'} style={wrapperStyle}>
-      <button
-        onClick={() => setOpen(o => !o)}
+    <div className={mode === 'absolute' ? 'cv-btn-desktop' : 'cv-btn-mobile'} style={wrapperStyle}>
+      <a
+        href="/Cristobal-Lemoine-CV-EN.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           background: '#ffffff',
-          border: `1px solid ${open ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.10)'}`,
+          border: `1px solid ${hovered ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.10)'}`,
           borderRadius: 9999, padding: '7px 14px',
           fontSize: 13, fontWeight: 500,
-          color: open ? '#111' : 'rgba(0,0,0,0.55)',
-          cursor: 'pointer', transition: 'border-color 0.2s, color 0.2s',
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.borderColor = 'rgba(0,0,0,0.22)'
-          e.currentTarget.style.color = '#111'
-        }}
-        onMouseLeave={e => {
-          if (open) return
-          e.currentTarget.style.borderColor = 'rgba(0,0,0,0.10)'
-          e.currentTarget.style.color = 'rgba(0,0,0,0.55)'
+          color: hovered ? '#111' : 'rgba(0,0,0,0.55)',
+          textDecoration: 'none',
+          transition: 'border-color 0.2s, color 0.2s',
         }}
       >
         <Download size={13} />
         Download CV
-        {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              position: 'absolute', top: 'calc(100% + 4px)', right: 0,
-              background: '#ffffff', borderRadius: 10,
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
-              overflow: 'hidden', width: '100%',
-            }}
-          >
-            {(['en', 'es'] as const).map(lang => (
-              <button
-                key={lang}
-                onClick={() => download(lang)}
-                style={{
-                  display: 'block', width: '100%', textAlign: 'left',
-                  padding: '10px 16px', fontSize: 13, fontWeight: 500,
-                  color: '#111', background: 'transparent',
-                  border: 'none', cursor: 'pointer',
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                {lang === 'en' ? 'English' : 'Español'}
-              </button>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </a>
     </div>
   )
 }

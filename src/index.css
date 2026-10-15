@@ -121,6 +121,8 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 }
 
 @media (max-width: 640px) {
+  .exp-row { display: flex !important; flex-direction: column !important; gap: 2px !important; }
+  .exp-row .exp-date { padding-top: 0 !important; }
   .cv-btn-desktop { display: none; }
   .cv-btn-mobile { display: inline-block; }
   .decision-grid { grid-template-columns: 1fr; gap: 16px; }
