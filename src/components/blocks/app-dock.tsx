@@ -237,7 +237,7 @@ export function AppDock({ variant = 'light' }: AppDockProps) {
             variant="primary"
             style={{ fontSize: 12, borderRadius: 8 }}
           >
-            Book a Call
+            Let's talk
           </CtaButton>
         </div>
       </div>

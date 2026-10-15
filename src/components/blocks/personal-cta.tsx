@@ -59,7 +59,7 @@ export function PersonalCta() {
             e.currentTarget.style.boxShadow = ''
           }}
         >
-          Book a Call
+          Let's talk
         </a>
         <a
           href="https://www.linkedin.com/in/cristoballemoine"

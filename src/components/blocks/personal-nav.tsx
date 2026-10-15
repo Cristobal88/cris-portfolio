@@ -21,14 +21,14 @@ export function PersonalNav({ variant = 'light' }: PersonalNavProps) {
       {/* Center: empty to maintain 3-col grid */}
       <div />
 
-      {/* Right: Book a Call */}
+      {/* Right: Let's talk */}
       <div style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: 8 }}>
 
         <CtaButton
           href="https://calendar.app.google/q37dZacRGpmM2wgy7"
           variant="primary"
         >
-          Book a Call
+          Let's talk
         </CtaButton>
       </div>
     </nav>
