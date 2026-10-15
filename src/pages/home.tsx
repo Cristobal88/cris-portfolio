@@ -562,8 +562,8 @@ function CvDownloadButton({ mode = 'absolute' }: { mode?: 'absolute' | 'inline' 
           transition: 'border-color 0.2s, color 0.2s',
         }}
       >
-        <Download size={13} />
         Download CV
+        <Download size={13} />
       </a>
     </div>
   )
