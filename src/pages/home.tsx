@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Download } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { AppDock } from '@/components/blocks/app-dock'
@@ -12,12 +12,12 @@ import type { Project } from '@/types/content'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{
+    <h2 style={{
       fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.14em',
       textTransform: 'uppercase', color: 'rgba(0,0,0,0.42)', margin: '0 0 16px',
     }}>
       {children}
-    </p>
+    </h2>
   )
 }
 
@@ -185,6 +185,7 @@ function WorkCards() {
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   const [hovered, setHovered] = useState(false)
+  const reducedMotion = useReducedMotion()
 
   return (
     <a
@@ -196,8 +197,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         position: 'relative',
         aspectRatio: '4/3',
         textDecoration: 'none',
-        transform: hovered ? 'scale(1.03)' : 'scale(1)',
-        transition: 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+        transform: hovered && !reducedMotion ? 'scale(1.03)' : 'scale(1)',
+        transition: reducedMotion ? 'none' : 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)',
         boxShadow: hovered ? '0 8px 24px rgba(0,0,0,0.14)' : '0 2px 8px rgba(0,0,0,0.06)',
       }}
       onMouseEnter={() => { setHovered(true); chime.cardHover() }}
@@ -219,7 +220,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: reducedMotion ? 0.1 : 0.2 }}
             style={{
               position: 'absolute', inset: 0,
               background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.40) 55%, transparent 100%)',
@@ -229,9 +230,9 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           >
             {project.metric && (
               <motion.span
-                initial={{ opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.22, delay: 0.04 }}
+                transition={{ duration: reducedMotion ? 0.1 : 0.22, delay: reducedMotion ? 0 : 0.04 }}
                 style={{
                   fontSize: '1.75rem', fontWeight: 700, color: '#ffffff',
                   letterSpacing: '-0.035em', fontVariantNumeric: 'tabular-nums', lineHeight: 1,
@@ -243,9 +244,9 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             )}
             {project.metricLabel && (
               <motion.span
-                initial={{ opacity: 0, y: 4 }}
+                initial={{ opacity: 0, y: reducedMotion ? 0 : 4 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.22, delay: 0.08 }}
+                transition={{ duration: reducedMotion ? 0.1 : 0.22, delay: reducedMotion ? 0 : 0.08 }}
                 style={{
                   fontSize: '0.6875rem', fontWeight: 500, color: 'rgba(255,255,255,0.70)',
                   lineHeight: 1.3, marginBottom: 8,
@@ -377,7 +378,7 @@ function GitHubActivitySection() {
     <div ref={containerRef}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
         <a href="https://github.com/Cristobal88" target="_blank" rel="noopener noreferrer"
-          style={{ fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.28)', textDecoration: 'none' }}>
+          style={{ fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.28)', textDecoration: 'none', padding: '6px 0', display: 'inline-block' }}>
           GitHub Activity
         </a>
         {total !== null && (
@@ -572,6 +573,7 @@ function CvDownloadButton({ mode = 'absolute' }: { mode?: 'absolute' | 'inline' 
 
 export default function Home() {
   const [emailCopied, setEmailCopied] = useState(false)
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
     document.title = 'Cristobal Lemoine — Staff Product Designer'
@@ -620,7 +622,7 @@ export default function Home() {
       <div className="gradient-blur-bottom" />
       <AppDock />
 
-      <main className="home-main">
+      <main id="main-content" className="home-main" tabIndex={-1} style={{ outline: 'none' }}>
         <div className="mx-auto w-full max-w-6xl px-6">
 
           <Card style={{ padding: '40px 48px', margin: '0 auto 100px', maxWidth: 680, position: 'relative' }}>
@@ -695,9 +697,9 @@ export default function Home() {
           {emailCopied ? (
             <motion.p
               key="copied"
-              initial={{ opacity: 0, y: 6 }}
+              initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 6 }}
+              exit={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
               style={{ fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.4)', margin: 0 }}
             >
@@ -706,9 +708,9 @@ export default function Home() {
           ) : (
             <motion.p
               key="hint"
-              initial={{ opacity: 0, y: 6 }}
+              initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 6 }}
+              exit={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
               style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.35)', margin: 0 }}
             >

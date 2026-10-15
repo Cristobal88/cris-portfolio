@@ -31,10 +31,33 @@ export default function CaseStudy() {
   }, [slug])
 
   if (loading) {
+    const rm = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     return (
       <div style={{ background: '#050505', color: T1, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Barlow, sans-serif' }}>
-        <div style={{ width: 32, height: 32, borderRadius: '50%', border: `2px solid ${BORDER}`, borderTopColor: BLUE, animation: 'spin 0.8s linear infinite' }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+        {rm ? (
+          /* Reduced motion: three dots pulsing with opacity */
+          <div role="status" aria-label="Loading" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {[0, 1, 2].map(i => (
+              <div key={i} style={{
+                width: 8, height: 8, borderRadius: '50%', background: BLUE,
+                animation: `dot-pulse 1.2s ease-in-out ${i * 0.15}s infinite`,
+              }} />
+            ))}
+            <style>{`@keyframes dot-pulse { 0%,70%,100%{opacity:.2} 35%{opacity:1} }`}</style>
+          </div>
+        ) : (
+          /* Normal: refined spinning arc with trailing fade */
+          <div role="status" aria-label="Loading">
+            <div style={{
+              width: 36, height: 36, borderRadius: '50%',
+              border: `2px solid ${BORDER}`,
+              borderTopColor: BLUE,
+              borderRightColor: `rgba(0, 68, 212, 0.35)`,
+              animation: 'spin 0.75s cubic-bezier(0.5, 0, 0.5, 1) infinite',
+            }} />
+            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+          </div>
+        )}
       </div>
     )
   }
@@ -83,6 +106,7 @@ export default function CaseStudy() {
         </div>
       </div>
 
+      <main id="main-content" tabIndex={-1} style={{ outline: 'none' }}>
       {/* ── Hero ── */}
       <section className="cs-hero" style={{ paddingBottom: 0 }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 clamp(16px, 4vw, 32px)', paddingTop: 0 }}>
@@ -231,7 +255,7 @@ export default function CaseStudy() {
                 <div key={i} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 48, alignItems: 'center' }}>
                   <div style={{ order: imageLeft ? 0 : 1 }}>
                     <div style={{ borderRadius: 16, overflow: 'hidden', border: `1px solid ${BORDER}`, background: SURFACE, aspectRatio: '4/3' }}>
-                      <img src={visual.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      <img src={visual.image} alt={visual.title ?? visual.caption ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                     </div>
                   </div>
                   <div style={{ order: imageLeft ? 1 : 0 }}>
@@ -260,7 +284,7 @@ export default function CaseStudy() {
                     <p style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: 0 }}>{visual.caption}</p>
                   </div>
                   <div style={{ borderRadius: 16, overflow: 'hidden', border: `1px solid ${BORDER}`, background: SURFACE, aspectRatio: '21/9' }}>
-                    <img src={visual.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <img src={visual.image} alt={visual.title ?? visual.caption ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </div>
                 </div>
               ))}
@@ -333,6 +357,7 @@ export default function CaseStudy() {
       )}
 
       <PersonalCta />
+      </main>
       <PersonalFooter />
     </div>
   )

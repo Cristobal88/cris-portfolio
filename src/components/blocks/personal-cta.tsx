@@ -1,3 +1,6 @@
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
 export function PersonalCta() {
   return (
     <section
@@ -52,7 +55,7 @@ export function PersonalCta() {
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-2px)'
+            if (!prefersReducedMotion()) e.currentTarget.style.transform = 'translateY(-2px)'
             e.currentTarget.style.boxShadow = '0 8px 24px rgba(255,255,255,0.12)'
           }}
           onMouseLeave={e => {

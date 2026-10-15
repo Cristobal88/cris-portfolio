@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { CtaButton } from '@/components/ui/cta-button'
 import { useCaseStudies } from '@/hooks/useCaseStudies'
 import { chime } from '@/lib/chime'
@@ -7,6 +7,7 @@ import type { Project } from '@/types/content'
 
 // ── Spring ────────────────────────────────────────────────────────────────────
 const SPRING = { type: 'spring' as const, stiffness: 280, damping: 24 }
+const INSTANT = { duration: 0 }
 
 // ── Thumbnail geometry ────────────────────────────────────────────────────────
 const TW     = 80   // thumbnail width
@@ -99,6 +100,7 @@ function WorkDockButton({
   variant:      'light' | 'dark'
 }) {
   const isTouch = useIsTouch()
+  const reducedMotion = useReducedMotion()
   const [hov, setHov]     = useState(false)
   const isDark = variant === 'dark'
   const total  = dockProjects.length
@@ -109,6 +111,7 @@ function WorkDockButton({
   }
 
   const spreadW = total > 0 ? total * TW + (total - 1) * TG : 0
+  const spring = reducedMotion ? INSTANT : SPRING
 
   return (
     <div
@@ -143,7 +146,7 @@ function WorkDockButton({
         }}
         initial={{ width: 0 }}
         animate={{ width: hov && total > 0 ? spreadW + 4 : 0 }}
-        transition={SPRING}
+        transition={spring}
       >
         {dockProjects.map(({ project, imgSrc }, i) => (
           <motion.a
@@ -165,15 +168,15 @@ function WorkDockButton({
               zIndex: hov ? i + 1 : total - i,
             }}
             className="dock-thumb"
-            initial={{ opacity: 0, scale: 0.72, x: 0, y: 0, rotate: REST_ROT[i] ?? 0 }}
+            initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.72, x: 0, y: 0, rotate: reducedMotion ? 0 : (REST_ROT[i] ?? 0) }}
             animate={{
-              x:       hov ? i * (TW + TG) : i * 6,
-              y:       hov ? arcY(i, total) : 0,
-              rotate:  hov ? HOVER_ROT[i] ?? 0 : REST_ROT[i] ?? 0,
+              x:       hov ? i * (TW + TG) : (reducedMotion ? 0 : i * 6),
+              y:       hov ? (reducedMotion ? 0 : arcY(i, total)) : 0,
+              rotate:  reducedMotion ? 0 : (hov ? HOVER_ROT[i] ?? 0 : REST_ROT[i] ?? 0),
               opacity: hov ? 1 : 0,
-              scale:   hov ? 1 : 0.72,
+              scale:   hov ? 1 : (reducedMotion ? 1 : 0.72),
             }}
-            transition={{ ...SPRING, delay: hov ? i * 0.04 : 0 }}
+            transition={{ ...spring, delay: hov && !reducedMotion ? i * 0.04 : 0 }}
             onClick={e => { e.stopPropagation(); chime.thumbClick() }}
           >
             <img
@@ -231,11 +234,12 @@ export function AppDock({ variant = 'light' }: AppDockProps) {
         <DockTextButton href="/" label="Home" variant={variant} />
         <WorkDockButton dockProjects={dockProjects} variant={variant} />
 
-        <div className="dock-cta" style={{ marginLeft: 8 }} onClick={() => chime.bookCall()}>
+        <div className="dock-cta" style={{ marginLeft: 8 }}>
           <CtaButton
             href="https://calendar.app.google/q37dZacRGpmM2wgy7"
             variant="primary"
             style={{ fontSize: '0.75rem', borderRadius: 8 }}
+            onClick={() => chime.bookCall()}
           >
             Let's talk
           </CtaButton>

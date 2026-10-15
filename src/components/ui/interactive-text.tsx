@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
 
 interface InteractiveWordProps {
@@ -13,6 +13,7 @@ const canHover = typeof window !== 'undefined' && window.matchMedia('(hover: hov
 
 export function InteractiveWord({ children, icon: Icon, color = '#0044d4', preview }: InteractiveWordProps) {
   const [hovered, setHovered] = useState(false)
+  const reducedMotion = useReducedMotion()
 
   return (
     <span style={{ display: 'inline', position: 'relative' }}>
@@ -30,10 +31,10 @@ export function InteractiveWord({ children, icon: Icon, color = '#0044d4', previ
         <AnimatePresence>
           {hovered && (
             <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.96 }}
+              initial={{ opacity: 0, y: reducedMotion ? 0 : 8, scale: reducedMotion ? 1 : 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.96 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              exit={{ opacity: 0, y: reducedMotion ? 0 : 8, scale: reducedMotion ? 1 : 0.96 }}
+              transition={{ duration: reducedMotion ? 0.1 : 0.18, ease: [0.16, 1, 0.3, 1] }}
               style={{
                 position: 'absolute',
                 bottom: 'calc(100% + 10px)',

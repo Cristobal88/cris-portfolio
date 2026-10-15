@@ -6,7 +6,15 @@ const CaseStudy = lazy(() => import('./pages/use-case'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
-  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+    // Move focus to main content so keyboard/screen-reader users land on the new page
+    const main = document.getElementById('main-content') ?? document.querySelector('main')
+    if (main) {
+      main.setAttribute('tabindex', '-1')
+      main.focus({ preventScroll: true })
+    }
+  }, [pathname])
   return null
 }
 
