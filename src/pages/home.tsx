@@ -546,8 +546,7 @@ function CvDownloadButton({ mode = 'absolute' }: { mode?: 'absolute' | 'inline' 
     <div className={mode === 'absolute' ? 'cv-btn-desktop' : 'cv-btn-mobile'} style={wrapperStyle}>
       <a
         href="/Cristobal-Lemoine-CV-EN.pdf"
-        target="_blank"
-        rel="noopener noreferrer"
+        download="Cristobal-Lemoine-CV.pdf"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={() => chime.cvDownload()}
@@ -555,7 +554,7 @@ function CvDownloadButton({ mode = 'absolute' }: { mode?: 'absolute' | 'inline' 
           display: 'inline-flex', alignItems: 'center', gap: 6,
           background: '#ffffff',
           border: `1px solid ${hovered ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.10)'}`,
-          borderRadius: 9999, padding: '7px 14px',
+          borderRadius: 8, padding: '7px 14px',
           fontSize: '0.8125rem', fontWeight: 500,
           color: hovered ? '#111' : 'rgba(0,0,0,0.55)',
           textDecoration: 'none',
