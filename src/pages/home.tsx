@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CreditCard, Sparkles, Layers, Linkedin, Download } from 'lucide-react'
 import { CtaButton } from '@/components/ui/cta-button'
 import { Card } from '@/components/ui/card'
-import { PersonalNav } from '@/components/blocks/personal-nav'
+import { AppDock } from '@/components/blocks/app-dock'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
 import { InteractiveWord } from '@/components/ui/interactive-text'
 import { useCaseStudies } from '@/hooks/useCaseStudies'
@@ -581,14 +581,15 @@ export default function Home() {
   }
 
   return (
-    <div style={{ background: '#ffffff', minHeight: '100vh', fontFamily: 'Barlow, sans-serif', color: '#0d0d0d' }}>
+    <div className="home-dot-bg" style={{ minHeight: '100vh', fontFamily: 'Barlow, sans-serif', color: '#0d0d0d' }}>
       <div className="gradient-blur" />
-      <PersonalNav variant="light" />
+      <div className="gradient-blur-bottom" />
+      <AppDock />
 
-      <main style={{ paddingTop: 116 }}>
+      <main className="home-main">
         <div className="mx-auto w-full max-w-6xl px-6">
 
-          <Card style={{ padding: '40px 48px', margin: '0 auto 80px', maxWidth: 680, position: 'relative' }}>
+          <Card style={{ padding: '40px 48px', margin: '0 auto 100px', maxWidth: 680, position: 'relative' }}>
 
             <CvDownloadButton />
 
@@ -638,7 +639,9 @@ export default function Home() {
             </div>
 
             <Divider />
+            <div id="work">
             <WorkCards />
+            </div>
 
             <Divider />
             <ExperienceSection />
