@@ -137,7 +137,7 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 }
 @media (min-width: 768px) {
   .app-dock { top: 28px; bottom: auto; }
-  .cs-back-fixed  { display: flex !important; }
+  .cs-back-fixed  { display: flex !important; align-items: center; height: 48px; }
   .cs-back-mobile { display: none !important; }
 }
 @media (max-width: 767px) {

@@ -62,7 +62,7 @@ export default function CaseStudy() {
         className="cs-back-fixed"
         style={{
           position: 'fixed', top: 28, left: 0, right: 0,
-          height: 48, display: 'none', alignItems: 'center',
+          display: 'none',
           pointerEvents: 'none', zIndex: 100,
         }}
       >
