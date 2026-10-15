@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useCaseStudy } from '@/hooks/useCaseStudy'
-import { PersonalNav } from '@/components/blocks/personal-nav'
+import { AppDock } from '@/components/blocks/app-dock'
 import { PersonalCta } from '@/components/blocks/personal-cta'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
 import { AnimatedNumber } from '@/components/ui/animated-number'
@@ -54,14 +54,42 @@ export default function CaseStudy() {
   return (
     <div style={{ background: '#050505', color: T1, fontFamily: 'Barlow, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
       <div className="gradient-blur" />
-      <PersonalNav variant="dark" />
+      <div className="gradient-blur-bottom" />
+      <AppDock variant="dark" />
+
+      {/* ── Back link — fixed, desktop only, aligned with dock ── */}
+      <div
+        className="cs-back-fixed"
+        style={{
+          position: 'fixed', top: 28, left: 0, right: 0,
+          height: 48, display: 'none', alignItems: 'center',
+          pointerEvents: 'none', zIndex: 100,
+        }}
+      >
+        <div style={{ maxWidth: 1152, margin: '0 auto', width: '100%', padding: '0 clamp(16px, 4vw, 32px)', pointerEvents: 'none' }}>
+          <a
+            href="/"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              color: T3, textDecoration: 'none', fontSize: 13, fontWeight: 500,
+              transition: 'color 0.2s ease', pointerEvents: 'auto',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = T1)}
+            onMouseLeave={e => (e.currentTarget.style.color = T3)}
+          >
+            <ArrowLeft size={12} strokeWidth={2.5} />
+            Back
+          </a>
+        </div>
+      </div>
 
       {/* ── Hero ── */}
-      <section style={{ paddingTop: 'clamp(100px, 9vw, 104px)', paddingBottom: 0 }}>
+      <section className="cs-hero" style={{ paddingBottom: 0 }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 clamp(16px, 4vw, 32px)', paddingTop: 0 }}>
 
-          {/* Back link */}
+          {/* Back link — mobile only (scrolls with content) */}
           <a href="/"
+            className="cs-back-mobile"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: T3, textDecoration: 'none', fontSize: 13, fontWeight: 500, marginBottom: 20, transition: 'color 0.2s ease' }}
             onMouseEnter={e => (e.currentTarget.style.color = T1)}
             onMouseLeave={e => (e.currentTarget.style.color = T3)}

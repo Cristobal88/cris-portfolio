@@ -95,11 +95,13 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 .cv-btn-desktop { display: none; }
 .cv-btn-mobile { display: inline-block; }
 
-.cta-primary { display: flex; align-items: center; gap: 16px; background-color: var(--brand-blue); color: #ffffff; text-decoration: none; border-radius: 9999px; padding: 6px 6px 6px 20px; font-size: 14px; font-weight: 600; box-shadow: 0 8px 24px rgba(0, 68, 212, 0.5), 0 2px 8px rgba(0, 68, 212, 0.3); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+.cta-primary { display: flex; align-items: center; gap: 16px; background-color: var(--brand-blue); color: #ffffff; text-decoration: none; border-radius: 9999px; padding: 6px 6px 6px 20px; font-size: 14px; font-weight: 600; box-shadow: 0 8px 24px rgba(0, 68, 212, 0.5), 0 2px 8px rgba(0, 68, 212, 0.3); transition: background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
 .cta-primary:hover { background-color: var(--brand-blue-dark); transform: translateY(-2px); box-shadow: 0 8px 24px var(--brand-blue-glow); }
 .cta-primary:hover .cta-icon-wrapper { background-color: var(--brand-blue-light); }
 .cta-primary:hover .cta-icon { transform: translate(2px, -2px); }
-.cta-icon-wrapper { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; background-color: #ffffff; border-radius: 50%; color: var(--brand-blue); transition: background-color 0.3s ease; }
+.cta-icon-wrapper { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; flex-shrink: 0; background-color: #ffffff; border-radius: 50%; color: var(--brand-blue); transition: background-color 0.3s ease; }
+.dock-cta .cta-primary { padding: 4px 4px 4px 14px; gap: 10px; }
+.dock-cta .cta-icon-wrapper { width: 28px; height: 28px; border-radius: 4px; }
 .cta-icon { transition: transform 0.3s ease; }
 
 .navbar.navbar--dark { top: 32px; }
@@ -116,6 +118,66 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
   .navbar { width: 92%; max-width: 1200px; left: 0; right: 0; margin: 0 auto; padding: 12px 14px 12px 32px; background-color: rgba(255, 255, 255, 0.80); border-radius: 100px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05); border: 1px solid rgba(0,0,0,0.05); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
   .navbar--dark { background-color: rgba(10, 10, 10, 0.85) !important; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255,255,255,0.08) !important; }
 }
+/* ── Dock ── */
+@keyframes dock-float {
+  0%, 100% { transform: translateX(-50%) translateY(-1.5px); }
+  50%       { transform: translateX(-50%) translateY( 1.5px); }
+}
+@keyframes dock-float-mobile {
+  0%, 100% { transform: translateY(-1.5px); }
+  50%       { transform: translateY( 1.5px); }
+}
+
+.app-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 100;
+  animation: dock-float 4s ease-in-out infinite;
+}
+@media (min-width: 768px) {
+  .app-dock { top: 28px; bottom: auto; }
+  .cs-back-fixed  { display: flex !important; }
+  .cs-back-mobile { display: none !important; }
+}
+@media (max-width: 767px) {
+  .dock-cta .cta-primary { white-space: nowrap; }
+}
+
+/* ── Dotted page background ── */
+.home-dot-bg {
+  background-color: #ffffff;
+  background-image: radial-gradient(circle, rgba(0,0,0,0.10) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* ── Dock thumbnail hover glow ── */
+.dock-thumb:hover {
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.80), 0 8px 28px rgba(0,0,0,0.45) !important;
+  filter: brightness(1.04);
+}
+
+/* Main content padding */
+.home-main { padding-top: 24px; }
+@media (min-width: 768px) { .home-main { padding-top: 144px; } }
+
+/* Case study hero padding */
+.cs-hero { padding-top: 24px; }
+@media (min-width: 768px) { .cs-hero { padding-top: 152px; } }
+
+/* Gradient blur: top on desktop, bottom on mobile */
+.gradient-blur-bottom {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 20vh;
+  backdrop-filter: blur(30px);
+  mask-image: linear-gradient(to top, #000 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 100%);
+  pointer-events: none; z-index: 50; display: none;
+}
+@media (max-width: 767px) {
+  .gradient-blur { display: none; }
+  .gradient-blur-bottom { display: block; }
+}
+
 @media (hover: none), (max-width: 640px) {
   .email-hint { display: none; }
 }
