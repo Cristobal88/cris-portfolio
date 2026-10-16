@@ -440,7 +440,8 @@ export function GlassFolder({
   const uid = React.useId().replace(/:/g, '')
   const rootRef = React.useRef<HTMLDivElement>(null)
   const filesRef = React.useRef<HTMLDivElement>(null)
-  const hitRef = React.useRef<HTMLElement>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hitRef = React.useRef<any>(null)
   const keyRef = React.useRef<HTMLButtonElement>(null)
   const menuRef = React.useRef<HTMLDivElement>(null)
 
@@ -601,7 +602,7 @@ export function GlassFolder({
             </svg>
             {href ? (
               <a
-                ref={hitRef as React.RefObject<HTMLAnchorElement & HTMLElement>}
+                ref={hitRef}
                 href={href}
                 className="gf-hit"
                 aria-label={'View ' + label}
