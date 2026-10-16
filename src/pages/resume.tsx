@@ -259,11 +259,11 @@ export default function Resume() {
 
       <main id="main-content" className="home-main" tabIndex={-1} style={{ outline: 'none' }}>
         <div className="mx-auto w-full max-w-6xl px-6">
-          <Card style={{ padding: '40px 48px', margin: '0 auto 100px', maxWidth: 680, position: 'relative' }}>
+          <Card className="resume-card" style={{ padding: '40px 48px', margin: '0 auto 100px', maxWidth: 680, position: 'relative' }}>
 
             {/* ── Header ── */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, gap: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
+            <div className="resume-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, gap: 16 }}>
+              <div className="resume-header-inner" style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
                 {/* Photo */}
                 <div style={{ width: 72, height: 72, borderRadius: 14, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.10)', flexShrink: 0 }}>
                   <img
@@ -309,7 +309,7 @@ export default function Resume() {
                 </div>
               </div>
 
-              {/* Download button — top-right */}
+              {/* Download button */}
               <DownloadButton />
             </div>
 
