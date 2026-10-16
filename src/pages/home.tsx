@@ -6,7 +6,6 @@ import { PersonalFooter } from '@/components/blocks/personal-footer'
 import { useCaseStudies } from '@/hooks/useCaseStudies'
 import { chime } from '@/lib/chime'
 import { GlassFolder } from '@/components/ui/glass-folder'
-import type { ArtRecipe } from '@/components/ui/glass-folder'
 import type { Project } from '@/types/content'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -144,19 +143,6 @@ function ExperienceSection() {
 
 // ─── Work folders ─────────────────────────────────────────────────────────────
 
-// Green marble — forest tones for the fintech / payments project
-const GREEN_ART: ArtRecipe = {
-  style: 'marble',
-  colors: ['#060d08', '#0f2918', '#1e5c36', '#122a1c', '#5a8a45', '#a8c97a', '#e8f0cc'],
-  scale: 0.72, warp: 3.2, angle: 1.8, gloss: 0.45, veins: 0.45,
-}
-
-// Purple marble — deep violet for the loyalty project
-const PURPLE_ART: ArtRecipe = {
-  style: 'marble',
-  colors: ['#0d0812', '#2a1240', '#5c3480', '#1e0d2e', '#9b5cc4', '#c89ae0', '#f0e4f8'],
-  scale: 0.68, warp: 3.8, angle: -0.6, gloss: 0.5, veins: 0.5,
-}
 
 function projectToFiles(project: Project, href: string) {
   const deliverables: string[] = Array.isArray(project.deliverables) ? project.deliverables : []
@@ -188,8 +174,7 @@ function WorkFolders() {
   const visible = projects?.filter(p => !p.locked) ?? []
   const [first, second] = visible
 
-  // folder width: quarter of the container (two folders side by side at half total width)
-  const gap = 12
+  const gap = 16
   const folderW = containerW > 0 ? Math.floor((containerW - gap) / 4) : 140
 
   if (loading) {
@@ -208,12 +193,12 @@ function WorkFolders() {
   return (
     <div>
       <SectionLabel>Some of my work</SectionLabel>
-      <div ref={containerRef} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap, alignItems: 'start' }}>
+      <div ref={containerRef} style={{ display: 'flex', gap, alignItems: 'flex-start' }}>
         {first && (
           <GlassFolder
             label={first.label}
             meta={first.metric ? first.metric + ' ' + (first.metricLabel ?? '') : undefined}
-            art={GREEN_ART}
+            art="none"
             backColor="#008859"
             seed={7}
             action="none"
@@ -228,7 +213,7 @@ function WorkFolders() {
           <GlassFolder
             label={second.label}
             meta={second.metric ? second.metric + ' ' + (second.metricLabel ?? '') : undefined}
-            art={PURPLE_ART}
+            art="none"
             backColor="#031061"
             seed={12}
             action="none"
