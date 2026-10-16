@@ -175,13 +175,16 @@ function WorkFolders() {
   const [first, second] = visible
 
   const gap = 24
-  const folderW = containerW > 0 ? Math.floor((containerW - gap) / 4) : 140
+  const stacked = containerW > 0 && containerW < 420
+  const folderW = containerW > 0
+    ? stacked ? containerW : Math.floor((containerW - gap) / 4)
+    : 140
 
   if (loading) {
     return (
       <div>
         <SectionLabel>Some of my work</SectionLabel>
-        <div style={{ display: 'flex', gap }}>
+        <div style={{ display: 'flex', flexDirection: stacked ? 'column' : 'row', gap }}>
           {[0, 1].map(i => (
             <div key={i} style={{ width: folderW || 140, height: (folderW || 140) * 0.96, borderRadius: 16, background: 'rgba(0,0,0,0.05)', animation: 'pulse 1.5s ease-in-out infinite' }} />
           ))}
@@ -193,7 +196,7 @@ function WorkFolders() {
   return (
     <div>
       <SectionLabel>Some of my work</SectionLabel>
-      <div ref={containerRef} style={{ display: 'flex', gap, alignItems: 'flex-start' }}>
+      <div ref={containerRef} style={{ display: 'flex', flexDirection: stacked ? 'column' : 'row', gap, alignItems: 'flex-start' }}>
         {first && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <GlassFolder
