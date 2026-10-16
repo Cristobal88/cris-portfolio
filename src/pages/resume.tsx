@@ -264,16 +264,6 @@ export default function Resume() {
             {/* ── Header ── */}
             <div className="resume-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, gap: 16 }}>
               <div className="resume-header-inner" style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
-                {/* Photo */}
-                <div style={{ width: 72, height: 72, borderRadius: 14, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.10)', flexShrink: 0 }}>
-                  <img
-                    src="/team/cristobal-lemoine.webp"
-                    alt="Cristobal Lemoine"
-                    width={72} height={72}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '60% 0%', transform: 'scale(1.35) translateY(-8%)', transformOrigin: '60% 0%' }}
-                  />
-                </div>
-
                 {/* Name + title + location + links */}
                 <div>
                   <h1 style={{ fontSize: '1.125rem', fontWeight: 400, fontStyle: 'italic', fontFamily: 'Instrument Serif, serif', color: '#0d0d0d', lineHeight: 1.3, margin: 0 }}>
