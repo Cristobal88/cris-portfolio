@@ -189,6 +189,7 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
   .resume-card { padding: 24px 20px !important; }
   .resume-header { flex-direction: column !important; gap: 12px !important; }
   .resume-header-inner { flex-direction: row !important; }
+  .resume-location { display: none !important; }
   .exp-row { display: flex !important; flex-direction: column !important; gap: 2px !important; }
   .exp-row .exp-date { padding-top: 0 !important; }
   .cv-btn-desktop { display: none; }

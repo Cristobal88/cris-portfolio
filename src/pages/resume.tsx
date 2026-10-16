@@ -283,7 +283,7 @@ export default function Resume() {
                     Staff Product Designer
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.75rem', color: 'rgba(0,0,0,0.40)', fontWeight: 500 }}>
+                    <span className="resume-location" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.75rem', color: 'rgba(0,0,0,0.40)', fontWeight: 500 }}>
                       <MapPin size={11} strokeWidth={2} />
                       Buenos Aires, Argentina
                     </span>
