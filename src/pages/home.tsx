@@ -5,6 +5,8 @@ import { AppDock } from '@/components/blocks/app-dock'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
 import { useCaseStudies } from '@/hooks/useCaseStudies'
 import { chime } from '@/lib/chime'
+import { GlassFolder } from '@/components/ui/glass-folder'
+import type { ArtRecipe } from '@/components/ui/glass-folder'
 import type { Project } from '@/types/content'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -140,24 +142,63 @@ function ExperienceSection() {
   )
 }
 
-// ─── Work cards ───────────────────────────────────────────────────────────────
+// ─── Work folders ─────────────────────────────────────────────────────────────
 
-function cardSrc(project: Project, index: number): string {
-  if (project.cardImage) return project.cardImage
-  return `/card-${index + 1}.webp`
+// Green marble — forest tones for the fintech / payments project
+const GREEN_ART: ArtRecipe = {
+  style: 'marble',
+  colors: ['#060d08', '#0f2918', '#1e5c36', '#122a1c', '#5a8a45', '#a8c97a', '#e8f0cc'],
+  scale: 0.72, warp: 3.2, angle: 1.8, gloss: 0.45, veins: 0.45,
 }
 
-function WorkCards() {
+// Purple marble — deep violet for the loyalty project
+const PURPLE_ART: ArtRecipe = {
+  style: 'marble',
+  colors: ['#0d0812', '#2a1240', '#5c3480', '#1e0d2e', '#9b5cc4', '#c89ae0', '#f0e4f8'],
+  scale: 0.68, warp: 3.8, angle: -0.6, gloss: 0.5, veins: 0.5,
+}
+
+function projectToFiles(project: Project, href: string) {
+  const deliverables: string[] = Array.isArray(project.deliverables) ? project.deliverables : []
+  if (deliverables.length > 0) {
+    return deliverables.slice(0, 3).map((d) => ({ name: d, href }))
+  }
+  // fallback generic files
+  return [
+    { name: 'Discovery & Research', meta: 'UX', href },
+    { name: 'Design System', meta: 'UI', href },
+    { name: 'Final Outcomes', meta: project.metric ?? '', href },
+  ]
+}
+
+function WorkFolders() {
   const { data: projects, loading } = useCaseStudies()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [containerW, setContainerW] = useState(0)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const ro = new ResizeObserver(entries => setContainerW(entries[0].contentRect.width))
+    ro.observe(el)
+    setContainerW(el.getBoundingClientRect().width)
+    return () => ro.disconnect()
+  }, [])
+
   const visible = projects?.filter(p => !p.locked) ?? []
+  const [first, second] = visible
+
+  // folder width: half the container minus the gap
+  const gap = 12
+  const folderW = containerW > 0 ? Math.floor((containerW - gap) / 2) : 280
 
   if (loading) {
     return (
       <div>
         <SectionLabel>Some of my work</SectionLabel>
-        <div className="grid grid-cols-3 gap-2">
-          {[0, 1, 2].map(i => (
-            <div key={i} style={{ height: 120, borderRadius: 12, background: 'rgba(0,0,0,0.05)', animation: 'pulse 1.5s ease-in-out infinite' }} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap }}>
+          {[0, 1].map(i => (
+            <div key={i} style={{ aspectRatio: '340/326', borderRadius: 16, background: 'rgba(0,0,0,0.05)', animation: 'pulse 1.5s ease-in-out infinite' }} />
           ))}
         </div>
       </div>
@@ -167,97 +208,37 @@ function WorkCards() {
   return (
     <div>
       <SectionLabel>Some of my work</SectionLabel>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 8,
-        }}
-      >
-        {visible.map((project, i) => (
-          <ProjectCard key={project.slug} project={project} index={i} />
-        ))}
+      <div ref={containerRef} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap, alignItems: 'start' }}>
+        {first && (
+          <GlassFolder
+            label={first.label}
+            meta={first.metric ? first.metric + ' ' + (first.metricLabel ?? '') : undefined}
+            art={GREEN_ART}
+            seed={7}
+            action="none"
+            labelPlacement="bottom-left"
+            appear={true}
+            appearDelay={0}
+            width={folderW}
+            files={projectToFiles(first, `/work/${first.slug}`)}
+          />
+        )}
+        {second && (
+          <GlassFolder
+            label={second.label}
+            meta={second.metric ? second.metric + ' ' + (second.metricLabel ?? '') : undefined}
+            art={PURPLE_ART}
+            seed={12}
+            action="none"
+            labelPlacement="bottom-left"
+            appear={true}
+            appearDelay={120}
+            width={folderW}
+            files={projectToFiles(second, `/work/${second.slug}`)}
+          />
+        )}
       </div>
     </div>
-  )
-}
-
-function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const [hovered, setHovered] = useState(false)
-  const reducedMotion = useReducedMotion()
-
-  return (
-    <a
-      href={`/work/${project.slug}`}
-      style={{
-        display: 'block',
-        borderRadius: 12,
-        overflow: 'hidden',
-        position: 'relative',
-        aspectRatio: '4/3',
-        textDecoration: 'none',
-        transform: hovered && !reducedMotion ? 'scale(1.03)' : 'scale(1)',
-        transition: reducedMotion ? 'none' : 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)',
-        boxShadow: hovered ? '0 8px 24px rgba(0,0,0,0.14)' : '0 2px 8px rgba(0,0,0,0.06)',
-      }}
-      onMouseEnter={() => { setHovered(true); chime.cardHover() }}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <picture>
-        <source srcSet={cardSrc(project, index)} type="image/webp" />
-        <img
-          src={`/card-${index + 1}.png`}
-          alt={project.label}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-        />
-      </picture>
-
-      {/* Hover metric hero overlay */}
-      <AnimatePresence>
-        {hovered && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reducedMotion ? 0.1 : 0.2 }}
-            style={{
-              position: 'absolute', inset: 0,
-              background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.40) 55%, transparent 100%)',
-              display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-              padding: '14px',
-            }}
-          >
-            {project.metric && (
-              <motion.span
-                initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: reducedMotion ? 0.1 : 0.22, delay: reducedMotion ? 0 : 0.04 }}
-                style={{
-                  fontSize: '1.75rem', fontWeight: 700, color: '#ffffff',
-                  letterSpacing: '-0.035em', fontVariantNumeric: 'tabular-nums', lineHeight: 1,
-                  marginBottom: 3,
-                }}
-              >
-                {project.metric}
-              </motion.span>
-            )}
-            {project.metricLabel && (
-              <motion.span
-                initial={{ opacity: 0, y: reducedMotion ? 0 : 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: reducedMotion ? 0.1 : 0.22, delay: reducedMotion ? 0 : 0.08 }}
-                style={{
-                  fontSize: '0.6875rem', fontWeight: 500, color: 'rgba(255,255,255,0.70)',
-                  lineHeight: 1.3, marginBottom: 8,
-                }}
-              >
-                {project.metricLabel}
-              </motion.span>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </a>
   )
 }
 
@@ -625,7 +606,7 @@ export default function Home() {
 
             <Divider />
             <div id="work">
-            <WorkCards />
+            <WorkFolders />
             </div>
 
             <Divider />
