@@ -174,7 +174,7 @@ function WorkFolders() {
   const visible = projects?.filter(p => !p.locked) ?? []
   const [first, second] = visible
 
-  const gap = 16
+  const gap = 24
   const folderW = containerW > 0 ? Math.floor((containerW - gap) / 4) : 140
 
   if (loading) {
