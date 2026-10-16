@@ -621,11 +621,8 @@ export default function Home() {
 
             {/* Bio */}
             <div style={{ marginBottom: 0 }}>
-              <p style={pStyle}>
-                I work in industries where a bad flow doesn't just frustrate: it breaks compliance, loses a transaction, or kills trust overnight. That's the pressure that shaped how I design.
-              </p>
               <p style={{ ...pStyle, margin: 0 }}>
-                9 years, 6M+ daily users, across fintech, AI and IoT. I work end-to-end, from discovery through delivery, and stay in until the outcome shows up in the numbers.
+                9 years, 6M+ daily users, across fintech, AI and IoT. I'm drawn to products that are part of larger ecosystems — platforms that connect banks, partners, and end users; tools where design decisions ripple far beyond a single screen. I work end-to-end, from discovery through delivery, and stay in until the outcome shows up in the numbers. Underneath all of it is a simple drive: to leave a real dent in the world.
               </p>
             </div>
 
