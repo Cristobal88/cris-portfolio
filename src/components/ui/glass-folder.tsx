@@ -567,6 +567,15 @@ export function GlassFolder({
       <style>{GF_CSS}</style>
       <div className="gf-stage" style={{ transform: 'translateY(' + HEADROOM * k + 'px) scale(' + k + ')' }}>
         <div className="gf-tilt">
+          {/* full-coverage link when href is set — catches clicks on the back panel tab */}
+          {href && (
+            <a
+              href={href}
+              aria-hidden="true"
+              tabIndex={-1}
+              style={{ position: 'absolute', inset: 0, zIndex: 1 }}
+            />
+          )}
           <div className="gf-shadow" aria-hidden="true" />
 
           {/* back panel */}
