@@ -145,6 +145,7 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 @media (max-width: 767px) {
   .dock-cta .cta-primary { white-space: nowrap; }
   .cs-back-fixed { top: 20px !important; }
+  .cs-back-mobile { display: inline-flex !important; }
 }
 
 /* ── Dotted page background ── */
