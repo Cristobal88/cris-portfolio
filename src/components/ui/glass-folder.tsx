@@ -41,6 +41,8 @@ export type GlassFolderProps = {
   art?: FolderArt
   seed?: number
   image?: string
+  /** Solid hex colour for the back panel — overrides the default gradient. */
+  backColor?: string
   files?: FolderFile[]
   action?: 'add' | 'more' | 'none'
   onAdd?: (files: FolderFile[]) => FolderFile | void
@@ -412,6 +414,7 @@ export function GlassFolder({
   art = 'aurora',
   seed = 3,
   image,
+  backColor,
   files: initialFiles = SAMPLE_FILES,
   action = 'add',
   onAdd,
@@ -560,7 +563,7 @@ export function GlassFolder({
           <div className="gf-shadow" aria-hidden="true" />
 
           {/* back panel */}
-          <div className="gf-back" style={{ clipPath: "path('" + BACK_PATH + "')" }} aria-hidden="true">
+          <div className="gf-back" style={{ clipPath: "path('" + BACK_PATH + "')", ...(backColor ? { background: backColor } : {}) }} aria-hidden="true">
             {image ? (
               <img className="gf-art" src={image} alt="" width={W + 24} height={H + 24} draggable={false} />
             ) : art !== 'none' ? (

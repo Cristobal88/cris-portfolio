@@ -188,17 +188,17 @@ function WorkFolders() {
   const visible = projects?.filter(p => !p.locked) ?? []
   const [first, second] = visible
 
-  // folder width: half the container minus the gap
+  // folder width: quarter of the container (two folders side by side at half total width)
   const gap = 12
-  const folderW = containerW > 0 ? Math.floor((containerW - gap) / 2) : 280
+  const folderW = containerW > 0 ? Math.floor((containerW - gap) / 4) : 140
 
   if (loading) {
     return (
       <div>
         <SectionLabel>Some of my work</SectionLabel>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap }}>
+        <div style={{ display: 'flex', gap }}>
           {[0, 1].map(i => (
-            <div key={i} style={{ aspectRatio: '340/326', borderRadius: 16, background: 'rgba(0,0,0,0.05)', animation: 'pulse 1.5s ease-in-out infinite' }} />
+            <div key={i} style={{ width: folderW || 140, height: (folderW || 140) * 0.96, borderRadius: 16, background: 'rgba(0,0,0,0.05)', animation: 'pulse 1.5s ease-in-out infinite' }} />
           ))}
         </div>
       </div>
@@ -214,6 +214,7 @@ function WorkFolders() {
             label={first.label}
             meta={first.metric ? first.metric + ' ' + (first.metricLabel ?? '') : undefined}
             art={GREEN_ART}
+            backColor="#008859"
             seed={7}
             action="none"
             labelPlacement="bottom-left"
@@ -228,6 +229,7 @@ function WorkFolders() {
             label={second.label}
             meta={second.metric ? second.metric + ' ' + (second.metricLabel ?? '') : undefined}
             art={PURPLE_ART}
+            backColor="#031061"
             seed={12}
             action="none"
             labelPlacement="bottom-left"
