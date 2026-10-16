@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Download, MapPin } from 'lucide-react'
+import { Download, MapPin, ArrowLeft } from 'lucide-react'
 import { AppDock } from '@/components/blocks/app-dock'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
 import { Card } from '@/components/ui/card'
@@ -84,8 +84,8 @@ const EXPERIENCE = [
 
 const SKILLS = [
   'Product Design', 'UX Research', 'Design Systems', 'Prototyping',
-  'Design Strategy', 'Interaction Design', 'User Testing', 'Figma',
-  'Design Leadership', 'Cross-functional Collaboration',
+  'Design Strategy', 'AI Product Design', 'LLM Interfaces', 'User Testing',
+  'Figma', 'Design Leadership', '0→1 Design',
   'UX Strategy', 'Data-Driven Design',
 ]
 
@@ -259,6 +259,23 @@ export default function Resume() {
 
       <main id="main-content" className="home-main" tabIndex={-1} style={{ outline: 'none' }}>
         <div className="mx-auto w-full max-w-6xl px-6">
+          {/* Back link — mobile only */}
+          <a
+            href="/"
+            className="cs-back-mobile"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              color: 'rgba(0,0,0,0.40)', textDecoration: 'none',
+              fontSize: '0.8125rem', fontWeight: 500,
+              marginBottom: 16, transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#0d0d0d')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.40)')}
+          >
+            <ArrowLeft size={12} strokeWidth={2.5} />
+            Back
+          </a>
+
           <Card className="resume-card" style={{ padding: '40px 48px', margin: '0 auto 100px', maxWidth: 680, position: 'relative' }}>
 
             {/* ── Header ── */}
