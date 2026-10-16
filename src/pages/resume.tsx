@@ -325,18 +325,9 @@ export default function Resume() {
             {/* ── About ── */}
             <div>
               <SectionLabel>About</SectionLabel>
-              {[
-                "For 9+ years, I've been designing and scaling product experiences across Fintech, IoT, SaaS, and AI-native companies. Over 6 million users interact daily with products I've shaped, mostly in industries where a confusing flow isn't just frustrating: it breaks compliance, loses a transaction, or kills trust overnight.",
-                "That context shapes how I work. I lead design from the ground up, from early discovery and UX research through high-fidelity UI and delivery, staying close to the details that matter in complex, regulated environments.",
-                "I partner with Product, Engineering, and Data not just to execute, but to help define strategy, shift adoption metrics, and connect design decisions to outcomes that show up in the business.",
-              ].map((para, i, arr) => (
-                <p key={i} style={{
-                  fontSize: '0.9375rem', lineHeight: 1.7, fontWeight: 400, textWrap: 'pretty',
-                  margin: i < arr.length - 1 ? '0 0 14px' : 0, color: 'rgba(0,0,0,0.65)',
-                }}>
-                  {para}
-                </p>
-              ))}
+              <p style={{ fontSize: '0.9375rem', lineHeight: 1.7, fontWeight: 400, textWrap: 'pretty', margin: 0, color: 'rgba(0,0,0,0.65)' }}>
+                For 9+ years, I've been designing and scaling product experiences across Fintech, IoT, SaaS, and AI-native companies — over 6 million people interact daily with products I've shaped. I'm drawn to products that are part of larger ecosystems: platforms that connect banks, partners, and end users; tools that sit inside complex systems where design decisions ripple far beyond a single screen. I lead from early discovery through high-fidelity delivery, partnering with Product, Engineering, and Data to define strategy and connect design to outcomes that show up in the business. Underneath all of it is a simple drive: to make things meaningfully better for the people using them — and through that, leave a real dent in the world.
+              </p>
             </div>
 
             <Divider />
