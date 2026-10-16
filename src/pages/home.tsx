@@ -258,7 +258,7 @@ function WorkFolders() {
             />
             <div>
               <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>{second.label}</p>
-              {second.metric && <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.45)', margin: '2px 0 0', lineHeight: 1.3 }}>{second.metric} {second.metricLabel}</p>}
+              {second.metric && <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.45)', margin: '2px 0 0', lineHeight: 1.3 }}>{second.metric} redemptions</p>}
             </div>
           </div>
         )}
