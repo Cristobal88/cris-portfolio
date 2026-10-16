@@ -54,6 +54,8 @@ export type GlassFolderProps = {
   onOpenChange?: (open: boolean) => void
   onFileSelect?: (file: FolderFile, index: number) => void
   width?: number
+  /** Hide the label rendered inside the front glass panel. */
+  hideLabel?: boolean
   appear?: boolean
   appearDelay?: number
   className?: string
@@ -421,6 +423,7 @@ export function GlassFolder({
   onFilesChange,
   menu = [],
   labelPlacement = 'bottom-left',
+  hideLabel = false,
   open: openProp,
   defaultOpen = false,
   onOpenChange,
@@ -601,10 +604,12 @@ export function GlassFolder({
               aria-label={(open ? 'Close ' : 'Open ') + label + ', ' + count + (count === 1 ? ' item' : ' items')}
               onClick={() => { setMenuOpen(false); setOpen(!open) }}
             />
-            <div className="gf-label">
-              <span className="gf-title">{label}</span>
-              <span className="gf-meta" key={metaLine}>{metaLine}</span>
-            </div>
+            {!hideLabel && (
+              <div className="gf-label">
+                <span className="gf-title">{label}</span>
+                <span className="gf-meta" key={metaLine}>{metaLine}</span>
+              </div>
+            )}
           </div>
 
           {/* files */}

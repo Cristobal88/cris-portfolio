@@ -195,34 +195,44 @@ function WorkFolders() {
       <SectionLabel>Some of my work</SectionLabel>
       <div ref={containerRef} style={{ display: 'flex', gap, alignItems: 'flex-start' }}>
         {first && (
-          <GlassFolder
-            label={first.label}
-            meta={first.metric ? first.metric + ' ' + (first.metricLabel ?? '') : undefined}
-            art="none"
-            backColor="#008859"
-            seed={7}
-            action="none"
-            labelPlacement="bottom-left"
-            appear={true}
-            appearDelay={0}
-            width={folderW}
-            files={projectToFiles(first, `/work/${first.slug}`)}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <GlassFolder
+              label={first.label}
+              art="none"
+              backColor="#008859"
+              seed={7}
+              action="none"
+              hideLabel
+              appear={true}
+              appearDelay={0}
+              width={folderW}
+              files={projectToFiles(first, `/work/${first.slug}`)}
+            />
+            <div>
+              <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>{first.label}</p>
+              {first.metric && <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.45)', margin: '2px 0 0', lineHeight: 1.3 }}>{first.metric} {first.metricLabel}</p>}
+            </div>
+          </div>
         )}
         {second && (
-          <GlassFolder
-            label={second.label}
-            meta={second.metric ? second.metric + ' ' + (second.metricLabel ?? '') : undefined}
-            art="none"
-            backColor="#031061"
-            seed={12}
-            action="none"
-            labelPlacement="bottom-left"
-            appear={true}
-            appearDelay={120}
-            width={folderW}
-            files={projectToFiles(second, `/work/${second.slug}`)}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <GlassFolder
+              label={second.label}
+              art="none"
+              backColor="#031061"
+              seed={12}
+              action="none"
+              hideLabel
+              appear={true}
+              appearDelay={120}
+              width={folderW}
+              files={projectToFiles(second, `/work/${second.slug}`)}
+            />
+            <div>
+              <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>{second.label}</p>
+              {second.metric && <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.45)', margin: '2px 0 0', lineHeight: 1.3 }}>{second.metric} {second.metricLabel}</p>}
+            </div>
+          </div>
         )}
       </div>
     </div>
