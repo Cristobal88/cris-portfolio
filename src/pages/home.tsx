@@ -160,7 +160,11 @@ function projectToFiles(project: Project, href: string) {
 function WorkFolders() {
   const { data: projects, loading } = useCaseStudies()
   const containerRef = useRef<HTMLDivElement>(null)
+  const firstRef  = useRef<HTMLDivElement>(null)
+  const secondRef = useRef<HTMLDivElement>(null)
   const [containerW, setContainerW] = useState(0)
+  const [firstOpen,  setFirstOpen]  = useState(false)
+  const [secondOpen, setSecondOpen] = useState(false)
 
   useEffect(() => {
     const el = containerRef.current
@@ -171,14 +175,31 @@ function WorkFolders() {
     return () => ro.disconnect()
   }, [])
 
-  const visible = projects?.filter(p => !p.locked) ?? []
-  const [first, second] = visible
-
   const gap = 24
   const stacked = containerW > 0 && containerW < 420
   const folderW = containerW > 0
     ? stacked ? containerW : Math.floor((containerW - gap) / 4)
     : 140
+
+  // On mobile: open each folder when 30 % of it enters the viewport
+  useEffect(() => {
+    if (!stacked) return
+    const watch = (el: HTMLDivElement | null, set: (v: boolean) => void) => {
+      if (!el) return
+      const io = new IntersectionObserver(
+        ([entry]) => set(entry.intersectionRatio >= 0.3),
+        { threshold: 0.3 },
+      )
+      io.observe(el)
+      return io
+    }
+    const io1 = watch(firstRef.current,  setFirstOpen)
+    const io2 = watch(secondRef.current, setSecondOpen)
+    return () => { io1?.disconnect(); io2?.disconnect() }
+  }, [stacked])
+
+  const visible = projects?.filter(p => !p.locked) ?? []
+  const [first, second] = visible
 
   if (loading) {
     return (
@@ -198,9 +219,11 @@ function WorkFolders() {
       <SectionLabel>Some of my work</SectionLabel>
       <div ref={containerRef} style={{ display: 'flex', flexDirection: stacked ? 'column' : 'row', gap, alignItems: 'flex-start' }}>
         {first && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div ref={firstRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <GlassFolder
               label={first.label}
+              href={`/work/${first.slug}`}
+              open={stacked ? firstOpen : undefined}
               art="none"
               backColor="#008859"
               seed={7}
@@ -218,9 +241,11 @@ function WorkFolders() {
           </div>
         )}
         {second && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div ref={secondRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <GlassFolder
               label={second.label}
+              href={`/work/${second.slug}`}
+              open={stacked ? secondOpen : undefined}
               art="none"
               backColor="#031061"
               seed={12}

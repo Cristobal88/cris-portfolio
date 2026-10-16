@@ -54,6 +54,8 @@ export type GlassFolderProps = {
   onOpenChange?: (open: boolean) => void
   onFileSelect?: (file: FolderFile, index: number) => void
   width?: number
+  /** When set, the hit area navigates to this URL instead of toggling open. */
+  href?: string
   /** Hide the label rendered inside the front glass panel. */
   hideLabel?: boolean
   appear?: boolean
@@ -424,6 +426,7 @@ export function GlassFolder({
   menu = [],
   labelPlacement = 'bottom-left',
   hideLabel = false,
+  href,
   open: openProp,
   defaultOpen = false,
   onOpenChange,
@@ -596,14 +599,23 @@ export function GlassFolder({
               </defs>
               <path d={FRONT_PATH} stroke={'url(#gf-rim-' + uid + ')'} />
             </svg>
-            <button
-              ref={hitRef}
-              type="button"
-              className="gf-hit"
-              aria-expanded={open}
-              aria-label={(open ? 'Close ' : 'Open ') + label + ', ' + count + (count === 1 ? ' item' : ' items')}
-              onClick={() => { setMenuOpen(false); setOpen(!open) }}
-            />
+            {href ? (
+              <a
+                ref={hitRef as React.RefObject<HTMLAnchorElement>}
+                href={href}
+                className="gf-hit"
+                aria-label={'View ' + label}
+              />
+            ) : (
+              <button
+                ref={hitRef}
+                type="button"
+                className="gf-hit"
+                aria-expanded={open}
+                aria-label={(open ? 'Close ' : 'Open ') + label + ', ' + count + (count === 1 ? ' item' : ' items')}
+                onClick={() => { setMenuOpen(false); setOpen(!open) }}
+              />
+            )}
             {!hideLabel && (
               <div className="gf-label">
                 <span className="gf-title">{label}</span>
