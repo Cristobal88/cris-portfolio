@@ -12,8 +12,8 @@ import type { Project } from '@/types/content'
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <h2 style={{
-      fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.14em',
-      textTransform: 'uppercase', color: 'rgba(0,0,0,0.42)', margin: '0 0 16px',
+      fontSize: '0.875rem', fontWeight: 400, letterSpacing: '0.01em',
+      color: 'rgba(0,0,0,0.40)', margin: '0 0 16px',
     }}>
       {children}
     </h2>
@@ -377,7 +377,7 @@ function GitHubActivitySection() {
     <div ref={containerRef}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
         <a href="https://github.com/Cristobal88" target="_blank" rel="noopener noreferrer"
-          style={{ fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.28)', textDecoration: 'none', padding: '6px 0', display: 'inline-block' }}>
+          style={{ fontSize: '0.875rem', fontWeight: 400, letterSpacing: '0.01em', color: 'rgba(0,0,0,0.40)', textDecoration: 'none', padding: '6px 0', display: 'inline-block' }}>
           GitHub Activity
         </a>
         {total !== null && (
@@ -605,7 +605,7 @@ export default function Home() {
 
             {/* Name */}
             <div style={{ margin: '0 0 32px' }}>
-              <h1 style={{ fontSize: '1rem', fontWeight: 700, color: '#0d0d0d', lineHeight: 1.4, margin: 0 }}>
+              <h1 style={{ fontSize: '1.125rem', fontWeight: 400, fontStyle: 'italic', fontFamily: 'Instrument Serif, serif', color: '#0d0d0d', lineHeight: 1.3, margin: 0 }}>
                 Cristobal Lemoine
               </h1>
               <p style={{ fontSize: '1rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
@@ -616,16 +616,10 @@ export default function Home() {
             {/* Bio */}
             <div style={{ marginBottom: 0 }}>
               <p style={pStyle}>
-                For 9+ years, I've been designing and scaling product experiences across Fintech, IoT, SaaS, and AI-native companies. Over 6 million users interact daily with products I've shaped, mostly in industries where a confusing flow isn't just frustrating: it breaks compliance, loses a transaction, or kills trust overnight.
-              </p>
-              <p style={pStyle}>
-                That context shapes how I work. I lead design from the ground up, from early discovery and UX research through high-fidelity UI and delivery, staying close to the details that matter in complex, regulated environments.
-              </p>
-              <p style={pStyle}>
-                I partner with Product, Engineering, and Data not just to execute, but to help define strategy, shift adoption metrics, and connect design decisions to outcomes that show up in the business.
+                I work in industries where a bad flow doesn't just frustrate: it breaks compliance, loses a transaction, or kills trust overnight. That's the pressure that shaped how I design.
               </p>
               <p style={{ ...pStyle, margin: 0 }}>
-                Behind all of it is a simple conviction: I'm a maker at heart, and I care deeply about building products with the potential to leave a positive mark on the world. Design is the best tool I've found for that.
+                9 years, 6M+ daily users, across fintech, AI and IoT. I work end-to-end, from discovery through delivery, and stay in until the outcome shows up in the numbers.
               </p>
             </div>
 

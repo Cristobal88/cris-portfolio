@@ -1,9 +1,10 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 
-const Home     = lazy(() => import('./pages/home'))
+const Home      = lazy(() => import('./pages/home'))
 const CaseStudy = lazy(() => import('./pages/use-case'))
-const Resume   = lazy(() => import('./pages/resume'))
+const Resume    = lazy(() => import('./pages/resume'))
+const PropiDemo = lazy(() => import('./pages/propi-demo'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -25,9 +26,10 @@ function AppRoutes() {
       <ScrollToTop />
       <Suspense fallback={null}>
         <Routes>
-          <Route path="/"            element={<Home />} />
+          <Route path="/"              element={<Home />} />
           <Route path="/work/:slug"  element={<CaseStudy />} />
           <Route path="/resume"      element={<Resume />} />
+          <Route path="/demo/propi"  element={<PropiDemo />} />
         </Routes>
       </Suspense>
     </>

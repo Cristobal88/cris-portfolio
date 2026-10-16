@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { CtaButton } from '@/components/ui/cta-button'
 import { useCaseStudies } from '@/hooks/useCaseStudies'
@@ -95,13 +95,16 @@ function DockTextButton({
 function WorkDockButton({
   dockProjects,
   variant,
+  isOpen,
+  onOpen,
 }: {
   dockProjects: DockProject[]
   variant:      'light' | 'dark'
+  isOpen:       boolean
+  onOpen:       () => void
 }) {
   const isTouch = useIsTouch()
   const reducedMotion = useReducedMotion()
-  const [hov, setHov]     = useState(false)
   const isDark = variant === 'dark'
   const total  = dockProjects.length
 
@@ -110,14 +113,14 @@ function WorkDockButton({
     return <DockTextButton href="/#work" label="Projects" variant={variant} />
   }
 
+  const hov     = isOpen
   const spreadW = total > 0 ? total * TW + (total - 1) * TG : 0
-  const spring = reducedMotion ? INSTANT : SPRING
+  const spring  = reducedMotion ? INSTANT : SPRING
 
   return (
     <div
       style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
-      onMouseEnter={() => { setHov(true); chime.workHover() }}
-      onMouseLeave={() => setHov(false)}
+      onMouseEnter={() => { onOpen(); chime.workHover() }}
     >
       {/* "Work" text label */}
       <div
@@ -143,6 +146,7 @@ function WorkDockButton({
           height: BTN_H,
           overflow: 'visible',
           flexShrink: 0,
+          pointerEvents: hov ? 'auto' : 'none',
         }}
         initial={{ width: 0 }}
         animate={{ width: hov && total > 0 ? spreadW + 4 : 0 }}
@@ -198,6 +202,7 @@ function WorkDockButton({
 export function AppDock({ variant = 'light' }: AppDockProps) {
   const isDark = variant === 'dark'
   const { data: projects } = useCaseStudies()
+  const [workOpen, setWorkOpen] = useState(false)
 
   const currentSlug =
     typeof window !== 'undefined'
@@ -216,6 +221,7 @@ export function AppDock({ variant = 'light' }: AppDockProps) {
     <nav className="app-dock">
       <div
         className="app-dock-inner"
+        onMouseLeave={() => setWorkOpen(false)}
         style={{
           display: 'flex', alignItems: 'center', gap: 2,
           background: isDark ? 'rgba(20,20,20,0.80)' : 'rgba(255,255,255,0.72)',
@@ -232,8 +238,10 @@ export function AppDock({ variant = 'light' }: AppDockProps) {
         }}
       >
         <DockTextButton href="/" label="Home" variant={variant} />
-        <WorkDockButton dockProjects={dockProjects} variant={variant} />
-        <DockTextButton href="/resume" label="Resume" variant={variant} />
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <WorkDockButton dockProjects={dockProjects} variant={variant} isOpen={workOpen} onOpen={() => setWorkOpen(true)} />
+          <DockTextButton href="/resume" label="Resume" variant={variant} />
+        </div>
 
         <div className="dock-cta" style={{ marginLeft: 8 }}>
           <CtaButton

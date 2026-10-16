@@ -12,15 +12,23 @@ const EXPERIENCE = [
     kind: 'single' as const,
     dates: '2026 — Present',
     role: 'Lead Product Designer',
-    company: 'EY',
-    description: 'Enterprise product design for AI-enabled platforms used by 400K+ professionals globally.',
+    company: 'EY GDS',
+    bullets: [
+      'Own and lead discovery, research and design across multiple global enterprise initiatives for platforms used by 400K+ professionals globally.',
+      'Set direction for AI-enabled experiences including LLM-powered assistants, generative content and intelligent workflows.',
+      'Strengthen and evolve enterprise design systems (tokens, components and documentation) used by distributed global teams.',
+    ],
   },
   {
     kind: 'single' as const,
     dates: '2025 — 2026',
     role: 'Lead Product Designer',
     company: 'HeySam',
-    description: 'Product Design 0→1 for an AI-native sales tool.',
+    bullets: [
+      'Owned the full 0 to 1 design lifecycle: UX flows, UI systems and prototyping for an AI-native sales copilot.',
+      'Designed AI-driven workflows including intelligent demo automation and real-time sales collaboration features.',
+      'Partnered with the founder on product vision, roadmap and go-to-market design strategy.',
+    ],
   },
   {
     kind: 'group' as const,
@@ -32,12 +40,20 @@ const EXPERIENCE = [
         role: 'Tech Lead Product Designer',
         dates: '2025',
         tag: 'Promoted',
-        description: 'Led QR and NFC payment experiences across 2 squads and 30+ partner banks.',
+        bullets: [
+          'Defined UX strategy through OKRs and roadmap planning for 2 core squads as the UX decision owner for QR and NFC payments.',
+          'Created a UX QA framework that became the company-wide standard across multiple squads in a regulated fintech environment.',
+          'Owned end-to-end NFC tap-to-pay UX from POC to V1, reaching 66K+ MAU across 30+ partner banks via a plug-and-play SDK.',
+        ],
       },
       {
         role: 'Product Designer',
         dates: '2022 — 2025',
-        description: 'Designed digital tipping, transit top-ups and loyalty experiences for a 6M+ user fintech ecosystem.',
+        bullets: [
+          'Designed a digital tipping flow across 30+ partner banks generating 15K completed tips with 16% conversion in the first 30 days.',
+          'Designed the SUBE bus card top-up experience supporting 100K+ MAU in the first 6 months.',
+          'Owned the 0 to 1 UX of a loyalty platform, leading from discovery to pilot launch with Axion and enabling a new business vertical.',
+        ],
       },
     ],
   },
@@ -45,24 +61,42 @@ const EXPERIENCE = [
     kind: 'single' as const,
     dates: '2020 — 2022',
     role: 'Product Designer',
-    company: 'Drixit',
-    description: 'Shipped IoT and Industry 4.0 products across 2 product ecosystems.',
+    company: 'Drixit Technologies',
+    bullets: [
+      'Built a mobile-first design system aligned with desktop components to improve consistency across platforms.',
+      'Designed mobile and dashboard experiences for managers supervising workers in high-risk industrial environments.',
+      'Translated IoT wearable data into actionable interfaces for real-time safety monitoring and operational decisions.',
+    ],
+  },
+  {
+    kind: 'single' as const,
+    dates: '2019 — 2020',
+    role: 'UX Designer',
+    company: 'Summa Solutions',
+    bullets: [
+      'Collaborated with delivery teams (product, engineering, QA) to design and iterate on features in a software factory environment.',
+      'Contributed to usability and conversion improvements by refining information architecture, interaction patterns and visual hierarchy.',
+      'Supported multiple client projects in parallel, adapting quickly to different domains, requirements and timelines.',
+    ],
   },
 ]
+
 
 const SKILLS = [
   'Product Design', 'UX Research', 'Design Systems', 'Prototyping',
   'Design Strategy', 'Interaction Design', 'User Testing', 'Figma',
   'Design Leadership', 'Cross-functional Collaboration',
+  'UX Strategy', 'Data-Driven Design',
 ]
+
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <h2 style={{
-      fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.14em',
-      textTransform: 'uppercase', color: 'rgba(0,0,0,0.42)', margin: '0 0 16px',
+      fontSize: '0.875rem', fontWeight: 400, letterSpacing: '0.01em',
+      color: 'rgba(0,0,0,0.40)', margin: '0 0 16px',
     }}>
       {children}
     </h2>
@@ -102,64 +136,85 @@ function DownloadButton() {
   )
 }
 
-// ─── Sections ─────────────────────────────────────────────────────────────────
+// ─── Bullet list ──────────────────────────────────────────────────────────────
 
-function ExperienceSection() {
+function Bullets({ items }: { items: string[] }) {
+  return (
+    <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {items.map((text, i) => (
+        <li key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+          <span style={{ marginTop: '0.45em', width: 3, height: 3, borderRadius: '50%', background: 'rgba(0,0,0,0.25)', flexShrink: 0 }} aria-hidden="true" />
+          <span style={{ fontSize: '0.8125rem', color: 'rgba(0,0,0,0.5)', lineHeight: 1.6 }}>{text}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+// ─── Shared experience row renderer ───────────────────────────────────────────
+
+type ExpItem = typeof EXPERIENCE[number]
+
+function ExpRow({ item }: { item: ExpItem }) {
   const dateStyle: React.CSSProperties = {
     fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.50)', paddingTop: 2, whiteSpace: 'nowrap',
   }
 
   return (
+    <div
+      key={item.kind === 'single' ? item.company + item.dates : item.company}
+      className="exp-row"
+      style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '0 16px' }}
+    >
+      <span className="exp-date" style={dateStyle}>{item.dates}</span>
+
+      {item.kind === 'single' ? (
+        <div>
+          <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: '0 0 6px', lineHeight: 1.3 }}>
+            {item.role}{' '}
+            <span style={{ fontWeight: 400, color: 'rgba(0,0,0,0.45)' }}>· {item.company}</span>
+          </p>
+          <Bullets items={item.bullets} />
+        </div>
+      ) : (
+        <div>
+          <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: '0 0 8px', lineHeight: 1.3 }}>
+            {item.company}{' '}
+            <span style={{ fontWeight: 400, color: 'rgba(0,0,0,0.38)' }}>· {item.category}</span>
+          </p>
+          <div style={{ borderLeft: '2px solid rgba(0,0,0,0.08)', paddingLeft: 14, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {item.roles.map((r) => (
+              <div key={r.role}>
+                <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>
+                  {r.role}
+                </p>
+                <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.40)', margin: '2px 0 6px', lineHeight: 1 }}>
+                  {r.dates}
+                  {r.tag && (
+                    <span style={{ marginLeft: 6, background: 'rgba(0,0,0,0.05)', borderRadius: 4, padding: '1px 6px', fontSize: '0.6875rem', fontWeight: 500 }}>
+                      {r.tag}
+                    </span>
+                  )}
+                </p>
+                <Bullets items={r.bullets} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Sections ─────────────────────────────────────────────────────────────────
+
+function ExperienceSection() {
+  return (
     <div>
       <SectionLabel>Experience</SectionLabel>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {EXPERIENCE.map((item) => (
-          <div
-            key={item.kind === 'single' ? item.company + item.dates : item.company}
-            className="exp-row"
-            style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '0 16px' }}
-          >
-            <span className="exp-date" style={dateStyle}>{item.dates}</span>
-
-            {item.kind === 'single' ? (
-              <div>
-                <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>
-                  {item.role}{' '}
-                  <span style={{ fontWeight: 400, color: 'rgba(0,0,0,0.45)' }}>· {item.company}</span>
-                </p>
-                <p style={{ fontSize: '0.8125rem', color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, margin: '3px 0 0' }}>
-                  {item.description}
-                </p>
-              </div>
-            ) : (
-              <div>
-                <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: '0 0 8px', lineHeight: 1.3 }}>
-                  {item.company}{' '}
-                  <span style={{ fontWeight: 400, color: 'rgba(0,0,0,0.38)' }}>· {item.category}</span>
-                </p>
-                <div style={{ borderLeft: '2px solid rgba(0,0,0,0.08)', paddingLeft: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {item.roles.map((r) => (
-                    <div key={r.role}>
-                      <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>
-                        {r.role}
-                      </p>
-                      <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.40)', margin: '2px 0 3px', lineHeight: 1 }}>
-                        {r.dates}
-                        {r.tag && (
-                          <span style={{ marginLeft: 6, background: 'rgba(0,0,0,0.05)', borderRadius: 4, padding: '1px 6px', fontSize: '0.6875rem', fontWeight: 500 }}>
-                            {r.tag}
-                          </span>
-                        )}
-                      </p>
-                      <p style={{ fontSize: '0.8125rem', color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, margin: 0 }}>
-                        {r.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <ExpRow key={item.kind === 'single' ? item.company + item.dates : item.company} item={item} />
         ))}
       </div>
     </div>
@@ -186,6 +241,8 @@ function SkillsSection() {
     </div>
   )
 }
+
+
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -219,7 +276,7 @@ export default function Resume() {
 
                 {/* Name + title + location + links */}
                 <div>
-                  <h1 style={{ fontSize: '1rem', fontWeight: 700, color: '#0d0d0d', lineHeight: 1.3, margin: 0 }}>
+                  <h1 style={{ fontSize: '1.125rem', fontWeight: 400, fontStyle: 'italic', fontFamily: 'Instrument Serif, serif', color: '#0d0d0d', lineHeight: 1.3, margin: 0 }}>
                     Cristobal Lemoine
                   </h1>
                   <p style={{ fontSize: '0.875rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: '2px 0 10px' }}>
@@ -280,6 +337,7 @@ export default function Resume() {
 
             <Divider />
             <SkillsSection />
+
 
           </Card>
         </div>
