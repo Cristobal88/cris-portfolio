@@ -144,7 +144,7 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 }
 @media (max-width: 767px) {
   .dock-cta .cta-primary { white-space: nowrap; }
-  .cs-back-fixed { top: 20px !important; }
+  .cs-back-fixed { display: none !important; }
   .cs-back-mobile { display: inline-flex !important; }
 }
 
@@ -208,3 +208,23 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 @media (min-width: 1920px) {
   .navbar { padding: 0 44px; }
 }
+
+/* ── Text input caret blink ── */
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.input-caret { animation: caret-blink 1s step-end infinite; }
+
+/* ── ios-26 kit / Tailwind compat ──
+   Tailwind preflight resets button::before { content: none }, which kills
+   the kit's pseudo-element key backgrounds. Provide direct background-color
+   fallbacks at higher specificity so keys render correctly. */
+.ios-keyboard .ios-key { background-color: #ffffff; }
+.ios-keyboard .ios-key[data-fn] { background-color: #acb4c0; }
+/* Suggest bar kept as spacer (no buttons) — reduced to 16px top gap */
+.ios-keyboard__suggest:empty { pointer-events: none; height: 16px; min-height: 0; }
+/* 8px gap between last key row and the bottom bar */
+.ios-keyboard__keys { padding-bottom: 16px; }
+/* Bottom safe-area breathing room below emoji/mic */
+.ios-keyboard__bottom { padding-bottom: 16px; }
