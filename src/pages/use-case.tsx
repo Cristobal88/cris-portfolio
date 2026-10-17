@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useCaseStudy } from '@/hooks/useCaseStudy'
+import { useThemeColor } from '@/lib/useThemeColor'
 import { AppDock } from '@/components/blocks/app-dock'
 import { PersonalCta } from '@/components/blocks/personal-cta'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
@@ -22,6 +23,7 @@ const PAGE_TITLES: Record<string, string> = {
 }
 
 export default function CaseStudy() {
+  useThemeColor('#050505')
   const { slug } = useParams<{ slug: string }>()
   const { data: project, nextProject, loading, notFound } = useCaseStudy(slug)
 

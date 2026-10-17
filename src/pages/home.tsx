@@ -5,6 +5,7 @@ import { AppDock } from '@/components/blocks/app-dock'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
 import { useCaseStudies } from '@/hooks/useCaseStudies'
 import { chime } from '@/lib/chime'
+import { useThemeColor } from '@/lib/useThemeColor'
 import { GlassFolder } from '@/components/ui/glass-folder'
 import type { Project } from '@/types/content'
 
@@ -542,6 +543,7 @@ function StackSection() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Home() {
+  useThemeColor('#ffffff')
   const [emailCopied, setEmailCopied] = useState(false)
   const reducedMotion = useReducedMotion()
 
