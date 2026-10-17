@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useLayoutEffect } from 'react'
 
 /**
  * Sets <meta name="theme-color"> for the duration the component is mounted.
@@ -6,7 +6,7 @@ import { useEffect } from 'react'
  * (setAttribute alone is not always picked up on SPA navigation).
  */
 export function useThemeColor(color: string) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     const existing = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
     const prev = existing?.getAttribute('content') ?? '#ffffff'
     existing?.remove()
