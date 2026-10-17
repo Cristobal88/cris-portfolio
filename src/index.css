@@ -187,6 +187,7 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 }
 
 @media (max-width: 640px) {
+  .bio-desktop-only { display: none; }
   .resume-card { padding: 24px 20px !important; }
   .resume-header { flex-direction: column !important; gap: 12px !important; }
   .resume-header-inner { flex-direction: row !important; }
