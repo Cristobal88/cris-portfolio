@@ -22,8 +22,13 @@ const PAGE_TITLES: Record<string, string> = {
   'loyalty-club-payments': 'Loyalty Platform — Cristobal Lemoine',
 }
 
-// Scales an iframe to fill its column at any viewport width.
-// The outer div collapses to the scaled dimensions so no extra space is left.
+// Scales the phone to fit both its column width and the viewport height.
+// Uses the more restrictive of the two constraints so the phone never overflows.
+// 120px is reserved for the fixed dock/back link + breathing room at top/bottom.
+const PHONE_W = 390
+const PHONE_H = 844
+const PHONE_CHROME_RESERVE = 120
+
 function ScaledPhone({ src }: { src: string }) {
   const outerRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
@@ -33,28 +38,32 @@ function ScaledPhone({ src }: { src: string }) {
     if (!el) return
     const measure = () => {
       const w = el.getBoundingClientRect().width
-      if (w > 0) setScale(Math.min(1, w / 390))
+      const vh = window.innerHeight
+      const scaleByW = w > 0 ? w / PHONE_W : 1
+      const scaleByH = (vh - PHONE_CHROME_RESERVE) / PHONE_H
+      setScale(Math.min(1, scaleByW, scaleByH))
     }
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(el)
-    return () => ro.disconnect()
+    window.addEventListener('resize', measure)
+    return () => { ro.disconnect(); window.removeEventListener('resize', measure) }
   }, [])
 
   return (
-    <div ref={outerRef} style={{ width: '100%', maxWidth: 390 }}>
+    <div ref={outerRef} style={{ width: '100%', maxWidth: PHONE_W }}>
       <div style={{
-        width: Math.round(390 * scale),
-        height: Math.round(844 * scale),
+        width: Math.round(PHONE_W * scale),
+        height: Math.round(PHONE_H * scale),
         overflow: 'hidden',
         borderRadius: Math.round(50 * scale),
         boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)',
       }}>
-        <div style={{ width: 390, height: 844, transformOrigin: 'top left', transform: `scale(${scale})` }}>
+        <div style={{ width: PHONE_W, height: PHONE_H, transformOrigin: 'top left', transform: `scale(${scale})` }}>
           <iframe
             src={src}
-            width={390}
-            height={844}
+            width={PHONE_W}
+            height={PHONE_H}
             style={{ border: 'none', display: 'block' }}
             title="Tipping flow interactive demo"
           />
