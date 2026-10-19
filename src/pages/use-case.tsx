@@ -51,6 +51,7 @@ function ScaledPhone({ src }: { src: string }) {
   }, [])
 
   return (
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
     <div ref={outerRef} style={{ width: '100%', maxWidth: PHONE_W }}>
       <div style={{
         width: Math.round(PHONE_W * scale),
@@ -69,6 +70,7 @@ function ScaledPhone({ src }: { src: string }) {
           />
         </div>
       </div>
+    </div>
     </div>
   )
 }
