@@ -1,5 +1,5 @@
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useCaseStudy } from '@/hooks/useCaseStudy'
 import { useThemeColor } from '@/lib/useThemeColor'
@@ -29,7 +29,7 @@ const PHONE_W = 390
 const PHONE_H = 844
 const PHONE_CHROME_RESERVE = 120
 
-function ScaledPhone({ src }: { src: string }) {
+function ScaledPhone({ src, iframeRef }: { src: string; iframeRef?: React.RefObject<HTMLIFrameElement> }) {
   const outerRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
 
@@ -39,8 +39,11 @@ function ScaledPhone({ src }: { src: string }) {
     const measure = () => {
       const w = el.getBoundingClientRect().width
       const vh = window.innerHeight
+      // On mobile: reserve more space for browser chrome + fixed dock (180px).
+      // On desktop: 120px is enough.
+      const reserve = window.innerWidth < 768 ? 180 : PHONE_CHROME_RESERVE
       const scaleByW = w > 0 ? w / PHONE_W : 1
-      const scaleByH = (vh - PHONE_CHROME_RESERVE) / PHONE_H
+      const scaleByH = (vh - reserve) / PHONE_H
       setScale(Math.min(1, scaleByW, scaleByH))
     }
     measure()
@@ -51,8 +54,8 @@ function ScaledPhone({ src }: { src: string }) {
   }, [])
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-    <div ref={outerRef} style={{ width: '100%', maxWidth: PHONE_W }}>
+    <div style={{ display: 'flex', justifyContent: 'center', overflow: 'hidden' }}>
+    <div ref={outerRef} style={{ width: '100%', maxWidth: PHONE_W, overflow: 'hidden' }}>
       <div style={{
         width: Math.round(PHONE_W * scale),
         height: Math.round(PHONE_H * scale),
@@ -63,6 +66,7 @@ function ScaledPhone({ src }: { src: string }) {
       }}>
         <div style={{ width: PHONE_W, height: PHONE_H, transformOrigin: 'top left', transform: `scale(${scale})` }}>
           <iframe
+            ref={iframeRef}
             src={src}
             width={PHONE_W}
             height={PHONE_H}
@@ -72,6 +76,119 @@ function ScaledPhone({ src }: { src: string }) {
         </div>
       </div>
     </div>
+    </div>
+  )
+}
+
+type Annotation = { screen: string; left: string; right: string | null }
+type TipFlowVisual = { title?: string | null; caption?: string | null; image?: string | null }
+
+function TipFlowSection({ visual, annotations }: { visual: TipFlowVisual; annotations: Annotation[] }) {
+  const [activeStep, setActiveStep] = useState<number | null>(null)
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      if (e.data?.type === 'propi-step' && typeof e.data.step === 'number') {
+        setActiveStep(e.data.step)
+      }
+    }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
+  }, [])
+
+  const jumpToStep = (step: number) => {
+    iframeRef.current?.contentWindow?.postMessage({ type: 'propi-jump', step }, '*')
+  }
+
+  return (
+    <div className="tip-flow-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
+      {/* Left: title always visible; rows desktop-only */}
+      <div>
+        <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 12, lineHeight: 1.25 }}>
+          Try the feature
+        </h3>
+        {/* Mobile-only hint — hidden on desktop via CSS */}
+        <p className="tip-mobile-hint" style={{ fontSize: '1rem', lineHeight: 1.75, color: T2, margin: '0 0 16px' }}>
+          This is a fully interactive demo. Tap through the flow below.
+        </p>
+        {/* Mobile-only step pills — hidden on desktop via CSS */}
+        <div className="tip-step-pills">
+          {(['Start', 'Add alias', 'Add amount', 'Send'] as const).map((label, step) => {
+            const isActive = activeStep === step
+            return (
+              <button
+                key={step}
+                onClick={() => jumpToStep(step)}
+                style={{
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '8px 16px',
+                  borderRadius: 100,
+                  border: `1px solid ${isActive ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.10)'}`,
+                  background: isActive ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.05)',
+                  color: isActive ? T1 : T3,
+                  fontSize: '0.875rem',
+                  fontWeight: isActive ? 600 : 500,
+                  fontFamily: 'Barlow, sans-serif',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'background 0.18s ease, border-color 0.18s ease, color 0.18s ease',
+                }}
+              >
+                {label}
+              </button>
+            )
+          })}
+        </div>
+        {/* Annotation rows — desktop only */}
+        <div className="tip-annotations" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {annotations.map((ann, ai) => {
+            const isActive  = activeStep === ai
+            const isHovered = hoveredRow === ai
+            const showDividerBelow = false // gap between rows replaces dividers
+            return (
+              <div
+                key={ai}
+                onClick={() => jumpToStep(ai)}
+                onMouseEnter={() => setHoveredRow(ai)}
+                onMouseLeave={() => setHoveredRow(null)}
+                style={{
+                  padding: '14px 10px',
+                  borderRadius: 14,
+                  ...(isActive
+                    ? {
+                        border: '1px solid rgba(255,255,255,0.10)',
+                        background: 'rgba(255,255,255,0.07)',
+                      }
+                    : {
+                        border: 'none',
+                        borderBottom: showDividerBelow ? `1px solid ${BORDER}` : 'none',
+                        background: isHovered ? 'rgba(255,255,255,0.03)' : 'transparent',
+                      }
+                  ),
+                  transition: 'background 0.18s ease',
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
+                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: isActive ? T1 : T2, margin: 0, lineHeight: 1.4, transition: 'color 0.18s ease' }}>{ann.screen}</p>
+                  <ArrowRight size={12} color={isActive ? T2 : T4} style={{ transition: 'color 0.18s ease', flexShrink: 0 }} />
+                </div>
+                <p style={{ fontSize: '0.8125rem', color: isActive ? T2 : T3, margin: 0, lineHeight: 1.6, transition: 'color 0.18s ease' }}>{ann.left}</p>
+                {ann.right && isActive && (
+                  <p style={{ fontSize: '0.75rem', color: T3, margin: '6px 0 0', lineHeight: 1.5, paddingLeft: 10, borderLeft: `2px solid ${BORDER}` }}>{ann.right}</p>
+                )}
+              </div>
+            )
+          })}
+        </div>
+        {/* end tip-annotations */}
+      </div>
+      {/* Right: phone demo */}
+      <ScaledPhone src="/demo/propi?embed" iframeRef={iframeRef} />
     </div>
   )
 }
@@ -218,8 +335,8 @@ export default function CaseStudy() {
         </div>
       </section>
 
-      {/* ── Context ── */}
-      {project.context && (
+      {/* ── Context ── (temporarily hidden) */}
+      {false && project.context && (
         <section className="cs-section--sm" style={{ borderTop: `1px solid rgba(255,255,255,0.05)` }}>
           <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 64, alignItems: 'start' }}>
@@ -328,75 +445,34 @@ export default function CaseStudy() {
           </div>
 
           {wideVisuals.length > 0 && (
-            <div style={{ marginTop: 80, display: 'flex', flexDirection: 'column', gap: 56 }}>
+            <div style={{ marginTop: 120, display: 'flex', flexDirection: 'column', gap: 96 }}>
               {wideVisuals.map((visual, i) => {
                 // Interactive demo: replace "The tip flow" image with annotated demo layout
                 if (visual.title === 'The tip flow') {
                   const annotations = [
                     {
-                      stage: 'Entry',
-                      screen: 'Success screen + bottom sheet',
-                      left: 'Waiters lost tips when Argentina went cashless. This is where Propina enters — no new app, no new screen.',
+                      screen: 'Tap to start',
+                      left: 'Select a step to jump to it in the demo. Or tap through the flow on the right to see each decision in sequence.',
                       right: null,
                     },
                     {
-                      stage: '20%',
-                      screen: 'Sheet opens, Propina CTA',
-                      left: 'One tap to start. The flow lives inside the existing payment confirmation — zero friction for the payer.',
-                      right: "Built on MODO's open rail — works across 30+ banks out of the box.",
-                    },
-                    {
-                      stage: '40%',
-                      screen: 'CBU alias input',
-                      left: 'Alias over CBU — the format every Argentine already uses for transfers. Familiar = trusted.',
-                      right: 'Saved after first use. Repeat payers skip this step entirely.',
-                    },
-                    {
-                      stage: '60%',
-                      screen: 'Amount keypad',
-                      left: 'Suggested amounts are anchored to the purchase total — no mental math, no awkward negotiation.',
+                      screen: 'Enter the alias',
+                      left: 'The format every Argentine already uses for transfers. Familiar means trusted.',
                       right: null,
                     },
                     {
-                      stage: '80%',
-                      screen: 'Green success + receipt',
-                      left: 'Payer gets instant confirmation. No ambiguity about whether the transfer went through.',
-                      right: 'Worker is notified in real time — both sides close the loop.',
+                      screen: 'Pick an amount',
+                      left: 'Tap the amount without awkward negotiation.',
+                      right: null,
                     },
                     {
-                      stage: '100%',
-                      screen: 'Blue success + notification',
-                      left: '15K tips processed. 16% of payers who saw the prompt tipped — within the first 30 days.',
+                      screen: 'Sent the tip',
+                      left: 'Instant bank confirmation for peace of mind.',
                       right: null,
                     },
                   ]
                   return (
-                    <div key={i} className="tip-flow-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'start' }}>
-                      {/* Left: title + caption + annotation list (desktop only) */}
-                      <div className="tip-annotations">
-                        <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 12, lineHeight: 1.25 }}>
-                          {visual.title}
-                        </h3>
-                        <p style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: '0 0 28px' }}>{visual.caption}</p>
-                        <div style={{ borderTop: `1px solid ${BORDER}` }}>
-                          {annotations.map((ann, ai) => (
-                            <div key={ai} style={{ padding: '14px 0', borderBottom: `1px solid ${BORDER}` }}>
-                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                                <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.07em', color: T4, textTransform: 'uppercase' as const }}>{ann.stage}</span>
-                                <ArrowRight size={12} color={T4} />
-                              </div>
-                              <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: T1, margin: '0 0 4px', lineHeight: 1.4 }}>{ann.screen}</p>
-                              <p style={{ fontSize: '0.8125rem', color: T2, margin: 0, lineHeight: 1.6 }}>{ann.left}</p>
-                              {ann.right && (
-                                <p style={{ fontSize: '0.75rem', color: T3, margin: '6px 0 0', lineHeight: 1.5, paddingLeft: 10, borderLeft: `2px solid ${BORDER}` }}>{ann.right}</p>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      {/* Right: phone demo */}
-                      <ScaledPhone src="/demo/propi?embed" />
-                    </div>
+                    <TipFlowSection key={i} visual={visual} annotations={annotations} />
                   )
                 }
 

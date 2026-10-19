@@ -142,12 +142,19 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 @media (min-width: 768px) {
   .app-dock { top: 28px; bottom: auto; }
 }
+/* tip-mobile-hint and tip-step-pills hidden by default (desktop) */
+.tip-mobile-hint { display: none; }
+.tip-step-pills { display: none; }
+.tip-step-pills::-webkit-scrollbar { display: none; }
+
 @media (max-width: 767px) {
   .dock-cta .cta-primary { white-space: nowrap; }
   .cs-back-fixed { display: none !important; }
   .cs-back-mobile { display: inline-flex !important; }
-  .tip-flow-grid { grid-template-columns: 1fr !important; }
+  .tip-flow-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
   .tip-annotations { display: none !important; }
+  .tip-mobile-hint { display: block !important; }
+  .tip-step-pills { display: flex !important; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
 }
 
 /* ── Dotted page background ── */

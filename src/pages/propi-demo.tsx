@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, useMotionValue, useTransform, useReducedMotion, AnimatePresence, useAnimationControls } from 'framer-motion'
-import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   BackArrowIcon, ReceiptIcon, ComprobanteIcon, MoneyIcon,
   RewardsGemIcon, DiamondTrio,
@@ -113,10 +112,12 @@ export default function PropiDemo() {
   // Sheet controlled imperatively so re-open can animate from SHEET_H → 0
   // without conflicting with a style motion value that's already at 0.
   const sheetControls = useAnimationControls()
+  const [sheetOpen, setSheetOpen] = useState(false)
   useEffect(() => {
     return playhead.on('change', (t) => {
       const rawY = SHEET_H * (1 - easeOut(Math.max(0, Math.min(1, (t - 1.55) / (2.05 - 1.55)))))
       sheetControls.set({ y: rawY })
+      if (t > 1.5) setSheetOpen(true)
     })
   }, [])
 
@@ -272,6 +273,65 @@ export default function PropiDemo() {
   }
 
   const isEmbed = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('embed')
+
+  // Emit current step to parent page so the annotation list can sync
+  useEffect(() => {
+    if (!isEmbed) return
+    let step: number
+    if (showSuccess) step = 3
+    else if (showAmount || showConfirm) step = 2
+    else if (showInput || showVerify) step = 1
+    else if (sheetOpen && !dismissed) step = 0
+    else return
+    window.parent.postMessage({ type: 'propi-step', step }, '*')
+  }, [showInput, showVerify, showAmount, showConfirm, showSuccess, sheetOpen, dismissed, isEmbed])
+
+  // Jump to a specific step when the parent list row is clicked
+  const jumpToStep = useCallback((step: number) => {
+    stopRAF()
+    setIsPlaying(false)
+    playhead.set(TOTAL)
+    setIsDone(true)
+    setDismissed(false)
+    setShowLoading(false)
+    setShowInput(false)
+    setShowVerify(false)
+    setShowAmount(false)
+    setShowConfirm(false)
+    setShowSuccess(false)
+    setShowNotif(false)
+    setSliderDone(false)
+    setKeyboardDown(false)
+    setAmountText('')
+    sheetControls.set({ y: 0 })
+
+    if (step === 1) {
+      setTypedText('')
+      setActiveKey(null)
+      setShowInput(true)
+    } else if (step === 2) {
+      setTypedText('Cris.propina')
+      setAmountText('')
+      setShowAmount(true)
+    } else if (step === 3) {
+      setTypedText('Cris.propina')
+      setAmountText('1500')
+      setSliderDone(true)
+      setShowSuccess(true)
+    }
+    // step 0: sheet open, no sub-screen
+  }, [playhead, sheetControls])
+
+  useEffect(() => {
+    if (!isEmbed) return
+    const handler = (e: MessageEvent) => {
+      if (e.data?.type === 'propi-jump' && typeof e.data.step === 'number') {
+        jumpToStep(e.data.step)
+      }
+    }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
+  }, [jumpToStep, isEmbed])
 
   return (
     <div style={{
