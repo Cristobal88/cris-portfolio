@@ -275,21 +275,55 @@ export default function CaseStudy() {
 
           {wideVisuals.length > 0 && (
             <div style={{ marginTop: 80, display: 'flex', flexDirection: 'column', gap: 56 }}>
-              {wideVisuals.map((visual, i) => (
-                <div key={i}>
-                  <div style={{ maxWidth: 680, marginBottom: 32 }}>
-                    {visual.title && (
-                      <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 14, lineHeight: 1.25 }}>
-                        {visual.title}
-                      </h3>
-                    )}
-                    <p style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: 0 }}>{visual.caption}</p>
+              {wideVisuals.map((visual, i) => {
+                // Interactive demo: replace "The tip flow" image with the PropiDemo iframe
+                if (visual.title === 'The tip flow') {
+                  return (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 48, alignItems: 'start' }}>
+                      {/* Phone demo — left column */}
+                      <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <div style={{
+                          width: 390, height: 844,
+                          borderRadius: 50, overflow: 'hidden',
+                          boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)',
+                          flexShrink: 0,
+                        }}>
+                          <iframe
+                            src="/demo/propi?embed"
+                            width={390}
+                            height={844}
+                            style={{ border: 'none', display: 'block' }}
+                            title="Tipping flow interactive demo"
+                          />
+                        </div>
+                      </div>
+                      {/* Text — right column */}
+                      <div style={{ paddingTop: 8 }}>
+                        <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 16, lineHeight: 1.25 }}>
+                          {visual.title}
+                        </h3>
+                        <p style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: 0 }}>{visual.caption}</p>
+                      </div>
+                    </div>
+                  )
+                }
+
+                return (
+                  <div key={i}>
+                    <div style={{ maxWidth: 680, marginBottom: 32 }}>
+                      {visual.title && (
+                        <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 14, lineHeight: 1.25 }}>
+                          {visual.title}
+                        </h3>
+                      )}
+                      <p style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: 0 }}>{visual.caption}</p>
+                    </div>
+                    <div style={{ borderRadius: 16, overflow: 'hidden', border: `1px solid ${BORDER}`, background: SURFACE, aspectRatio: '21/9' }}>
+                      <img src={visual.image} alt={visual.title ?? visual.caption ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    </div>
                   </div>
-                  <div style={{ borderRadius: 16, overflow: 'hidden', border: `1px solid ${BORDER}`, background: SURFACE, aspectRatio: '21/9' }}>
-                    <img src={visual.image} alt={visual.title ?? visual.caption ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>

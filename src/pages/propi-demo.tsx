@@ -271,14 +271,16 @@ export default function PropiDemo() {
     sheetControls.start({ y: 0, transition: { duration: 0.5, ease: [0.215, 0.61, 0.355, 1] } })
   }
 
+  const isEmbed = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('embed')
+
   return (
     <div style={{
-      minHeight: '100vh',
-      background: '#0a0a0a',
+      minHeight: isEmbed ? 'unset' : '100vh',
+      background: isEmbed ? 'transparent' : '#0a0a0a',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '40px 16px',
+      padding: isEmbed ? '0' : '40px 16px',
       fontFamily: "'Red Hat Display', sans-serif",
     }}>
       {/* ── Phone shell ── */}
