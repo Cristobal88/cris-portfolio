@@ -3,6 +3,11 @@ import React from 'react'
 interface BankLogoProps {
   bank: 'galicia' | 'santafe'
   size?: number
+  /** appIcon: renders as a rounded-square iOS app icon instead of a circle avatar.
+   *  Technique: replace the circular outer subpath with a full-square rect (M0 0H26V26H0Z)
+   *  and use fill-rule="evenodd" so the compass arm subpaths punch white holes through the
+   *  solid brand-colour fill. Container background stays white; brand colour fills the square. */
+  appIcon?: boolean
 }
 
 function GaliciaCircle({ size = 36 }: { size?: number }) {
@@ -34,7 +39,30 @@ function SantaFeCircle({ size = 36 }: { size?: number }) {
   )
 }
 
-export default function BankLogo({ bank, size = 36 }: BankLogoProps) {
+// ── App icon variant ────────────────────────────────────────────────────────
+// Square outer path + evenodd rule = brand colour fills the full rounded square,
+// compass/logo subpaths punch white holes through it. White container bg provides
+// the hole colour. Use for iOS notification banners, app icon contexts, etc.
+function GaliciaAppIcon({ size = 40 }: { size?: number }) {
+  const r = Math.round(size * 0.25) // borderRadius scales with size (10px at 40px)
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: r,
+      overflow: 'hidden', flexShrink: 0, background: 'white',
+    }}>
+      <svg width={size} height={size} viewBox="0 0 26 26" fill="none">
+        <path
+          fillRule="evenodd"
+          fill="#FA6400"
+          d="M0 0H26V26H0ZM15.6644 8.97832C15.2016 9.1131 14.4347 9.26175 13.2692 9.28238C13.2928 8.17641 13.4505 7.44609 13.5912 7.00918C13.7016 6.66707 13.8005 6.50198 13.8187 6.47458C13.8187 6.03767 13.4528 5.6875 13.0015 5.6875C12.5499 5.6875 12.1837 6.03767 12.1837 6.46909C12.2073 6.51456 12.3035 6.67868 12.4108 7.00854C12.5512 7.44448 12.7082 8.17319 12.7315 9.28174C11.5636 9.26013 10.7943 9.10988 10.3316 8.9751C9.9346 8.85773 9.76347 8.75326 9.76347 8.75326C9.30576 8.75197 8.9375 9.10407 8.9375 9.53808C8.9375 9.97176 9.30576 10.3232 9.75976 10.3232C9.76347 10.3229 9.93393 10.2162 10.3339 10.1004C10.794 9.96531 11.5582 9.81602 12.719 9.79474C12.6579 11.0178 12.4314 11.7216 12.2913 12.0467C12.2046 12.2404 11.9973 12.6148 11.6635 12.708L13.0042 21.9375L14.3365 12.7093C14.0017 12.6145 13.7941 12.2379 13.7073 12.0431C13.5507 11.6707 13.3384 10.9762 13.2813 9.79506C14.4395 9.81667 15.2053 9.96628 15.6671 10.1014C16.0627 10.2155 16.2355 10.3197 16.2399 10.3223C16.6946 10.3232 17.0625 9.97176 17.0625 9.53808C17.0625 9.10407 16.6946 8.75197 16.2402 8.75197C16.2348 8.75713 16.0627 8.8616 15.6644 8.97832Z"
+        />
+      </svg>
+    </div>
+  )
+}
+
+export default function BankLogo({ bank, size = 36, appIcon = false }: BankLogoProps) {
+  if (appIcon) return <GaliciaAppIcon size={size} />
   if (bank === 'galicia') return <GaliciaCircle size={size} />
   return <SantaFeCircle size={size} />
 }

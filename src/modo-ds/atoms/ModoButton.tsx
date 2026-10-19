@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { COLOR, FONT, RADIUS } from '../tokens'
 
 interface ModoButtonProps {
@@ -20,6 +20,8 @@ export default function ModoButton({
   disabled = false,
   style,
 }: ModoButtonProps) {
+  const [pressed, setPressed] = useState(false)
+
   const base: React.CSSProperties = {
     border: 'none',
     cursor: disabled ? 'default' : 'pointer',
@@ -31,33 +33,45 @@ export default function ModoButton({
     justifyContent: 'center',
     gap: 8,
     width,
+    WebkitTapHighlightColor: 'transparent',
   }
 
   const variants: Record<string, React.CSSProperties> = {
     primary: {
       height: 56,
       borderRadius: RADIUS.button,
-      background: disabled ? 'rgba(18,18,18,0.05)' : COLOR.green,
+      background: disabled ? 'rgba(18,18,18,0.05)' : pressed ? '#00471b' : COLOR.green,
       color: disabled ? '#717171' : '#fff',
-      transition: 'background 0.25s ease, color 0.25s ease',
+      transition: pressed ? 'none' : 'background 0.2s ease',
     },
     ghost: {
       height: 40,
-      background: 'transparent',
+      background: pressed ? 'rgba(255,255,255,0.1)' : 'transparent',
       color: '#fff',
+      transition: pressed ? 'none' : 'background 0.2s ease',
     },
     overlay: {
       height: 44,
       borderRadius: RADIUS.button,
-      background: COLOR.overlay,
+      background: pressed ? 'rgba(255,255,255,0.28)' : COLOR.overlay,
       color: '#fff',
+      transition: pressed ? 'none' : 'background 0.2s ease',
     },
+  }
+
+  const pressHandlers = disabled ? {} : {
+    onMouseDown:  () => setPressed(true),
+    onMouseUp:    () => setPressed(false),
+    onMouseLeave: () => setPressed(false),
+    onTouchStart: () => setPressed(true),
+    onTouchEnd:   () => setPressed(false),
   }
 
   return (
     <button
       onClick={disabled ? undefined : onClick}
       style={{ ...base, ...variants[variant], ...style }}
+      {...pressHandlers}
     >
       {icon && icon}
       {children}
