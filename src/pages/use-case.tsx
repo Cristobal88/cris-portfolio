@@ -56,6 +56,7 @@ function ScaledPhone({ src }: { src: string }) {
       <div style={{
         width: Math.round(PHONE_W * scale),
         height: Math.round(PHONE_H * scale),
+        margin: '0 auto',
         overflow: 'hidden',
         borderRadius: Math.round(50 * scale),
         boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)',
