@@ -330,19 +330,72 @@ export default function CaseStudy() {
           {wideVisuals.length > 0 && (
             <div style={{ marginTop: 80, display: 'flex', flexDirection: 'column', gap: 56 }}>
               {wideVisuals.map((visual, i) => {
-                // Interactive demo: replace "The tip flow" image with the PropiDemo iframe
+                // Interactive demo: replace "The tip flow" image with annotated demo layout
                 if (visual.title === 'The tip flow') {
+                  const annotations = [
+                    {
+                      stage: 'Entry',
+                      screen: 'Success screen + bottom sheet',
+                      left: 'Waiters lost tips when Argentina went cashless. This is where Propina enters — no new app, no new screen.',
+                      right: null,
+                    },
+                    {
+                      stage: '20%',
+                      screen: 'Sheet opens, Propina CTA',
+                      left: 'One tap to start. The flow lives inside the existing payment confirmation — zero friction for the payer.',
+                      right: "Built on MODO's open rail — works across 30+ banks out of the box.",
+                    },
+                    {
+                      stage: '40%',
+                      screen: 'CBU alias input',
+                      left: 'Alias over CBU — the format every Argentine already uses for transfers. Familiar = trusted.',
+                      right: 'Saved after first use. Repeat payers skip this step entirely.',
+                    },
+                    {
+                      stage: '60%',
+                      screen: 'Amount keypad',
+                      left: 'Suggested amounts are anchored to the purchase total — no mental math, no awkward negotiation.',
+                      right: null,
+                    },
+                    {
+                      stage: '80%',
+                      screen: 'Green success + receipt',
+                      left: 'Payer gets instant confirmation. No ambiguity about whether the transfer went through.',
+                      right: 'Worker is notified in real time — both sides close the loop.',
+                    },
+                    {
+                      stage: '100%',
+                      screen: 'Blue success + notification',
+                      left: '15K tips processed. 16% of payers who saw the prompt tipped — within the first 30 days.',
+                      right: null,
+                    },
+                  ]
                   return (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 48, alignItems: 'start' }}>
-                      {/* Phone demo — left column */}
-                      <ScaledPhone src="/demo/propi?embed" />
-                      {/* Text — right column */}
-                      <div style={{ paddingTop: 8 }}>
-                        <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 16, lineHeight: 1.25 }}>
+                    <div key={i} className="tip-flow-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'start' }}>
+                      {/* Left: title + caption + annotation list (desktop only) */}
+                      <div className="tip-annotations">
+                        <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 12, lineHeight: 1.25 }}>
                           {visual.title}
                         </h3>
-                        <p style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: 0 }}>{visual.caption}</p>
+                        <p style={{ fontSize: '1rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: '0 0 28px' }}>{visual.caption}</p>
+                        <div style={{ borderTop: `1px solid ${BORDER}` }}>
+                          {annotations.map((ann, ai) => (
+                            <div key={ai} style={{ padding: '14px 0', borderBottom: `1px solid ${BORDER}` }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                                <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.07em', color: T4, textTransform: 'uppercase' as const }}>{ann.stage}</span>
+                                <ArrowRight size={12} color={T4} />
+                              </div>
+                              <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: T1, margin: '0 0 4px', lineHeight: 1.4 }}>{ann.screen}</p>
+                              <p style={{ fontSize: '0.8125rem', color: T2, margin: 0, lineHeight: 1.6 }}>{ann.left}</p>
+                              {ann.right && (
+                                <p style={{ fontSize: '0.75rem', color: T3, margin: '6px 0 0', lineHeight: 1.5, paddingLeft: 10, borderLeft: `2px solid ${BORDER}` }}>{ann.right}</p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
+                      {/* Right: phone demo */}
+                      <ScaledPhone src="/demo/propi?embed" />
                     </div>
                   )
                 }

@@ -146,6 +146,8 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
   .dock-cta .cta-primary { white-space: nowrap; }
   .cs-back-fixed { display: none !important; }
   .cs-back-mobile { display: inline-flex !important; }
+  .tip-flow-grid { grid-template-columns: 1fr !important; }
+  .tip-annotations { display: none !important; }
 }
 
 /* ── Dotted page background ── */
