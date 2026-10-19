@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useCaseStudy } from '@/hooks/useCaseStudy'
 import { useThemeColor } from '@/lib/useThemeColor'
@@ -20,6 +20,48 @@ const T4 = 'rgba(255,255,255,0.40)'
 const PAGE_TITLES: Record<string, string> = {
   'fintech-tipping-flow': 'Digital Tipping — Cristobal Lemoine',
   'loyalty-club-payments': 'Loyalty Platform — Cristobal Lemoine',
+}
+
+// Scales an iframe to fill its column at any viewport width.
+// The outer div collapses to the scaled dimensions so no extra space is left.
+function ScaledPhone({ src }: { src: string }) {
+  const outerRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1)
+
+  useLayoutEffect(() => {
+    const el = outerRef.current
+    if (!el) return
+    const measure = () => {
+      const w = el.getBoundingClientRect().width
+      if (w > 0) setScale(Math.min(1, w / 390))
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  return (
+    <div ref={outerRef} style={{ width: '100%', maxWidth: 390 }}>
+      <div style={{
+        width: Math.round(390 * scale),
+        height: Math.round(844 * scale),
+        overflow: 'hidden',
+        borderRadius: Math.round(50 * scale),
+        boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)',
+      }}>
+        <div style={{ width: 390, height: 844, transformOrigin: 'top left', transform: `scale(${scale})` }}>
+          <iframe
+            src={src}
+            width={390}
+            height={844}
+            style={{ border: 'none', display: 'block' }}
+            title="Tipping flow interactive demo"
+          />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function CaseStudy() {
@@ -281,22 +323,7 @@ export default function CaseStudy() {
                   return (
                     <div key={i} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 48, alignItems: 'start' }}>
                       {/* Phone demo — left column */}
-                      <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <div style={{
-                          width: 390, height: 844,
-                          borderRadius: 50, overflow: 'hidden',
-                          boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)',
-                          flexShrink: 0,
-                        }}>
-                          <iframe
-                            src="/demo/propi?embed"
-                            width={390}
-                            height={844}
-                            style={{ border: 'none', display: 'block' }}
-                            title="Tipping flow interactive demo"
-                          />
-                        </div>
-                      </div>
+                      <ScaledPhone src="/demo/propi?embed" />
                       {/* Text — right column */}
                       <div style={{ paddingTop: 8 }}>
                         <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 16, lineHeight: 1.25 }}>
