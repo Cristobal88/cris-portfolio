@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { AppDock } from '@/components/blocks/app-dock'
-import { PersonalFooter } from '@/components/blocks/personal-footer'
 import { useCaseStudies } from '@/hooks/useCaseStudies'
 import { chime } from '@/lib/chime'
 import { useThemeColor } from '@/lib/useThemeColor'
@@ -283,7 +282,48 @@ const PERSONAL_IMAGES = [
   { src: 'https://hpnfqxxapukjtaoewckv.supabase.co/storage/v1/object/public/cris-bio/Personal%20Cris%203.webp', alt: 'Personal photo 3' },
 ]
 
+const WMO_DESC: Record<number, string> = {
+  0: 'clear', 1: 'mainly clear', 2: 'partly cloudy', 3: 'overcast',
+  45: 'foggy', 48: 'foggy',
+  51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle',
+  61: 'light rain', 63: 'rain', 65: 'heavy rain',
+  71: 'light snow', 73: 'snow', 75: 'heavy snow',
+  80: 'showers', 81: 'showers', 82: 'heavy showers',
+  95: 'thunderstorm', 96: 'thunderstorm', 99: 'thunderstorm',
+}
+
+function getBATime(): string {
+  return new Date().toLocaleTimeString('en-US', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).toLowerCase()
+}
+
 function PersonalSection() {
+  const [time, setTime] = useState(getBATime)
+  const [weather, setWeather] = useState<string | null>(null)
+
+  useEffect(() => {
+    const id = setInterval(() => setTime(getBATime()), 15_000)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    fetch(
+      'https://api.open-meteo.com/v1/forecast?latitude=-34.6037&longitude=-58.3816&current=temperature_2m,weather_code&forecast_days=1'
+    )
+      .then(r => r.json())
+      .then(data => {
+        const c = Math.round(data.current.temperature_2m)
+        const f = Math.round(c * 9 / 5 + 32)
+        const desc = WMO_DESC[data.current.weather_code as number] ?? 'cloudy'
+        setWeather(`${c}°c / ${f}°f ${desc}`)
+      })
+      .catch(() => {})
+  }, [])
+
   return (
     <div>
       <SectionLabel>Personal</SectionLabel>
@@ -316,6 +356,12 @@ function PersonalSection() {
           </div>
         ))}
       </div>
+      <p style={{ marginTop: 16, fontSize: '0.75rem', color: 'rgba(0,0,0,0.30)', lineHeight: 1.5 }}>
+        designed in buenos aires, argentina
+        {(time || weather) && (
+          <> &nbsp;·&nbsp; {time}{weather ? ` · ${weather}` : ''}</>
+        )}
+      </p>
     </div>
   )
 }
@@ -613,7 +659,7 @@ export default function Home() {
 
             {/* Name */}
             <div style={{ margin: '0 0 32px' }}>
-              <h1 style={{ fontSize: '1.125rem', fontWeight: 400, fontStyle: 'italic', fontFamily: 'Instrument Serif, serif', color: '#0d0d0d', lineHeight: 1.3, margin: 0 }}>
+              <h1 style={{ fontSize: '0.875rem', fontWeight: 400, fontFamily: 'Barlow, sans-serif', color: '#0d0d0d', lineHeight: 1.3, margin: 0 }}>
                 Cristobal Lemoine
               </h1>
               <p style={{ fontSize: '0.875rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
@@ -628,6 +674,9 @@ export default function Home() {
               </p>
               <p className="bio-desktop-only" style={{ ...pStyle, margin: '12px 0 0', fontSize: '0.875rem' }}>
                 Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link">uxbs</a>, a YouTube channel and lab about product design and what happens when designers start building. I'm in this because design is one of the few tools that can genuinely change how people experience the world.
+              </p>
+              <p className="bio-desktop-only" style={{ ...pStyle, margin: '12px 0 0', fontSize: '0.875rem' }}>
+                If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link">let's talk</a>.
               </p>
             </div>
 
@@ -652,7 +701,6 @@ export default function Home() {
         </div>
       </main>
 
-      <PersonalFooter />
 
       {/* Floating email hint — bottom right (desktop/keyboard only) */}
       <div className="email-hint" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
