@@ -623,8 +623,11 @@ export default function Home() {
 
             {/* Bio */}
             <div style={{ marginBottom: 0 }}>
-              <p style={{ ...pStyle, margin: 0 }}>
-                9 years, 6M+ daily users, across fintech, AI and IoT. I'm drawn to products that are part of larger ecosystems: platforms that connect banks, partners, and end users; tools where design decisions ripple far beyond a single screen.<span className="bio-desktop-only"> I work end-to-end, from discovery through delivery, and stay in until the outcome shows up in the numbers. Underneath all of it is a simple drive: to leave a real dent in the world.</span>
+              <p style={{ ...pStyle, margin: 0, fontSize: '0.875rem' }}>
+                Based in Buenos Aires. Currently at EY, previously at MODO, HeySam and Drixit. 9 years across fintech, AI and IoT, working with products that reach 6M+ people.
+              </p>
+              <p className="bio-desktop-only" style={{ ...pStyle, margin: '12px 0 0', fontSize: '0.875rem' }}>
+                Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link">uxbs</a>, a YouTube channel and lab about product design and what happens when designers start building. I'm in this because design is one of the few tools that can genuinely change how people experience the world.
               </p>
             </div>
 

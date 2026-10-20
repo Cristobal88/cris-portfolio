@@ -198,6 +198,9 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
   .gradient-blur-bottom { display: block; }
 }
 
+.uxbs-link { color: inherit; text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s ease; }
+.uxbs-link:hover { color: var(--brand-blue); }
+
 @media (hover: none), (max-width: 640px) {
   .email-hint { display: none; }
 }
