@@ -494,12 +494,12 @@ function GitHubActivitySection() {
 // ─── Stack ────────────────────────────────────────────────────────────────────
 
 const STACK_AVATARS = [
-  { src: 'https://cdn.simpleicons.org/figma/ffffff',         alt: 'Figma',    label: 'Figma',    bg: '#000000' },
-  { src: 'https://cdn.simpleicons.org/visualstudiocode',     alt: 'VS Code',  label: 'VS Code',  bg: '#007ACC' },
-  { src: 'https://cdn.simpleicons.org/anthropic/ffffff',     alt: 'Claude',   label: 'Claude',   bg: '#C96B49' },
-  { src: 'https://cdn.simpleicons.org/vercel/ffffff',        alt: 'V0',       label: 'V0',       bg: '#000000' },
-  { src: 'https://cdn.simpleicons.org/supabase/3ECF8E',      alt: 'Supabase', label: 'Supabase', bg: '#1C1C1E' },
-  { src: 'https://cdn.simpleicons.org/github/ffffff',        alt: 'GitHub',   label: 'GitHub',   bg: '#181717', href: 'https://github.com/Cristobal88' },
+  { src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg',   alt: 'Figma',    label: 'Figma',    bg: '#f5f5f5' },
+  { src: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg', alt: 'VS Code',  label: 'VS Code',  bg: '#f5f5f5' },
+  { src: 'https://cdn.simpleicons.org/anthropic/ffffff',                                          alt: 'Claude',   label: 'Claude',   bg: '#C96B49' },
+  { src: 'https://cdn.simpleicons.org/vercel/ffffff',                                             alt: 'V0',       label: 'V0',       bg: '#000000' },
+  { src: 'https://cdn.simpleicons.org/supabase/3ECF8E',                                          alt: 'Supabase', label: 'Supabase', bg: '#1C1C1E' },
+  { src: 'https://cdn.simpleicons.org/github/ffffff',                                             alt: 'GitHub',   label: 'GitHub',   bg: '#181717', href: 'https://github.com/Cristobal88' },
 ]
 
 function StackSection() {
