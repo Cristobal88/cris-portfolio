@@ -142,6 +142,13 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 @media (min-width: 768px) {
   .app-dock { top: 28px; bottom: auto; }
 }
+/* ── Case study TOC: hidden below 1600px, shown on wide desktops only ── */
+.cs-toc { display: none !important; }
+.cs-toc::-webkit-scrollbar { display: none; }
+@media (min-width: 1600px) {
+  .cs-toc { display: block !important; }
+}
+
 /* tip-mobile-hint and tip-step-pills hidden by default (desktop) */
 .tip-mobile-hint { display: none; }
 .tip-step-pills { display: none; }

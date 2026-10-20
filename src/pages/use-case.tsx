@@ -6,6 +6,7 @@ import { useThemeColor } from '@/lib/useThemeColor'
 import { AppDock } from '@/components/blocks/app-dock'
 import { PersonalCta } from '@/components/blocks/personal-cta'
 import { PersonalFooter } from '@/components/blocks/personal-footer'
+import { CaseStudyTOC } from '@/components/blocks/case-study-toc'
 import { AnimatedNumber } from '@/components/ui/animated-number'
 
 const BLUE    = '#0044d4'
@@ -247,11 +248,19 @@ export default function CaseStudy() {
   const altVisuals  = project.workVisuals.slice(0, 2)
   const wideVisuals = project.workVisuals.slice(2)
 
+  const tocItems = [
+    { id: 'cs-problem',  label: 'The problem' },
+    { id: 'cs-work',     label: 'Process'     },
+    { id: 'cs-live-demo', label: 'Live demo', scrollBlock: 'center' as ScrollLogicalPosition },
+    { id: 'cs-results',  label: 'Results'     },
+  ]
+
   return (
     <div style={{ background: '#050505', color: T1, fontFamily: 'Barlow, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
       <div className="gradient-blur" />
       <div className="gradient-blur-bottom" />
       <AppDock variant="dark" />
+      <CaseStudyTOC items={tocItems} />
 
       {/* ── Back link — fixed, desktop only, aligned with dock ── */}
       <div
@@ -356,7 +365,7 @@ export default function CaseStudy() {
       )}
 
       {/* ── The Problem ── */}
-      <section className="cs-section" style={{ background: '#080808', borderTop: `1px solid rgba(255,255,255,0.05)` }}>
+      <section id="cs-problem" className="cs-section" style={{ background: '#080808', borderTop: `1px solid rgba(255,255,255,0.05)` }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
           {project.problemHeadline ? (
             <>
@@ -412,7 +421,7 @@ export default function CaseStudy() {
       </section>
 
       {/* ── The Work ── */}
-      <section className="cs-section" style={{ background: '#080808', borderTop: `1px solid rgba(255,255,255,0.05)` }}>
+      <section id="cs-work" className="cs-section" style={{ background: '#080808', borderTop: `1px solid rgba(255,255,255,0.05)` }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 64 }}>
             <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, margin: 0 }}>
@@ -472,7 +481,9 @@ export default function CaseStudy() {
                     },
                   ]
                   return (
-                    <TipFlowSection key={i} visual={visual} annotations={annotations} />
+                    <div key={i} id="cs-live-demo">
+                      <TipFlowSection visual={visual} annotations={annotations} />
+                    </div>
                   )
                 }
 
@@ -498,7 +509,7 @@ export default function CaseStudy() {
       </section>
 
       {/* ── Key Decisions ── */}
-      <section className="cs-section" style={{ borderTop: `1px solid rgba(255,255,255,0.05)` }}>
+      <section id="cs-decisions" className="cs-section" style={{ borderTop: `1px solid rgba(255,255,255,0.05)` }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
           <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 48 }}>
             {project.decisionTitle ?? 'The decision'}
@@ -520,7 +531,7 @@ export default function CaseStudy() {
       </section>
 
       {/* ── Results ── */}
-      <section className="cs-section" style={{ background: '#080808', borderTop: `1px solid rgba(255,255,255,0.05)` }}>
+      <section id="cs-results" className="cs-section" style={{ background: '#080808', borderTop: `1px solid rgba(255,255,255,0.05)` }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
           <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 48 }}>
             {project.proofTitle ?? 'The proof'}
