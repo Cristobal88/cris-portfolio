@@ -611,6 +611,9 @@ export default function Home() {
             </div>
 
             <Divider />
+            <ExperienceSection />
+
+            <Divider />
             <GitHubActivitySection />
 
             <Divider />
