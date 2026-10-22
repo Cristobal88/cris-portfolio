@@ -99,7 +99,7 @@ export function PersonalFooter() {
         gap: 16,
       }}>
         <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8125rem' }}>
-          © 2026 Cristobal Lemoine
+          © 2025 — 2026 Cristobal Lemoine
         </span>
         <div style={{ display: 'flex', gap: 24 }}>
           <a
