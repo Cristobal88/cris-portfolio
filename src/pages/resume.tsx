@@ -283,7 +283,7 @@ export default function Resume() {
               <div className="resume-header-inner" style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
                 {/* Name + title + location + links */}
                 <div>
-                  <h1 style={{ fontSize: '1.125rem', fontWeight: 400, fontStyle: 'italic', fontFamily: 'Instrument Serif, serif', color: '#0d0d0d', lineHeight: 1.3, margin: 0 }}>
+                  <h1 style={{ fontSize: '0.875rem', fontWeight: 400, fontFamily: 'Barlow, sans-serif', color: '#0d0d0d', lineHeight: 1.3, margin: 0 }}>
                     Cristobal Lemoine
                   </h1>
                   <p style={{ fontSize: '0.875rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: '2px 0 10px' }}>
