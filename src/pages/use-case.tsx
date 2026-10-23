@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useParams } from 'react-router-dom'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useCaseStudy } from '@/hooks/useCaseStudy'
@@ -28,7 +29,7 @@ const PAGE_TITLES: Record<string, string> = {
 // 120px is reserved for the fixed dock/back link + breathing room at top/bottom.
 const PHONE_W = 390
 const PHONE_H = 844
-const PHONE_CHROME_RESERVE = 120
+const PHONE_CHROME_RESERVE = 200 // includes ~88px dock clearance at bottom
 
 function ScaledPhone({ src, iframeRef }: { src: string; iframeRef?: React.RefObject<HTMLIFrameElement> }) {
   const outerRef = useRef<HTMLDivElement>(null)
@@ -84,112 +85,282 @@ function ScaledPhone({ src, iframeRef }: { src: string; iframeRef?: React.RefObj
 type Annotation = { screen: string; left: string; right: string | null }
 type TipFlowVisual = { title?: string | null; caption?: string | null; image?: string | null }
 
-function TipFlowSection({ visual, annotations }: { visual: TipFlowVisual; annotations: Annotation[] }) {
-  const [activeStep, setActiveStep] = useState<number | null>(null)
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
+// ── Scroll-driven showcase (Glossar-style) ─────────────────────────────────
+// Scroll is the single source of truth.
+// Each step gets VH_PER_STEP of scroll travel so advancing is deliberate.
+// Left words progressively bold (L→R) during first LEFT_PHASE of step progress.
+// Right annotation fades in after all left words are bold.
+// A vertical line on the left tracks total progress.
+// On mobile: pill nav fallback.
 
+const STEP_LABELS = ['Start', 'Enter alias', 'Pick amount', 'Send']
+const VH_PER_STEP = 300
+// First 65% of step travel: words bold L→R. Last 35%: right annotation fades in.
+const LEFT_PHASE = 0.65
+
+// Renders text as progressively-bolding words (Glossar-style).
+// progress 0 = all normal weight, progress 1 = all bold.
+function WordByWord({ text, progress }: { text: string; progress: number }) {
+  const words = text.split(' ')
+  const n = words.length
+  return (
+    <>
+      {words.map((word, i) => {
+        // Word i snaps to bold once progress crosses its threshold
+        const isBold = progress >= (i + 1) / n
+        return (
+          <React.Fragment key={i}>
+            <span style={{ fontWeight: isBold ? 700 : 300 }}>{word}</span>
+            {i < n - 1 ? ' ' : ''}
+          </React.Fragment>
+        )
+      })}
+    </>
+  )
+}
+
+function TipFlowSection({ annotations }: { visual?: TipFlowVisual; annotations: Annotation[] }) {
+  const containerRef   = useRef<HTMLDivElement>(null)
+  const iframeRef      = useRef<HTMLIFrameElement>(null)
+  const [rawProgress, setRawProgress] = useState(0) // 0–1 across entire section
+  const [mobileStep,  setMobileStep]  = useState(0)
+  const [isMobile,    setIsMobile]    = useState(false)
+  const [isTablet,    setIsTablet]    = useState(false)
+  const [demoStep,    setDemoStep]    = useState(0) // tracks iframe screen
+
+  const steps = annotations.length
+
+  useEffect(() => {
+    const w = window.innerWidth
+    setIsMobile(w < 768)
+    setIsTablet(w >= 768 && w < 1024)
+  }, [])
+
+  // Scroll → rawProgress (desktop)
+  useEffect(() => {
+    if (isMobile) return
+    const onScroll = () => {
+      const el = containerRef.current
+      if (!el) return
+      const { top, height } = el.getBoundingClientRect()
+      const vh = window.innerHeight
+      const travel = height - vh
+      if (travel <= 0) return
+      setRawProgress(Math.max(0, Math.min(1, -top / travel)))
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [isMobile])
+
+  // Derive step index from rawProgress
+  const scrollStep = Math.min(steps - 1, Math.floor(rawProgress * steps))
+  // Progress within current step (0–1)
+  const stepProgress = (rawProgress * steps) - scrollStep
+
+  // Push to iframe on step change (desktop)
+  useEffect(() => {
+    if (isMobile) return
+    iframeRef.current?.contentWindow?.postMessage({ type: 'propi-jump', step: scrollStep }, '*')
+  }, [scrollStep, isMobile])
+
+  // Scroll-controlled signals for last step transitions (desktop only)
+  const sliderFiredRef  = useRef(false)
+  const completeFiredRef = useRef(false)
+  useEffect(() => {
+    sliderFiredRef.current  = false
+    completeFiredRef.current = false
+  }, [scrollStep])
+  useEffect(() => {
+    if (isMobile || scrollStep !== steps - 1) return
+    if (!sliderFiredRef.current && stepProgress >= 0.20) {
+      sliderFiredRef.current = true
+      iframeRef.current?.contentWindow?.postMessage({ type: 'propi-slider-go' }, '*')
+    }
+    if (!completeFiredRef.current && stepProgress >= 0.65) {
+      completeFiredRef.current = true
+      iframeRef.current?.contentWindow?.postMessage({ type: 'propi-complete' }, '*')
+    }
+  }, [stepProgress, scrollStep, steps, isMobile])
+
+  // Mobile: pills push to iframe
+  useEffect(() => {
+    if (!isMobile) return
+    iframeRef.current?.contentWindow?.postMessage({ type: 'propi-jump', step: mobileStep }, '*')
+  }, [mobileStep, isMobile])
+
+  // Always track the iframe's current screen so annotations stay in sync
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if (e.data?.type === 'propi-step' && typeof e.data.step === 'number') {
-        setActiveStep(e.data.step)
+        setDemoStep(e.data.step)
+        if (isMobile) setMobileStep(e.data.step)
       }
     }
     window.addEventListener('message', handler)
     return () => window.removeEventListener('message', handler)
-  }, [])
+  }, [isMobile])
 
-  const jumpToStep = (step: number) => {
-    iframeRef.current?.contentWindow?.postMessage({ type: 'propi-jump', step }, '*')
+  // ── Mobile ─────────────────────────────────────────────────────────────────
+  if (isMobile) {
+    return (
+      <div style={{ padding: '64px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+        <h3 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 500, letterSpacing: '-0.03em', color: T1, margin: '0 0 10px', lineHeight: 1.25 }}>
+          Try it yourself
+        </h3>
+        <p style={{ fontSize: '1rem', lineHeight: 1.75, color: T2, margin: '0 0 28px' }}>
+          Tap through the flow below.
+        </p>
+        <ScaledPhone src="/demo/propi?embed" iframeRef={iframeRef} />
+      </div>
+    )
   }
 
-  return (
-    <div className="tip-flow-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
-      {/* Left: title always visible; rows desktop-only */}
-      <div>
-        <h3 style={{ fontSize: 'clamp(20px, 2vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 12, lineHeight: 1.25 }}>
-          Try the feature
-        </h3>
-        {/* Mobile-only hint — hidden on desktop via CSS */}
-        <p className="tip-mobile-hint" style={{ fontSize: '1rem', lineHeight: 1.75, color: T2, margin: '0 0 16px' }}>
-          This is a fully interactive demo. Tap through the flow below.
-        </p>
-        {/* Mobile-only step pills — hidden on desktop via CSS */}
-        <div className="tip-step-pills">
-          {(['Start', 'Add alias', 'Add amount', 'Send'] as const).map((label, step) => {
-            const isActive = activeStep === step
-            return (
-              <button
-                key={step}
-                onClick={() => jumpToStep(step)}
-                style={{
-                  flexShrink: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '8px 16px',
-                  borderRadius: 100,
-                  border: `1px solid ${isActive ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.10)'}`,
-                  background: isActive ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.05)',
-                  color: isActive ? T1 : T3,
-                  fontSize: '0.875rem',
-                  fontWeight: isActive ? 600 : 500,
-                  fontFamily: 'Barlow, sans-serif',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'background 0.18s ease, border-color 0.18s ease, color 0.18s ease',
-                }}
-              >
-                {label}
-              </button>
-            )
-          })}
-        </div>
-        {/* Annotation rows — desktop only */}
-        <div className="tip-annotations" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {annotations.map((ann, ai) => {
-            const isActive  = activeStep === ai
-            const isHovered = hoveredRow === ai
-            const showDividerBelow = false // gap between rows replaces dividers
-            return (
-              <div
-                key={ai}
-                onClick={() => jumpToStep(ai)}
-                onMouseEnter={() => setHoveredRow(ai)}
-                onMouseLeave={() => setHoveredRow(null)}
-                style={{
-                  padding: '14px 10px',
-                  borderRadius: 14,
-                  ...(isActive
-                    ? {
-                        border: '1px solid rgba(255,255,255,0.10)',
-                        background: 'rgba(255,255,255,0.07)',
-                      }
-                    : {
-                        border: 'none',
-                        borderBottom: showDividerBelow ? `1px solid ${BORDER}` : 'none',
-                        background: isHovered ? 'rgba(255,255,255,0.03)' : 'transparent',
-                      }
-                  ),
-                  transition: 'background 0.18s ease',
-                  cursor: 'pointer',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
-                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: isActive ? T1 : T2, margin: 0, lineHeight: 1.4, transition: 'color 0.18s ease' }}>{ann.screen}</p>
-                  <ArrowRight size={12} color={isActive ? T2 : T4} style={{ transition: 'color 0.18s ease', flexShrink: 0 }} />
-                </div>
-                <p style={{ fontSize: '0.8125rem', color: isActive ? T2 : T3, margin: 0, lineHeight: 1.6, transition: 'color 0.18s ease' }}>{ann.left}</p>
-                {ann.right && isActive && (
-                  <p style={{ fontSize: '0.75rem', color: T3, margin: '6px 0 0', lineHeight: 1.5, paddingLeft: 10, borderLeft: `2px solid ${BORDER}` }}>{ann.right}</p>
-                )}
+  // When the demo reaches success (demoStep 3 = showSuccess), override the last step's copy
+  const SUCCESS_ANN: Annotation = {
+    screen: 'Sent',
+    left: 'Done. The tip is on its way, just like any other transfer.',
+    right: null,
+  }
+  const ann = (scrollStep === steps - 1 && demoStep === 3)
+    ? SUCCESS_ANN
+    : annotations[scrollStep] ?? annotations[0]
+  const totalVh = 100 + (steps - 1) * VH_PER_STEP
+  // leftProgress: 0→1 over the first LEFT_PHASE of step travel (drives word bolding)
+  const leftProgress  = Math.min(1, stepProgress / LEFT_PHASE)
+  // rightOpacity: 0 until left is fully bold, then fades in during the last 35%
+  const rightOpacity  = Math.max(0, Math.min(1, (stepProgress - LEFT_PHASE) / (1 - LEFT_PHASE)))
+  // Vertical line fill: total progress across all steps
+  const lineFill = `${rawProgress * 100}%`
+
+  // ── Tablet layout (768–1199px): centered header + phone / right annotation ──
+  if (isTablet) {
+    return (
+      <div ref={containerRef} style={{ height: `${totalVh}vh`, position: 'relative' }}>
+        <div style={{
+          position: 'sticky', top: 0, height: '100vh',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          padding: '0 clamp(32px, 5vw, 80px)', boxSizing: 'border-box', gap: 36,
+        }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center' }}>
+            <h3 style={{ fontSize: 'clamp(22px, 3vw, 30px)', fontWeight: 500, letterSpacing: '-0.03em', color: T1, margin: '0 0 10px', lineHeight: 1.25 }}>
+              Try it yourself
+            </h3>
+            <p style={{ fontSize: 'clamp(14px, 1.8vw, 17px)', lineHeight: 1.6, color: T3, margin: 0 }}>
+              Scroll to step through the flow, or drag the elements directly.
+            </p>
+          </div>
+
+          {/* Left annotation + phone — equal halves */}
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 'clamp(24px, 4vw, 64px)', width: '100%', justifyContent: 'center' }}>
+            <div style={{ flex: 1, maxWidth: 360, display: 'flex', alignItems: 'center', gap: 24 }}>
+              {/* Vertical progress line */}
+              <div style={{ position: 'relative', width: 2, height: 80, flexShrink: 0, background: 'rgba(255,255,255,0.10)', borderRadius: 1 }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: lineFill, background: T1, borderRadius: 1 }} />
               </div>
-            )
-          })}
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={`left-tablet-${scrollStep}`}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ fontSize: 'clamp(16px, 2vw, 22px)', lineHeight: 1.55, color: T1, margin: 0 }}
+                >
+                  <WordByWord text={ann.left} progress={leftProgress} />
+                </motion.p>
+              </AnimatePresence>
+            </div>
+            <div style={{ flexShrink: 0 }}>
+              <ScaledPhone src="/demo/propi?embed" iframeRef={iframeRef} />
+            </div>
+          </div>
         </div>
-        {/* end tip-annotations */}
       </div>
-      {/* Right: phone demo */}
-      <ScaledPhone src="/demo/propi?embed" iframeRef={iframeRef} />
+    )
+  }
+
+  // ── Desktop layout (1200px+): left annotation + phone + right annotation ───
+  return (
+    <div ref={containerRef} style={{ height: `${totalVh}vh`, position: 'relative' }}>
+      {/* Sticky inner — flex row, centered above the dock */}
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: '0 clamp(48px, 6vw, 120px)',
+        gap: 'clamp(32px, 5vw, 80px)',
+        boxSizing: 'border-box',
+      }}>
+
+        {/* Left annotation */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 24, justifyContent: 'flex-end' }}>
+          <div style={{ maxWidth: 380, width: '100%', display: 'flex', alignItems: 'center', gap: 24 }}>
+          {/* Vertical progress line */}
+          <div style={{ position: 'relative', width: 2, height: 80, flexShrink: 0, background: 'rgba(255,255,255,0.10)', borderRadius: 1 }}>
+            <div style={{
+              position: 'absolute', top: 0, left: 0, width: '100%',
+              height: lineFill,
+              background: T1,
+              borderRadius: 1,
+            }} />
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={`left-${scrollStep}`}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                fontSize: 'clamp(18px, 1.8vw, 24px)',
+                lineHeight: 1.55,
+                color: T1,
+                margin: 0,
+              }}
+            >
+              <WordByWord text={ann.left} progress={leftProgress} />
+            </motion.p>
+          </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Center: phone — fixed width, centered by flex */}
+        <div style={{ flexShrink: 0 }}>
+          <ScaledPhone src="/demo/propi?embed" iframeRef={iframeRef} />
+        </div>
+
+        {/* Right annotation */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+          <div style={{ maxWidth: 380, width: '100%' }}>
+          <AnimatePresence mode="wait">
+            {ann.right && (
+              <motion.p
+                key={`right-${scrollStep}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: rightOpacity, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  fontSize: 'clamp(18px, 1.8vw, 24px)',
+                  lineHeight: 1.55,
+                  color: T3,
+                  margin: 0,
+                }}
+              >
+                {ann.right}
+              </motion.p>
+            )}
+          </AnimatePresence>
+          </div>
+        </div>
+
+      </div>
     </div>
   )
 }
@@ -256,7 +427,7 @@ export default function CaseStudy() {
   ]
 
   return (
-    <div style={{ background: '#050505', color: T1, fontFamily: 'Barlow, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
+    <div style={{ background: '#050505', color: T1, fontFamily: 'Barlow, sans-serif', minHeight: '100vh', overflowX: 'clip' }}>
       <div className="gradient-blur" />
       <div className="gradient-blur-bottom" />
       <AppDock variant="dark" />
@@ -460,29 +631,37 @@ export default function CaseStudy() {
                 if (visual.title === 'The tip flow') {
                   const annotations = [
                     {
-                      screen: 'Tap to start',
-                      left: 'Select a step to jump to it in the demo. Or tap through the flow on the right to see each decision in sequence.',
-                      right: null,
+                      screen: 'Tap Dejar Propina',
+                      left: 'Imagine you just paid for lunch and want to tip the person who served you. This is what shows up, without you asking for it.',
+                      right: 'Only shows at restaurants. Every other merchant, nothing.',
                     },
                     {
                       screen: 'Enter the alias',
-                      left: 'The format every Argentine already uses for transfers. Familiar means trusted.',
-                      right: null,
+                      left: 'You type the alias the server gives you and tap Continue. Same field people already use to send money.',
+                      right: 'The demo types it for you. In real life you ask the person.',
                     },
                     {
                       screen: 'Pick an amount',
-                      left: 'Tap the amount without awkward negotiation.',
-                      right: null,
+                      left: 'Type the amount you want to give. It goes straight to their pocket.',
+                      right: 'The demo fills in an amount. In real life you type whatever you want.',
                     },
                     {
-                      screen: 'Sent the tip',
-                      left: 'Instant bank confirmation for peace of mind.',
-                      right: null,
+                      screen: 'Confirm and send',
+                      left: 'One last look before it goes. Everything visible before the money moves.',
+                      right: 'Yes, you can do the swipe up by dragging or keep scrolling',
                     },
                   ]
                   return (
-                    <div key={i} id="cs-live-demo">
-                      <TipFlowSection visual={visual} annotations={annotations} />
+                    // Full-bleed breakout from maxWidth: 1152 container
+                    <div key={i} id="cs-live-demo" style={{
+                      position: 'relative',
+                      left: '50%',
+                      marginLeft: '-50vw',
+                      marginRight: '-50vw',
+                      right: '50%',
+                      width: '100vw',
+                    }}>
+                      <TipFlowSection annotations={annotations} />
                     </div>
                   )
                 }

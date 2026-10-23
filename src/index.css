@@ -1,3 +1,4 @@
+@import '@fontsource/barlow/300.css';
 @import '@fontsource/barlow/400.css';
 @import '@fontsource/barlow/500.css';
 @import '@fontsource/barlow/600.css';
@@ -85,7 +86,7 @@ a *, button *, [role="button"] *, .cursor-pointer * {
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; touch-action: pan-x pan-y; scroll-padding-top: 80px; }
-body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background-color: #ffffff; overflow-x: hidden; touch-action: pan-x pan-y; }
+body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background-color: #ffffff; overflow-x: clip; touch-action: pan-x pan-y; }
 
 @keyframes fadeInUp {
   0% { opacity: 0; transform: translateY(30px); }
