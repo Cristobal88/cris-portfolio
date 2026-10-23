@@ -148,10 +148,10 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
 @media (min-width: 768px) {
   .app-dock { top: 28px; bottom: auto; }
 }
-/* ── Case study TOC: hidden below 1600px, shown on wide desktops only ── */
+/* ── Case study TOC: shown on 13"+ MacBook screens and above ── */
 .cs-toc { display: none !important; }
 .cs-toc::-webkit-scrollbar { display: none; }
-@media (min-width: 1600px) {
+@media (min-width: 1280px) {
   .cs-toc { display: block !important; }
 }
 
