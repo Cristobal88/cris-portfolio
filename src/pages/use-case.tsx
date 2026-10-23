@@ -194,7 +194,8 @@ function TipFlowSection({ annotations }: { visual?: TipFlowVisual; annotations: 
     const handler = (e: MessageEvent) => {
       if (e.data?.type === 'propi-step' && typeof e.data.step === 'number') {
         setDemoStep(e.data.step)
-        if (isMobile) setMobileStep(e.data.step)
+        // Do NOT sync mobileStep from propi-step — it would send propi-jump back
+        // and reset the demo mid-flow (e.g. success → amount loop).
       }
     }
     window.addEventListener('message', handler)
