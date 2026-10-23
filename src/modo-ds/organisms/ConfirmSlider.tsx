@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { motion, animate, useMotionValue, useTransform, AnimatePresence } from 'framer-motion'
 
 const GREEN = '#008859'
@@ -23,15 +23,30 @@ const GREEN = '#008859'
 
 interface ConfirmSliderProps {
   complete: boolean
+  autoPlay?: boolean
   onComplete: () => void
 }
 
-export default function ConfirmSlider({ complete, onComplete }: ConfirmSliderProps) {
+export default function ConfirmSlider({ complete, autoPlay, onComplete }: ConfirmSliderProps) {
   const y = useMotionValue(0)
   const W = 70          // track width = thumb diameter
   const TRACK_H = 268   // per DS spec
   const TRAVEL = TRACK_H - W  // 198px of travel
   const RING = W + 8    // 78px — Ellipse 228, 4px bigger on each side
+
+  // Auto-animate slider to the top when autoPlay is true
+  const onCompleteRef = useRef(onComplete)
+  useEffect(() => { onCompleteRef.current = onComplete }, [onComplete])
+  useEffect(() => {
+    if (!autoPlay || complete) return
+    const id = setTimeout(() => {
+      animate(y, -TRAVEL, {
+        type: 'spring', stiffness: 260, damping: 24,
+        onComplete: () => onCompleteRef.current(),
+      })
+    }, 900)
+    return () => clearTimeout(id)
+  }, [autoPlay]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Base color: gray → #33a07a (primary/default80) in first 20px of drag
   const trackBg = useTransform(y, [0, -20], ['#ececec', '#33a07a'])

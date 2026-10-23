@@ -68,6 +68,15 @@ const SHEET_H  = 492   // bottom sheet height in px
 function easeOut(t: number): number {
   return 1 - Math.pow(1 - t, 3)
 }
+
+// Argentine number format: dot = thousands separator, comma = decimal separator
+// e.g. "1500" → "1.500", "1500,50" → "1.500,50"
+function formatARS(raw: string): string {
+  if (!raw) return ''
+  const [intPart, decPart] = raw.split(',')
+  const formatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  return decPart !== undefined ? `${formatted},${decPart}` : formatted
+}
 function seg(t: number, start: number, end: number): number {
   return easeOut(Math.max(0, Math.min(1, (t - start) / (end - start))))
 }
@@ -89,11 +98,14 @@ export default function PropiDemo() {
   const [amountText, setAmountText] = useState('')
   const [activeAmountKey, setActiveAmountKey] = useState<string | null>(null)
   const [sliderDone, setSliderDone] = useState(false)
+  const [autoSlider, setAutoSlider] = useState(false)
+  const [confirmKey, setConfirmKey] = useState(0)
   const [showSuccess, setShowSuccess] = useState(false)
   const [showNotif, setShowNotif] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
-  const rafRef      = useRef<number | undefined>(undefined)
-  const lastTimeRef = useRef<number | undefined>(undefined)
+  const rafRef            = useRef<number | undefined>(undefined)
+  const lastTimeRef       = useRef<number | undefined>(undefined)
+  const completionFiredRef = useRef(false)
 
   // ── Phase 1: Success ────────────────────────────────────────────
   const ckOpacity    = useTransform(playhead, t => seg(t, 0.10, 0.50))
@@ -187,6 +199,28 @@ export default function PropiDemo() {
     return () => clearTimeout(startId)
   }, [showInput])
 
+  // ── Amount auto-typing when amount screen is shown (embed mode) ─────────
+  useEffect(() => {
+    if (!showAmount || !isEmbed) return
+    const DIGITS = '1500'
+    let i = 0
+    const startId = setTimeout(() => {
+      const tick = () => {
+        if (i >= DIGITS.length) {
+          // typing done — wait for user to scroll to step 3 (which triggers confirm)
+          return
+        }
+        setAmountText(DIGITS.slice(0, i + 1))
+        setActiveAmountKey(DIGITS[i])
+        i++
+        setTimeout(() => setActiveAmountKey(null), 100)
+        setTimeout(tick, 160)
+      }
+      tick()
+    }, 1000)
+    return () => clearTimeout(startId)
+  }, [showAmount]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleDejarPropina = () => {
     setShowLoading(true)
     setTimeout(() => {
@@ -252,13 +286,13 @@ export default function PropiDemo() {
     }
   }
 
-  // ── Galicia notification — 1 s after blue success, auto-dismiss after 3 s ──
+  // ── Galicia notification — only after loading is fully gone ──
   useEffect(() => {
-    if (!showSuccess) { setShowNotif(false); return }
-    const showId  = setTimeout(() => setShowNotif(true),  1000)
-    const hideId  = setTimeout(() => setShowNotif(false), 4000)
+    if (!showSuccess || showLoading) { setShowNotif(false); return }
+    const showId  = setTimeout(() => setShowNotif(true),  800)
+    const hideId  = setTimeout(() => setShowNotif(false), 3800)
     return () => { clearTimeout(showId); clearTimeout(hideId) }
-  }, [showSuccess])
+  }, [showSuccess, showLoading])
 
   const dismissSheet = () => {
     setDismissed(true)
@@ -301,7 +335,9 @@ export default function PropiDemo() {
     setShowSuccess(false)
     setShowNotif(false)
     setSliderDone(false)
+    setAutoSlider(false)
     setKeyboardDown(false)
+    completionFiredRef.current = false
     setAmountText('')
     sheetControls.set({ y: 0 })
 
@@ -316,8 +352,9 @@ export default function PropiDemo() {
     } else if (step === 3) {
       setTypedText('Cris.propina')
       setAmountText('1500')
-      setSliderDone(true)
-      setShowSuccess(true)
+      setShowConfirm(true)
+      // autoSlider fires via propi-slider-go from scroll progress — not here
+      setConfirmKey(k => k + 1)
     }
     // step 0: sheet open, no sub-screen
   }, [playhead, sheetControls])
@@ -327,6 +364,19 @@ export default function PropiDemo() {
     const handler = (e: MessageEvent) => {
       if (e.data?.type === 'propi-jump' && typeof e.data.step === 'number') {
         jumpToStep(e.data.step)
+      }
+      if (e.data?.type === 'propi-slider-go') {
+        setAutoSlider(true)
+      }
+      if (e.data?.type === 'propi-complete') {
+        if (completionFiredRef.current) return
+        completionFiredRef.current = true
+        setSliderDone(true)
+        setShowLoading(true)
+        setTimeout(() => {
+          setShowSuccess(true)
+          setTimeout(() => setShowLoading(false), 150)
+        }, 200)
       }
     }
     window.addEventListener('message', handler)
@@ -394,7 +444,7 @@ export default function PropiDemo() {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1, gap: 6 }}>
                     <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: 'rgba(0,0,0,0.85)', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', lineHeight: '18px', letterSpacing: -0.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       <span style={{ fontWeight: 600, color: 'rgba(0,0,0,0.9)' }}>Banco Galicia</span>
-                      {' '}Transferiste ${amountText || '0'}
+                      {' '}Transferiste ${formatARS(amountText) || '0'}
                     </p>
                     <span style={{ fontSize: 12, color: 'rgba(60,60,67,0.55)', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', flexShrink: 0, lineHeight: 1 }}>
                       ahora
@@ -910,7 +960,7 @@ export default function PropiDemo() {
                   ) : (
                     <>
                       <span style={{ color: '#121212', fontSize: 22, fontWeight: 700, lineHeight: '28px', fontFamily: "'Red Hat Display', sans-serif" }}>$</span>
-                      <span style={{ color: '#121212', fontSize: 40, fontWeight: 500, lineHeight: '56px', fontFamily: "'Red Hat Display', sans-serif" }}>{amountText}</span>
+                      <span style={{ color: '#121212', fontSize: 40, fontWeight: 500, lineHeight: '56px', fontFamily: "'Red Hat Display', sans-serif" }}>{formatARS(amountText)}</span>
                       <div className="input-caret" style={{ width: 2, height: 32, background: GREEN, borderRadius: 1, margin: '0 1px', alignSelf: 'center' }} />
                     </>
                   )}
@@ -999,7 +1049,7 @@ export default function PropiDemo() {
         <AnimatePresence>
           {showConfirm && (
             <motion.div
-              key="confirm"
+              key={`confirm-${confirmKey}`}
               initial={{ x: 390 }}
               animate={{ x: 0 }}
               exit={{ x: 390 }}
@@ -1031,7 +1081,7 @@ export default function PropiDemo() {
                 {/* Amount — $ 22px/700 + number 40px/500 */}
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginTop: 14, marginBottom: 16 }}>
                   <span style={{ fontSize: 22, fontWeight: 700, lineHeight: '28px', color: '#121212', fontFamily: "'Red Hat Display', sans-serif" }}>$</span>
-                  <span style={{ fontSize: 40, fontWeight: 500, lineHeight: '56px', color: '#121212', fontFamily: "'Red Hat Display', sans-serif" }}>{amountText || '0'}</span>
+                  <span style={{ fontSize: 40, fontWeight: 500, lineHeight: '56px', color: '#121212', fontFamily: "'Red Hat Display', sans-serif" }}>{formatARS(amountText) || '0'}</span>
                 </div>
 
                 {/* Enviando a */}
@@ -1063,12 +1113,15 @@ export default function PropiDemo() {
                 {/* Drag slider */}
                 <ConfirmSlider
                   complete={sliderDone}
+                  autoPlay={autoSlider}
                   onComplete={() => {
+                    if (completionFiredRef.current) return
+                    completionFiredRef.current = true
                     setSliderDone(true)
-                    setShowLoading(true)                   // loading fades in immediately (0.2s)
+                    setShowLoading(true)
                     setTimeout(() => {
-                      setShowSuccess(true)                 // success slides in behind loader
-                      setTimeout(() => setShowLoading(false), 150)  // loader fades out
+                      setShowSuccess(true)
+                      setTimeout(() => setShowLoading(false), 150)
                     }, 2000)
                   }}
                 />
@@ -1132,7 +1185,7 @@ export default function PropiDemo() {
                   <span style={{ fontSize: 16, fontWeight: 500, color: '#fff', lineHeight: '22px', fontFamily: "'Red Hat Display', sans-serif" }}>Monto total</span>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
                     <span style={{ fontSize: 20, fontWeight: 700, color: '#fff', lineHeight: '28px', fontFamily: "'Red Hat Display', sans-serif" }}>$</span>
-                    <span style={{ fontSize: 32, fontWeight: 500, color: '#fff', lineHeight: '44px', fontFamily: "'Red Hat Display', sans-serif" }}>{amountText || '0'}</span>
+                    <span style={{ fontSize: 32, fontWeight: 500, color: '#fff', lineHeight: '44px', fontFamily: "'Red Hat Display', sans-serif" }}>{formatARS(amountText) || '0'}</span>
                   </div>
                 </div>
               </div>
