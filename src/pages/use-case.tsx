@@ -127,6 +127,7 @@ function TipFlowSection({ annotations }: { visual?: TipFlowVisual; annotations: 
   const [isMobile,    setIsMobile]    = useState(false)
   const [isTablet,    setIsTablet]    = useState(false)
   const [demoStep,    setDemoStep]    = useState(0) // tracks iframe screen
+  const [tapStep,     setTapStep]     = useState<number | null>(null) // set when user taps inside demo
 
   const steps = annotations.length
 
@@ -158,19 +159,41 @@ function TipFlowSection({ annotations }: { visual?: TipFlowVisual; annotations: 
   // Progress within current step (0–1)
   const stepProgress = (rawProgress * steps) - scrollStep
 
-  // Push to iframe on step change (desktop)
+  // Push to iframe on step change (desktop).
+  // If tap is driving: don't interrupt — only hand scroll back when it catches up (scrollStep >= tapStep).
   useEffect(() => {
     if (isMobile) return
-    iframeRef.current?.contentWindow?.postMessage({ type: 'propi-jump', step: scrollStep }, '*')
-  }, [scrollStep, isMobile])
+    if (tapStep === null) {
+      // Scroll is driving — keep iframe in sync
+      iframeRef.current?.contentWindow?.postMessage({ type: 'propi-jump', step: scrollStep }, '*')
+    } else if (scrollStep >= tapStep) {
+      // Scroll caught up to or passed the tapped step — hand control back to scroll
+      setTapStep(null)
+      iframeRef.current?.contentWindow?.postMessage({ type: 'propi-jump', step: scrollStep }, '*')
+    }
+    // scrollStep < tapStep: user tapped ahead, don't interrupt
+  }, [scrollStep, tapStep, isMobile])
 
   // Scroll-controlled signals for last step transitions (desktop only)
-  const sliderFiredRef  = useRef(false)
+  const sliderFiredRef   = useRef(false)
   const completeFiredRef = useRef(false)
+  const prevRawProgressRef = useRef(0)
   useEffect(() => {
     sliderFiredRef.current  = false
     completeFiredRef.current = false
   }, [scrollStep])
+
+  // Reset demo when user scrolls backward after success so they can replay it
+  useEffect(() => {
+    if (isMobile) return
+    const wentBack = rawProgress < prevRawProgressRef.current
+    if (wentBack && demoStep === 3 && scrollStep === steps - 1) {
+      sliderFiredRef.current  = false
+      completeFiredRef.current = false
+      iframeRef.current?.contentWindow?.postMessage({ type: 'propi-jump', step: steps - 1 }, '*')
+    }
+    prevRawProgressRef.current = rawProgress
+  }, [rawProgress, demoStep, scrollStep, steps, isMobile])
   useEffect(() => {
     if (isMobile || scrollStep !== steps - 1) return
     if (!sliderFiredRef.current && stepProgress >= 0.20) {
@@ -189,13 +212,15 @@ function TipFlowSection({ annotations }: { visual?: TipFlowVisual; annotations: 
     iframeRef.current?.contentWindow?.postMessage({ type: 'propi-jump', step: mobileStep }, '*')
   }, [mobileStep, isMobile])
 
-  // Always track the iframe's current screen so annotations stay in sync
+  // Always track the iframe's current screen so annotations stay in sync.
+  // On desktop/tablet: also set tapStep so annotations follow manual taps.
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if (e.data?.type === 'propi-step' && typeof e.data.step === 'number') {
         setDemoStep(e.data.step)
         // Do NOT sync mobileStep from propi-step — it would send propi-jump back
         // and reset the demo mid-flow (e.g. success → amount loop).
+        if (!isMobile) setTapStep(e.data.step)
       }
     }
     window.addEventListener('message', handler)
@@ -217,20 +242,23 @@ function TipFlowSection({ annotations }: { visual?: TipFlowVisual; annotations: 
     )
   }
 
+  // tapStep overrides scrollStep when the user taps inside the demo directly.
+  // Falls back to scrollStep when null (scroll is driving).
+  const activeStep = tapStep ?? scrollStep
+
   // When the demo reaches success (demoStep 3 = showSuccess), override the last step's copy
   const SUCCESS_ANN: Annotation = {
     screen: 'Sent',
     left: 'Done. The tip is on its way, just like any other transfer.',
     right: null,
   }
-  const ann = (scrollStep === steps - 1 && demoStep === 3)
+  const ann = (activeStep === steps - 1 && demoStep === 3)
     ? SUCCESS_ANN
-    : annotations[scrollStep] ?? annotations[0]
+    : annotations[activeStep] ?? annotations[0]
   const totalVh = 100 + (steps - 1) * VH_PER_STEP
-  // leftProgress: 0→1 over the first LEFT_PHASE of step travel (drives word bolding)
-  const leftProgress  = Math.min(1, stepProgress / LEFT_PHASE)
-  // rightOpacity: 0 until left is fully bold, then fades in during the last 35%
-  const rightOpacity  = Math.max(0, Math.min(1, (stepProgress - LEFT_PHASE) / (1 - LEFT_PHASE)))
+  // When tap-driven: show annotation fully immediately (user already arrived there)
+  const leftProgress  = tapStep !== null ? 1 : Math.min(1, stepProgress / LEFT_PHASE)
+  const rightOpacity  = tapStep !== null ? 1 : Math.max(0, Math.min(1, (stepProgress - LEFT_PHASE) / (1 - LEFT_PHASE)))
   // Vertical line fill: total progress across all steps
   const lineFill = `${rawProgress * 100}%`
 
@@ -262,7 +290,7 @@ function TipFlowSection({ annotations }: { visual?: TipFlowVisual; annotations: 
               </div>
               <AnimatePresence mode="wait">
                 <motion.p
-                  key={`left-tablet-${scrollStep}`}
+                  key={`left-tablet-${activeStep}`}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
@@ -313,7 +341,7 @@ function TipFlowSection({ annotations }: { visual?: TipFlowVisual; annotations: 
 
           <AnimatePresence mode="wait">
             <motion.p
-              key={`left-${scrollStep}`}
+              key={`left-${activeStep}`}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
@@ -342,7 +370,7 @@ function TipFlowSection({ annotations }: { visual?: TipFlowVisual; annotations: 
           <AnimatePresence mode="wait">
             {ann.right && (
               <motion.p
-                key={`right-${scrollStep}`}
+                key={`right-${activeStep}`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: rightOpacity, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}

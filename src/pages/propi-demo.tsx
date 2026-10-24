@@ -313,9 +313,11 @@ export default function PropiDemo() {
     if (!isEmbed) return
     let step: number
     if (showSuccess) step = 3
-    else if (showAmount || showConfirm) step = 2
+    else if (showConfirm) step = 3   // confirm → annotation 3 ("Confirm and send")
+    else if (showAmount) step = 2
     else if (showInput || showVerify) step = 1
     else if (sheetOpen && !dismissed) step = 0
+    else if (dismissed) step = 1    // gap: sheet dismissed, input not yet mounted
     else return
     window.parent.postMessage({ type: 'propi-step', step }, '*')
   }, [showInput, showVerify, showAmount, showConfirm, showSuccess, sheetOpen, dismissed, isEmbed])
