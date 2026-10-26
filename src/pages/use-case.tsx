@@ -448,10 +448,12 @@ export default function CaseStudy() {
   const altVisuals  = project.workVisuals.slice(0, 2)
   const wideVisuals = project.workVisuals.slice(2)
 
+  const hasLiveDemo = slug === 'fintech-tipping-flow'
+
   const tocItems = [
     { id: 'cs-problem',  label: 'The problem' },
     { id: 'cs-work',     label: 'Process'     },
-    { id: 'cs-live-demo', label: 'Live demo', scrollBlock: 'center' as ScrollLogicalPosition },
+    ...(hasLiveDemo ? [{ id: 'cs-live-demo', label: 'Live demo', scrollBlock: 'center' as ScrollLogicalPosition }] : []),
     { id: 'cs-results',  label: 'Results'     },
   ]
 
