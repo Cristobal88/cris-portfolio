@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import ReactDOM from 'react-dom'
+import { motion, AnimatePresence, useReducedMotion, useDragControls } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { AppDock } from '@/components/blocks/app-dock'
 import { useCaseStudies } from '@/hooks/useCaseStudies'
@@ -158,14 +159,211 @@ function projectToFiles(project: Project, href: string) {
   ]
 }
 
+// ─── macOS Window Modal ───────────────────────────────────────────────────────
+
+const DEMO_W = 390
+const DEMO_H = 844
+const WIN_MARGIN = 80   // top + bottom gap from viewport edge
+const TITLEBAR_H = 32
+const PADDING = 16 * 2  // top + bottom content padding
+
+function MacWindow({ url, onClose }: { url: string; onClose: () => void }) {
+  const prefersReduced = useReducedMotion()
+  const dragControls = useDragControls()
+  const [scale, setScale] = useState(1)
+
+  useEffect(() => {
+    const compute = () => {
+      const available = window.innerHeight - WIN_MARGIN - TITLEBAR_H - PADDING
+      setScale(Math.min(1, available / DEMO_H))
+    }
+    compute()
+    window.addEventListener('resize', compute)
+    return () => window.removeEventListener('resize', compute)
+  }, [])
+
+  const scaledW = Math.round(DEMO_W * scale)
+  const scaledH = Math.round(DEMO_H * scale)
+
+  // Close on backdrop click
+  const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) onClose()
+  }
+  // Lock body scroll while modal is open
+  useEffect(() => {
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [])
+
+  // Close on Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
+
+  return (
+    <div
+      onClick={handleBackdrop}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 1000,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(0,0,0,0.40)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+      }}
+    >
+      <motion.div
+        drag
+        dragControls={dragControls}
+        dragListener={false}
+        dragMomentum={false}
+        initial={prefersReduced ? {} : { opacity: 0, scale: 0.94, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={prefersReduced ? {} : { opacity: 0, scale: 0.94, y: 12 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        style={{
+          borderRadius: 12,
+          overflow: 'hidden',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.35), 0 4px 16px rgba(0,0,0,0.15)',
+          display: 'flex',
+          flexDirection: 'column',
+          width: 'fit-content',
+        }}
+      >
+        {/* Title bar — 3-col grid: lights | title | spacer */}
+        <div
+          onPointerDown={(e) => dragControls.start(e)}
+          style={{
+            height: TITLEBAR_H,
+            background: 'rgba(246,246,246,0.92)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderBottom: '1px solid rgba(0,0,0,0.08)',
+            display: 'grid',
+            gridTemplateColumns: '1fr auto 1fr',
+            alignItems: 'center',
+            paddingLeft: 12,
+            paddingRight: 12,
+            flexShrink: 0,
+            cursor: 'grab',
+            userSelect: 'none',
+          }}
+        >
+          {/* Traffic lights — stop drag propagation so clicks still work */}
+          <div onPointerDown={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button
+              onClick={onClose}
+              aria-label="Close window"
+              style={{ width: 12, height: 12, borderRadius: '50%', background: '#FF5F57', border: 'none', cursor: 'pointer', flexShrink: 0, padding: 0 }}
+            />
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#FFBD2E', flexShrink: 0 }} />
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#28C840', flexShrink: 0 }} />
+          </div>
+          {/* Title */}
+          <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#0d0d0d', letterSpacing: '-0.01em' }}>Proina_demo.html</span>
+          {/* Spacer */}
+          <div />
+        </div>
+        {/* Content: iframe scaled to fit viewport */}
+        <div style={{ background: '#ffffff', padding: 16 }}>
+          {/* Clip wrapper — sized to scaled dimensions */}
+          <div style={{ width: scaledW, height: scaledH, overflow: 'hidden', borderRadius: 50, clipPath: 'inset(0 round 50px)', position: 'relative' }}>
+            <iframe
+              src={url}
+              title="Propina Demo"
+              style={{
+                width: DEMO_W,
+                height: DEMO_H,
+                border: 'none',
+                display: 'block',
+                transformOrigin: 'top left',
+                transform: `scale(${scale})`,
+              }}
+            />
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+type DragItem = 'first' | 'second' | 'demo'
+
 function WorkFolders() {
   const { data: projects, loading } = useCaseStudies()
   const containerRef = useRef<HTMLDivElement>(null)
   const firstRef  = useRef<HTMLDivElement>(null)
   const secondRef = useRef<HTMLDivElement>(null)
   const [containerW, setContainerW] = useState(0)
-  const [firstOpen,  setFirstOpen]  = useState(false)
-  const [secondOpen, setSecondOpen] = useState(false)
+  const [firstHovered, setFirstHovered] = useState(false)
+  const [secondHovered, setSecondHovered] = useState(false)
+  const [demoHovered, setDemoHovered] = useState(false)
+  const [demoOpen, setDemoOpen] = useState(false)
+
+  // ── Drag state ──────────────────────────────────────────────────────────────
+  const [dragging, setDragging] = useState<DragItem | null>(null)
+  const [ghostPos, setGhostPos] = useState({ x: 0, y: 0 })
+  const [offsets, setOffsets] = useState<Record<DragItem, { dx: number; dy: number }>>({
+    first: { dx: 0, dy: 0 },
+    second: { dx: 0, dy: 0 },
+    demo: { dx: 0, dy: 0 },
+  })
+  const dragOffsetRef  = useRef({ x: 0, y: 0 })
+  const dragStartRef   = useRef<{ x: number; y: number } | null>(null)
+  const hasDraggedRef  = useRef(false)
+  const justDraggedRef = useRef(false)
+
+  // Attach move/up listeners at window level so tracking never breaks when
+  // the pointer leaves the element (React synthetic events stop firing then).
+  const onItemPointerDown = useCallback((item: DragItem) => (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault() // stop browser native drag on images/links
+    dragStartRef.current = { x: e.clientX, y: e.clientY }
+    hasDraggedRef.current = false
+    const rect = e.currentTarget.getBoundingClientRect()
+    dragOffsetRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top }
+
+    const onMove = (ev: PointerEvent) => {
+      if (!dragStartRef.current) return
+      const dx = ev.clientX - dragStartRef.current.x
+      const dy = ev.clientY - dragStartRef.current.y
+      if (!hasDraggedRef.current && Math.sqrt(dx * dx + dy * dy) > 6) {
+        hasDraggedRef.current = true
+        setDragging(item)
+      }
+      if (hasDraggedRef.current) {
+        ev.preventDefault() // prevent scroll on touch while dragging
+        setGhostPos({ x: ev.clientX - dragOffsetRef.current.x, y: ev.clientY - dragOffsetRef.current.y })
+      }
+    }
+
+    const onUp = (ev: PointerEvent) => {
+      if (hasDraggedRef.current && dragStartRef.current) {
+        const moveDx = ev.clientX - dragStartRef.current.x
+        const moveDy = ev.clientY - dragStartRef.current.y
+        setOffsets(prev => ({
+          ...prev,
+          [item]: { dx: prev[item].dx + moveDx, dy: prev[item].dy + moveDy },
+        }))
+      }
+      justDraggedRef.current = hasDraggedRef.current
+      if (item === 'demo' && !hasDraggedRef.current) setDemoOpen(true)
+      setDragging(null)
+      dragStartRef.current = null
+      hasDraggedRef.current = false
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+  }, [])
+
+  // While dragging, keep the item's hover state active
+  const firstActive  = firstHovered  || dragging === 'first'
+  const secondActive = secondHovered || dragging === 'second'
+  const demoActive   = demoHovered   || dragging === 'demo'
 
   useEffect(() => {
     const el = containerRef.current
@@ -177,27 +375,12 @@ function WorkFolders() {
   }, [])
 
   const gap = 24
-  const stacked = containerW > 0 && containerW < 420
+  // Always side-by-side: Propina+Demo on left, Loyalty on right
   const folderW = containerW > 0
-    ? stacked ? containerW : Math.floor((containerW - gap) / 4)
-    : 140
-
-  // On mobile: open each folder when 30 % of it enters the viewport
-  useEffect(() => {
-    if (!stacked) return
-    const watch = (el: HTMLDivElement | null, set: (v: boolean) => void) => {
-      if (!el) return
-      const io = new IntersectionObserver(
-        ([entry]) => set(entry.intersectionRatio >= 0.3),
-        { threshold: 0.3 },
-      )
-      io.observe(el)
-      return io
-    }
-    const io1 = watch(firstRef.current,  setFirstOpen)
-    const io2 = watch(secondRef.current, setSecondOpen)
-    return () => { io1?.disconnect(); io2?.disconnect() }
-  }, [stacked])
+    ? Math.min(130, Math.floor((containerW - gap) / 2))
+    : 120
+  // Desktop-only: stagger Loyalty downward; on mobile align to top
+  const loyaltyMarginTop = containerW > 480 ? 72 : 0
 
   const visible = projects?.filter(p => !p.locked) ?? []
   const [first, second] = visible
@@ -205,8 +388,7 @@ function WorkFolders() {
   if (loading) {
     return (
       <div>
-        <SectionLabel>Some of my work</SectionLabel>
-        <div style={{ display: 'flex', flexDirection: stacked ? 'column' : 'row', gap }}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap }}>
           {[0, 1].map(i => (
             <div key={i} style={{ width: folderW || 140, height: (folderW || 140) * 0.96, borderRadius: 16, background: 'rgba(0,0,0,0.05)', animation: 'pulse 1.5s ease-in-out infinite' }} />
           ))}
@@ -217,53 +399,234 @@ function WorkFolders() {
 
   return (
     <div>
-      <SectionLabel>Some of my work</SectionLabel>
-      <div ref={containerRef} style={{ display: 'flex', flexDirection: stacked ? 'column' : 'row', gap, alignItems: 'flex-start' }}>
-        {first && (
-          <div ref={firstRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <GlassFolder
-              label={first.label}
-              href={`/work/${first.slug}`}
-              open={stacked ? firstOpen : undefined}
-              art="none"
-              backColor="#008859"
-              seed={7}
-              action="none"
-              hideLabel
-              appear={true}
-              appearDelay={0}
-              width={folderW}
-              files={projectToFiles(first, `/work/${first.slug}`)}
-            />
-            <div>
-              <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>{first.label}</p>
-              {first.metric && <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.45)', margin: '2px 0 0', lineHeight: 1.3 }}>{first.metric} {first.metricLabel}</p>}
+      <div ref={containerRef} style={{ display: 'flex', flexDirection: 'row', gap, alignItems: 'flex-start', justifyContent: 'center' }}>
+        {/* Left column: Propina folder + Demo phone thumb */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap, alignItems: 'center' }}>
+          {first && (
+            <div
+              ref={firstRef}
+              style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12, touchAction: 'none', transform: `translate(${offsets.first.dx}px, ${offsets.first.dy}px)`, transition: 'none', willChange: 'transform', opacity: dragging === 'first' ? 0.4 : 1 }}
+              onMouseEnter={() => setFirstHovered(true)}
+              onMouseLeave={() => { if (dragging !== 'first') setFirstHovered(false) }}
+              onPointerDown={onItemPointerDown('first')}
+              onClickCapture={(e) => { if (justDraggedRef.current) { justDraggedRef.current = false; e.preventDefault() } }}
+            >
+              {/* Folder only — overlay scoped here so it never touches the label */}
+              <div style={{ position: 'relative' }}>
+                <div style={{
+                  position: 'absolute', top: -4, left: -10, right: -10, bottom: -10,
+                  background: 'rgba(156,163,175,0.30)',
+                  backdropFilter: 'blur(4px)',
+                  WebkitBackdropFilter: 'blur(4px)',
+                  borderRadius: 16,
+                  opacity: firstActive ? 1 : 0,
+                  transition: 'opacity 0.15s ease',
+                  pointerEvents: 'none',
+                }} />
+                <GlassFolder
+                  label={first.label}
+                  href={`/work/${first.slug}`}
+                  open={undefined}
+                  art="none"
+                  backColor="#008859"
+                  seed={7}
+                  action="none"
+                  hideLabel
+                  appear={true}
+                  appearDelay={0}
+                  width={folderW}
+                  files={projectToFiles(first, `/work/${first.slug}`)}
+                />
+              </div>
+              {/* Label */}
+              <div style={{ isolation: 'isolate', textAlign: 'center', background: firstActive ? '#0067EA' : 'transparent', borderRadius: firstActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', maxWidth: folderW, width: 'fit-content' }}>
+                <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <span style={{ fontWeight: 500, color: firstActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>{first.label}</span>
+                  {first.metric && <span style={{ fontWeight: 500, color: firstActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}> {first.metric} {first.metricLabel}</span>}
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Phone demo thumbnail */}
+          {(() => {
+            const phoneW = Math.round(folderW * 0.62)
+            return (
+              <div
+                style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12, touchAction: 'none', transform: `translate(${offsets.demo.dx}px, ${offsets.demo.dy}px)`, transition: 'none', willChange: 'transform', opacity: dragging === 'demo' ? 0.4 : 1 }}
+                onMouseEnter={() => setDemoHovered(true)}
+                onMouseLeave={() => { if (dragging !== 'demo') setDemoHovered(false) }}
+                onPointerDown={onItemPointerDown('demo')}
+                onClickCapture={(e) => { if (justDraggedRef.current) { justDraggedRef.current = false; e.preventDefault() } }}
+              >
+                {/* Image only — overlay scoped here, comes first so image paints on top */}
+                <div style={{ position: 'relative' }}>
+                  <button
+                    aria-label="Open Propina Demo"
+                    style={{ display: 'block', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  >
+                    <img
+                      src="/propina-start.png"
+                      alt="Propina Demo"
+                      draggable={false}
+                      width={phoneW}
+                      style={{ width: phoneW, height: 'auto', display: 'block', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }}
+                    />
+                  </button>
+                  <div style={{
+                    position: 'absolute', top: -4, left: -8, right: -8, bottom: -8,
+                    background: 'rgba(156,163,175,0.30)',
+                    backdropFilter: 'blur(4px)',
+                    WebkitBackdropFilter: 'blur(4px)',
+                    borderRadius: 14,
+                    opacity: demoActive ? 1 : 0,
+                    transition: 'opacity 0.15s ease',
+                    pointerEvents: 'none',
+                    zIndex: -1,
+                  }} />
+                </div>
+                {/* Label */}
+                <div style={{ isolation: 'isolate', textAlign: 'center', background: demoActive ? '#0067EA' : 'transparent', borderRadius: demoActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', width: 'fit-content', maxWidth: folderW }}>
+                  <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, whiteSpace: 'nowrap' }}>
+                    <span style={{ fontWeight: 500, color: demoActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>Proina_demo.html</span>
+                  </p>
+                </div>
+              </div>
+            )
+          })()}
+        </div>
+
         {second && (
-          <div ref={secondRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <GlassFolder
-              label={second.label}
-              href={`/work/${second.slug}`}
-              open={stacked ? secondOpen : undefined}
-              art="none"
-              backColor="#031061"
-              seed={12}
-              action="none"
-              hideLabel
-              appear={true}
-              appearDelay={120}
-              width={folderW}
-              files={projectToFiles(second, `/work/${second.slug}`)}
-            />
-            <div>
-              <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0d0d', margin: 0, lineHeight: 1.3 }}>{second.label}</p>
-              {second.metric && <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.45)', margin: '2px 0 0', lineHeight: 1.3 }}>{second.metric} redemptions</p>}
+          <div
+            ref={secondRef}
+            style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12, touchAction: 'none', marginTop: loyaltyMarginTop, transform: `translate(${offsets.second.dx}px, ${offsets.second.dy}px)`, transition: 'none', willChange: 'transform', opacity: dragging === 'second' ? 0.4 : 1 }}
+            onMouseEnter={() => setSecondHovered(true)}
+            onMouseLeave={() => { if (dragging !== 'second') setSecondHovered(false) }}
+            onPointerDown={onItemPointerDown('second')}
+            onClickCapture={(e) => { if (justDraggedRef.current) { justDraggedRef.current = false; e.preventDefault() } }}
+          >
+            {/* Folder only — overlay scoped here so it never touches the label */}
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                position: 'absolute', top: -4, left: -10, right: -10, bottom: -10,
+                background: 'rgba(156,163,175,0.30)',
+                backdropFilter: 'blur(4px)',
+                WebkitBackdropFilter: 'blur(4px)',
+                borderRadius: 16,
+                opacity: secondActive ? 1 : 0,
+                transition: 'opacity 0.15s ease',
+                pointerEvents: 'none',
+              }} />
+              <GlassFolder
+                label={second.label}
+                href={`/work/${second.slug}`}
+                open={undefined}
+                art="none"
+                backColor="#031061"
+                seed={12}
+                action="none"
+                hideLabel
+                appear={true}
+                appearDelay={120}
+                width={folderW}
+                files={projectToFiles(second, `/work/${second.slug}`)}
+              />
+            </div>
+            {/* Label: macOS-style continuous text, wraps to 2 lines */}
+            <div style={{ isolation: 'isolate', textAlign: 'center', background: secondActive ? '#0067EA' : 'transparent', borderRadius: secondActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', maxWidth: folderW, width: 'fit-content' }}>
+              <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                <span style={{ fontWeight: 500, color: secondActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>{second.label}</span>
+                {second.metric && <span style={{ fontWeight: 500, color: secondActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}> {second.metric} {second.metricLabel}</span>}
+              </p>
             </div>
           </div>
         )}
       </div>
+
+      {/* Ghost portal — floats above everything while dragging */}
+      {dragging && ReactDOM.createPortal(
+        <div style={{
+          position: 'fixed',
+          left: ghostPos.x,
+          top: ghostPos.y,
+          pointerEvents: 'none',
+          zIndex: 9999,
+          opacity: 0.92,
+          transform: 'scale(1.04)',
+          transformOrigin: 'top left',
+          display: 'inline-flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 12,
+          filter: 'drop-shadow(0 16px 40px rgba(0,0,0,0.3))',
+        }}>
+          {dragging === 'first' && first && (
+            <>
+              <div style={{ position: 'relative' }}>
+                <div style={{
+                  position: 'absolute', top: -4, left: -10, right: -10, bottom: -10,
+                  background: 'rgba(156,163,175,0.30)',
+                  backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
+                  borderRadius: 16, opacity: 1, pointerEvents: 'none',
+                }} />
+                <GlassFolder label={first.label} href={`/work/${first.slug}`} open={undefined} art="none" backColor="#008859" seed={7} action="none" hideLabel appear={false} width={folderW} files={projectToFiles(first, `/work/${first.slug}`)} />
+              </div>
+              <div style={{ isolation: 'isolate', textAlign: 'center', background: '#0067EA', borderRadius: 6, padding: '4px 10px', maxWidth: folderW, width: 'fit-content' }}>
+                <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <span style={{ fontWeight: 500, color: '#ffffff' }}>{first.label}</span>
+                  {first.metric && <span style={{ fontWeight: 500, color: '#ffffff' }}> {first.metric} {first.metricLabel}</span>}
+                </p>
+              </div>
+            </>
+          )}
+          {dragging === 'second' && second && (
+            <>
+              <div style={{ position: 'relative' }}>
+                <div style={{
+                  position: 'absolute', top: -4, left: -10, right: -10, bottom: -10,
+                  background: 'rgba(156,163,175,0.30)',
+                  backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
+                  borderRadius: 16, opacity: 1, pointerEvents: 'none',
+                }} />
+                <GlassFolder label={second.label} href={`/work/${second.slug}`} open={undefined} art="none" backColor="#031061" seed={12} action="none" hideLabel appear={false} width={folderW} files={projectToFiles(second, `/work/${second.slug}`)} />
+              </div>
+              <div style={{ isolation: 'isolate', textAlign: 'center', background: '#0067EA', borderRadius: 6, padding: '4px 10px', maxWidth: folderW, width: 'fit-content' }}>
+                <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <span style={{ fontWeight: 500, color: '#ffffff' }}>{second.label}</span>
+                  {second.metric && <span style={{ fontWeight: 500, color: '#ffffff' }}> {second.metric} {second.metricLabel}</span>}
+                </p>
+              </div>
+            </>
+          )}
+          {dragging === 'demo' && (() => {
+            const phoneW = Math.round(folderW * 0.62)
+            return (
+              <>
+                <div style={{ position: 'relative' }}>
+                  <img src="/propina-start.png" alt="Propina Demo" draggable={false} width={phoneW}
+                    style={{ width: phoneW, height: 'auto', display: 'block', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }} />
+                  <div style={{
+                    position: 'absolute', top: -4, left: -8, right: -8, bottom: -8,
+                    background: 'rgba(156,163,175,0.30)',
+                    backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
+                    borderRadius: 14, opacity: 1, pointerEvents: 'none', zIndex: -1,
+                  }} />
+                </div>
+                <div style={{ isolation: 'isolate', textAlign: 'center', background: '#0067EA', borderRadius: 6, padding: '4px 10px', width: 'fit-content', maxWidth: folderW }}>
+                  <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, whiteSpace: 'nowrap' }}>
+                    <span style={{ fontWeight: 500, color: '#ffffff' }}>Proina_demo.html</span>
+                  </p>
+                </div>
+              </>
+            )
+          })()}
+        </div>,
+        document.body
+      )}
+
+      <AnimatePresence>
+        {demoOpen && <MacWindow url="/demo/propi?embed" onClose={() => setDemoOpen(false)} />}
+      </AnimatePresence>
     </div>
   )
 }
@@ -516,7 +879,12 @@ function StackSection() {
 export default function Home() {
   useThemeColor('#ffffff')
   const [emailCopied, setEmailCopied] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const reducedMotion = useReducedMotion()
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768)
+  }, [])
 
   useEffect(() => {
     document.title = 'Cristobal Lemoine — Staff Product Designer'
@@ -551,13 +919,77 @@ export default function Home() {
   }, [])
 
   const pStyle: React.CSSProperties = {
-    fontSize: '1rem',
+    fontSize: '1.15rem',
     lineHeight: 1.7,
     fontWeight: 400,
-    textWrap: 'pretty',
-    margin: '0 0 20px',
+    textWrap: 'pretty' as React.CSSProperties['textWrap'],
+    margin: 0,
     color: 'rgba(0,0,0,0.65)',
   }
+
+  const pStyleMobile: React.CSSProperties = {
+    ...pStyle,
+    fontSize: '0.9375rem',
+  }
+
+  const photoBlock = (
+    <div style={{ marginBottom: 32 }}>
+      <div style={{ width: 88, height: 88, borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.10)', flexShrink: 0 }}>
+        <img
+          src="/team/cristobal-lemoine.webp"
+          alt="Cristobal Lemoine"
+          width={88} height={88}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '60% 0%', transform: 'scale(1.35) translateY(-8%)', transformOrigin: '60% 0%' }}
+        />
+      </div>
+    </div>
+  )
+
+  const bioPanelContent = (
+    <>
+      {photoBlock}
+      {/* Name */}
+      <div style={{ margin: '0 0 32px' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 500, fontFamily: 'Barlow, sans-serif', color: '#0d0d0d', lineHeight: 1.2, margin: '0 0 4px' }}>
+          Cristobal Lemoine
+        </h1>
+        <p style={{ fontSize: '1rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
+          Staff Product Designer
+        </p>
+      </div>
+      {/* Bio — full */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <p style={pStyle}>
+          Based in Buenos Aires. Currently at EY, previously at MODO, HeySam and Drixit. 9 years across fintech, AI and IoT, working with products that reach 6M+ people.
+        </p>
+        <p style={pStyle}>
+          Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link">uxbs</a>, a YouTube channel and lab about product design and what happens when designers start building. I'm in this because design is one of the few tools that can genuinely change how people experience the world.
+        </p>
+        <p style={pStyle}>
+          If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link">let's talk</a>.
+        </p>
+      </div>
+    </>
+  )
+
+  const bioPanelMobile = (
+    <>
+      {photoBlock}
+      {/* Name */}
+      <div style={{ margin: '0 0 24px' }}>
+        <h1 style={{ fontSize: '1.25rem', fontWeight: 500, fontFamily: 'Barlow, sans-serif', color: '#0d0d0d', lineHeight: 1.2, margin: '0 0 4px' }}>
+          Cristobal Lemoine
+        </h1>
+        <p style={{ fontSize: '0.875rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
+          Staff Product Designer
+        </p>
+      </div>
+      {/* Bio — short */}
+      <p style={pStyleMobile}>
+        Based in Buenos Aires. Currently at EY, previously at MODO, HeySam and Drixit. 9 years across fintech, AI and IoT, working with products that reach 6M+ people.
+      </p>
+    </>
+  )
 
   return (
     <div className="home-dot-bg" style={{ minHeight: '100vh', fontFamily: 'Barlow, sans-serif', color: '#0d0d0d' }}>
@@ -565,67 +997,64 @@ export default function Home() {
       <div className="gradient-blur-bottom" />
       <AppDock />
 
-      <main id="main-content" className="home-main" tabIndex={-1} style={{ outline: 'none' }}>
-        <div className="mx-auto w-full max-w-6xl px-6">
+      <main id="main-content" tabIndex={-1} style={{ outline: 'none' }}>
 
-          <Card style={{ padding: '40px 48px', margin: '0 auto 100px', maxWidth: 680 }}>
+        {isMobile ? (
+          // ── Mobile: single card, stacked layout ──────────────────────────────
+          <div className="home-main">
+            <div className="mx-auto w-full max-w-6xl px-6">
+              <Card style={{ padding: '32px 24px', margin: '0 auto 100px', maxWidth: 680 }}>
+                {bioPanelMobile}
+                <Divider />
+                <div id="work"><WorkFolders /></div>
+                <Divider />
+                <GitHubActivitySection />
+                <Divider />
+                <StackSection />
+                <Divider />
+                <PersonalSection />
+              </Card>
+            </div>
+          </div>
+        ) : (
+          // ── Desktop: 6-col split hero + card below ────────────────────────────
+          <>
+            {/* Hero: bio left (cols 2-3), folders right (cols 4-5) */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(6, 1fr)',
+              gap: 'clamp(32px, 4vw, 64px)',
+              padding: '0 20px',
+              alignItems: 'flex-start',
+              paddingTop: 'clamp(120px, 15vh, 180px)',
+              paddingBottom: 80,
+              boxSizing: 'border-box',
+            }}>
+              {/* Bio panel */}
+              <div style={{ gridColumn: '2 / 4', display: 'flex', flexDirection: 'column' }}>
+                {bioPanelContent}
+              </div>
 
-            {/* Photo */}
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ width: 88, height: 88, borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.10)', flexShrink: 0 }}>
-                <img
-                  src="/team/cristobal-lemoine.webp"
-                  alt="Cristobal Lemoine"
-                  width={88} height={88}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '60% 0%', transform: 'scale(1.35) translateY(-8%)', transformOrigin: '60% 0%' }}
-                />
+              {/* Folders panel */}
+              <div id="work" style={{ gridColumn: '4 / 6', alignSelf: 'center' }}>
+                <WorkFolders />
               </div>
             </div>
 
-            {/* Name */}
-            <div style={{ margin: '0 0 32px' }}>
-              <h1 style={{ fontSize: '0.875rem', fontWeight: 400, fontFamily: 'Barlow, sans-serif', color: '#0d0d0d', lineHeight: 1.3, margin: 0 }}>
-                Cristobal Lemoine
-              </h1>
-              <p style={{ fontSize: '0.875rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
-                Staff Product Designer
-              </p>
+            {/* Bottom sections */}
+            <div className="mx-auto w-full max-w-6xl px-6" style={{ paddingBottom: 100 }}>
+              <div style={{ margin: '0 auto', maxWidth: 680, padding: '40px 48px 0' }}>
+                <GitHubActivitySection />
+                <Divider />
+                <StackSection />
+                <Divider />
+                <PersonalSection />
+              </div>
             </div>
+          </>
+        )}
 
-            {/* Bio */}
-            <div style={{ marginBottom: 0 }}>
-              <p style={{ ...pStyle, margin: 0, fontSize: '0.875rem' }}>
-                Based in Buenos Aires. Currently at EY, previously at MODO, HeySam and Drixit. 9 years across fintech, AI and IoT, working with products that reach 6M+ people.
-              </p>
-              <p className="bio-desktop-only" style={{ ...pStyle, margin: '12px 0 0', fontSize: '0.875rem' }}>
-                Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link">uxbs</a>, a YouTube channel and lab about product design and what happens when designers start building. I'm in this because design is one of the few tools that can genuinely change how people experience the world.
-              </p>
-              <p className="bio-desktop-only" style={{ ...pStyle, margin: '12px 0 0', fontSize: '0.875rem' }}>
-                If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link">let's talk</a>.
-              </p>
-            </div>
-
-            <Divider />
-            <div id="work">
-            <WorkFolders />
-            </div>
-
-            <Divider />
-            <ExperienceSection />
-
-            <Divider />
-            <GitHubActivitySection />
-
-            <Divider />
-            <StackSection />
-
-            <Divider />
-            <PersonalSection />
-
-          </Card>
-        </div>
       </main>
-
 
       {/* Floating email hint — bottom right (desktop/keyboard only) */}
       <div className="email-hint" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
