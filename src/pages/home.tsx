@@ -380,7 +380,7 @@ function WorkFolders() {
     ? Math.min(130, Math.floor((containerW - gap) / 2))
     : 120
   // Desktop-only: stagger Loyalty downward; on mobile align to top
-  const loyaltyMarginTop = containerW > 480 ? 72 : 0
+  const loyaltyMarginTop = typeof window !== 'undefined' && window.innerWidth >= 768 ? 110 : 0
 
   const visible = projects?.filter(p => !p.locked) ?? []
   const [first, second] = visible
