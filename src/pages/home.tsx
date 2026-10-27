@@ -289,9 +289,79 @@ function MacWindow({ url, onClose }: { url: string; onClose: () => void }) {
   )
 }
 
+// ─── Selected Projects ────────────────────────────────────────────────────────
+
+const PROJECTS_DATA = [
+  {
+    slug: 'fintech-tipping-flow',
+    title: 'Propina',
+    image: '/propina-start.png',
+  },
+  {
+    slug: 'loyalty-club-payments',
+    title: 'Loyalty Club',
+    image: '/card-2.png',
+  },
+]
+
+function SelectedProjectsSection() {
+  const { data: projects } = useCaseStudies()
+  const visible = projects?.filter(p => !p.locked) ?? []
+  const [first, second] = visible
+  const folderW = 130
+
+  if (!first && !second) return null
+
+  return (
+    <div>
+      <SectionLabel>Selected projects</SectionLabel>
+      <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+        {first && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <GlassFolder
+              label={first.label}
+              href={`/work/${first.slug}`}
+              open={undefined}
+              art="none"
+              backColor="#008859"
+              seed={7}
+              action="none"
+              hideLabel
+              appear={true}
+              appearDelay={0}
+              width={folderW}
+              files={projectToFiles(first, `/work/${first.slug}`)}
+            />
+            <p style={{ fontSize: '0.75rem', fontWeight: 500, color: '#0d0d0d', margin: 0, textAlign: 'center', maxWidth: folderW }}>{first.label}</p>
+          </div>
+        )}
+        {second && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <GlassFolder
+              label={second.label}
+              href={`/work/${second.slug}`}
+              open={undefined}
+              art="none"
+              backColor="#031061"
+              seed={12}
+              action="none"
+              hideLabel
+              appear={true}
+              appearDelay={0.06}
+              width={folderW}
+              files={projectToFiles(second, `/work/${second.slug}`)}
+            />
+            <p style={{ fontSize: '0.75rem', fontWeight: 500, color: '#0d0d0d', margin: 0, textAlign: 'center', maxWidth: folderW }}>{second.label}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 type DragItem = 'first' | 'second' | 'demo'
 
-function WorkFolders() {
+function WorkFolders({ mobile = false }: { mobile?: boolean }) {
   const { data: projects, loading } = useCaseStudies()
   const containerRef = useRef<HTMLDivElement>(null)
   const firstRef  = useRef<HTMLDivElement>(null)
@@ -318,6 +388,7 @@ function WorkFolders() {
   // Attach move/up listeners at window level so tracking never breaks when
   // the pointer leaves the element (React synthetic events stop firing then).
   const onItemPointerDown = useCallback((item: DragItem) => (e: React.PointerEvent<HTMLDivElement>) => {
+    if (mobile) return // no drag on mobile
     e.preventDefault() // stop browser native drag on images/links
     dragStartRef.current = { x: e.clientX, y: e.clientY }
     hasDraggedRef.current = false
@@ -379,10 +450,7 @@ function WorkFolders() {
   const folderW = containerW > 0
     ? Math.min(130, Math.floor((containerW - gap) / 2))
     : 120
-  // Desktop-only: stagger Loyalty downward; on mobile align to top
-  const loyaltyMarginTop = typeof window !== 'undefined' && window.innerWidth >= 768 ? 110 : 0
-
-  const visible = projects?.filter(p => !p.locked) ?? []
+const visible = projects?.filter(p => !p.locked) ?? []
   const [first, second] = visible
 
   if (loading) {
@@ -397,151 +465,96 @@ function WorkFolders() {
     )
   }
 
+  const phoneW = Math.round(folderW * 0.62)
+
+  // ── Item renderers ────────────────────────────────────────────────────────
+
+  const propinItem = first && (
+    <div
+      ref={firstRef}
+      style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12, touchAction: mobile ? 'auto' : 'none', transform: mobile ? undefined : `translate(${offsets.first.dx}px, ${offsets.first.dy}px)`, transition: 'none', willChange: mobile ? undefined : 'transform', opacity: dragging === 'first' ? 0.4 : 1 }}
+      onMouseEnter={() => setFirstHovered(true)}
+      onMouseLeave={() => { if (dragging !== 'first') setFirstHovered(false) }}
+      onPointerDown={onItemPointerDown('first')}
+      onClickCapture={(e) => { if (justDraggedRef.current) { justDraggedRef.current = false; e.preventDefault() } }}
+    >
+      <div style={{ position: 'relative' }}>
+        <div style={{ position: 'absolute', top: -4, left: -10, right: -10, bottom: -10, background: 'rgba(156,163,175,0.30)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', borderRadius: 16, opacity: firstActive ? 1 : 0, transition: 'opacity 0.15s ease', pointerEvents: 'none' }} />
+        <GlassFolder label={first.label} href={`/work/${first.slug}`} open={undefined} art="none" backColor="#008859" seed={7} action="none" hideLabel appear={true} appearDelay={0} width={folderW} files={projectToFiles(first, `/work/${first.slug}`)} />
+      </div>
+      <div style={{ isolation: 'isolate', textAlign: 'center', background: firstActive ? '#0067EA' : 'transparent', borderRadius: firstActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', maxWidth: folderW, width: 'fit-content' }}>
+        <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <span style={{ fontWeight: 500, color: firstActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>{first.label}</span>
+          {first.metric && <span style={{ fontWeight: 500, color: firstActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}> {first.metric} {first.metricLabel}</span>}
+        </p>
+      </div>
+    </div>
+  )
+
+  const demoItem = (
+    <div
+      style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12, touchAction: mobile ? 'auto' : 'none', transform: mobile ? undefined : `translate(${offsets.demo.dx}px, ${offsets.demo.dy}px)`, transition: 'none', willChange: mobile ? undefined : 'transform', opacity: dragging === 'demo' ? 0.4 : 1 }}
+      onMouseEnter={() => setDemoHovered(true)}
+      onMouseLeave={() => { if (dragging !== 'demo') setDemoHovered(false) }}
+      onPointerDown={onItemPointerDown('demo')}
+      onClickCapture={(e) => { if (justDraggedRef.current) { justDraggedRef.current = false; e.preventDefault() } }}
+    >
+      <div style={{ position: 'relative' }}>
+        <button aria-label="Open Propina Demo" style={{ display: 'block', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <img src="/propina-start.png" alt="Propina Demo" draggable={false} width={phoneW} style={{ width: phoneW, height: 'auto', display: 'block', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }} />
+        </button>
+        <div style={{ position: 'absolute', top: -4, left: -8, right: -8, bottom: -8, background: 'rgba(156,163,175,0.30)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', borderRadius: 14, opacity: demoActive ? 1 : 0, transition: 'opacity 0.15s ease', pointerEvents: 'none', zIndex: -1 }} />
+      </div>
+      <div style={{ isolation: 'isolate', textAlign: 'center', background: demoActive ? '#0067EA' : 'transparent', borderRadius: demoActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', width: 'fit-content', maxWidth: phoneW + 20 }}>
+        <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, whiteSpace: 'nowrap' }}>
+          <span style={{ fontWeight: 500, color: demoActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>Proina_demo.html</span>
+        </p>
+      </div>
+    </div>
+  )
+
+  const loyaltyItem = second && (
+    <div
+      ref={secondRef}
+      style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12, touchAction: mobile ? 'auto' : 'none', transform: mobile ? undefined : `translate(${offsets.second.dx}px, ${offsets.second.dy}px)`, transition: 'none', willChange: mobile ? undefined : 'transform', opacity: dragging === 'second' ? 0.4 : 1 }}
+      onMouseEnter={() => setSecondHovered(true)}
+      onMouseLeave={() => { if (dragging !== 'second') setSecondHovered(false) }}
+      onPointerDown={onItemPointerDown('second')}
+      onClickCapture={(e) => { if (justDraggedRef.current) { justDraggedRef.current = false; e.preventDefault() } }}
+    >
+      <div style={{ position: 'relative' }}>
+        <div style={{ position: 'absolute', top: -4, left: -10, right: -10, bottom: -10, background: 'rgba(156,163,175,0.30)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', borderRadius: 16, opacity: secondActive ? 1 : 0, transition: 'opacity 0.15s ease', pointerEvents: 'none' }} />
+        <GlassFolder label={second.label} href={`/work/${second.slug}`} open={undefined} art="none" backColor="#031061" seed={12} action="none" hideLabel appear={true} appearDelay={120} width={folderW} files={projectToFiles(second, `/work/${second.slug}`)} />
+      </div>
+      <div style={{ isolation: 'isolate', textAlign: 'center', background: secondActive ? '#0067EA' : 'transparent', borderRadius: secondActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', maxWidth: folderW, width: 'fit-content' }}>
+        <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <span style={{ fontWeight: 500, color: secondActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>{second.label}</span>
+          {second.metric && <span style={{ fontWeight: 500, color: secondActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}> {second.metric} {second.metricLabel}</span>}
+        </p>
+      </div>
+    </div>
+  )
+
   return (
     <div>
-      <div ref={containerRef} style={{ display: 'flex', flexDirection: 'row', gap, alignItems: 'flex-start', justifyContent: 'center' }}>
-        {/* Left column: Propina folder + Demo phone thumb */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap, alignItems: 'center' }}>
-          {first && (
-            <div
-              ref={firstRef}
-              style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12, touchAction: 'none', transform: `translate(${offsets.first.dx}px, ${offsets.first.dy}px)`, transition: 'none', willChange: 'transform', opacity: dragging === 'first' ? 0.4 : 1 }}
-              onMouseEnter={() => setFirstHovered(true)}
-              onMouseLeave={() => { if (dragging !== 'first') setFirstHovered(false) }}
-              onPointerDown={onItemPointerDown('first')}
-              onClickCapture={(e) => { if (justDraggedRef.current) { justDraggedRef.current = false; e.preventDefault() } }}
-            >
-              {/* Folder only — overlay scoped here so it never touches the label */}
-              <div style={{ position: 'relative' }}>
-                <div style={{
-                  position: 'absolute', top: -4, left: -10, right: -10, bottom: -10,
-                  background: 'rgba(156,163,175,0.30)',
-                  backdropFilter: 'blur(4px)',
-                  WebkitBackdropFilter: 'blur(4px)',
-                  borderRadius: 16,
-                  opacity: firstActive ? 1 : 0,
-                  transition: 'opacity 0.15s ease',
-                  pointerEvents: 'none',
-                }} />
-                <GlassFolder
-                  label={first.label}
-                  href={`/work/${first.slug}`}
-                  open={undefined}
-                  art="none"
-                  backColor="#008859"
-                  seed={7}
-                  action="none"
-                  hideLabel
-                  appear={true}
-                  appearDelay={0}
-                  width={folderW}
-                  files={projectToFiles(first, `/work/${first.slug}`)}
-                />
-              </div>
-              {/* Label */}
-              <div style={{ isolation: 'isolate', textAlign: 'center', background: firstActive ? '#0067EA' : 'transparent', borderRadius: firstActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', maxWidth: folderW, width: 'fit-content' }}>
-                <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                  <span style={{ fontWeight: 500, color: firstActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>{first.label}</span>
-                  {first.metric && <span style={{ fontWeight: 500, color: firstActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}> {first.metric} {first.metricLabel}</span>}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Phone demo thumbnail */}
-          {(() => {
-            const phoneW = Math.round(folderW * 0.62)
-            return (
-              <div
-                style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12, touchAction: 'none', transform: `translate(${offsets.demo.dx}px, ${offsets.demo.dy}px)`, transition: 'none', willChange: 'transform', opacity: dragging === 'demo' ? 0.4 : 1 }}
-                onMouseEnter={() => setDemoHovered(true)}
-                onMouseLeave={() => { if (dragging !== 'demo') setDemoHovered(false) }}
-                onPointerDown={onItemPointerDown('demo')}
-                onClickCapture={(e) => { if (justDraggedRef.current) { justDraggedRef.current = false; e.preventDefault() } }}
-              >
-                {/* Image only — overlay scoped here, comes first so image paints on top */}
-                <div style={{ position: 'relative' }}>
-                  <button
-                    aria-label="Open Propina Demo"
-                    style={{ display: 'block', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-                  >
-                    <img
-                      src="/propina-start.png"
-                      alt="Propina Demo"
-                      draggable={false}
-                      width={phoneW}
-                      style={{ width: phoneW, height: 'auto', display: 'block', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }}
-                    />
-                  </button>
-                  <div style={{
-                    position: 'absolute', top: -4, left: -8, right: -8, bottom: -8,
-                    background: 'rgba(156,163,175,0.30)',
-                    backdropFilter: 'blur(4px)',
-                    WebkitBackdropFilter: 'blur(4px)',
-                    borderRadius: 14,
-                    opacity: demoActive ? 1 : 0,
-                    transition: 'opacity 0.15s ease',
-                    pointerEvents: 'none',
-                    zIndex: -1,
-                  }} />
-                </div>
-                {/* Label */}
-                <div style={{ isolation: 'isolate', textAlign: 'center', background: demoActive ? '#0067EA' : 'transparent', borderRadius: demoActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', width: 'fit-content', maxWidth: folderW }}>
-                  <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, whiteSpace: 'nowrap' }}>
-                    <span style={{ fontWeight: 500, color: demoActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>Proina_demo.html</span>
-                  </p>
-                </div>
-              </div>
-            )
-          })()}
-        </div>
-
-        {second && (
-          <div
-            ref={secondRef}
-            style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12, touchAction: 'none', marginTop: loyaltyMarginTop, transform: `translate(${offsets.second.dx}px, ${offsets.second.dy}px)`, transition: 'none', willChange: 'transform', opacity: dragging === 'second' ? 0.4 : 1 }}
-            onMouseEnter={() => setSecondHovered(true)}
-            onMouseLeave={() => { if (dragging !== 'second') setSecondHovered(false) }}
-            onPointerDown={onItemPointerDown('second')}
-            onClickCapture={(e) => { if (justDraggedRef.current) { justDraggedRef.current = false; e.preventDefault() } }}
-          >
-            {/* Folder only — overlay scoped here so it never touches the label */}
-            <div style={{ position: 'relative' }}>
-              <div style={{
-                position: 'absolute', top: -4, left: -10, right: -10, bottom: -10,
-                background: 'rgba(156,163,175,0.30)',
-                backdropFilter: 'blur(4px)',
-                WebkitBackdropFilter: 'blur(4px)',
-                borderRadius: 16,
-                opacity: secondActive ? 1 : 0,
-                transition: 'opacity 0.15s ease',
-                pointerEvents: 'none',
-              }} />
-              <GlassFolder
-                label={second.label}
-                href={`/work/${second.slug}`}
-                open={undefined}
-                art="none"
-                backColor="#031061"
-                seed={12}
-                action="none"
-                hideLabel
-                appear={true}
-                appearDelay={120}
-                width={folderW}
-                files={projectToFiles(second, `/work/${second.slug}`)}
-              />
-            </div>
-            {/* Label: macOS-style continuous text, wraps to 2 lines */}
-            <div style={{ isolation: 'isolate', textAlign: 'center', background: secondActive ? '#0067EA' : 'transparent', borderRadius: secondActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', maxWidth: folderW, width: 'fit-content' }}>
-              <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                <span style={{ fontWeight: 500, color: secondActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>{second.label}</span>
-                {second.metric && <span style={{ fontWeight: 500, color: secondActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}> {second.metric} {second.metricLabel}</span>}
-              </p>
-            </div>
+      {mobile ? (
+        /* Mobile: row 1 = Propina + Demo, row 2 = Loyalty */
+        <div ref={containerRef} style={{ display: 'flex', flexDirection: 'column', gap, alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', gap, alignItems: 'flex-end' }}>
+            {propinItem}
+            {demoItem}
           </div>
-        )}
-      </div>
+          {loyaltyItem}
+        </div>
+      ) : (
+        /* Desktop: flat row — Propina | Demo | Loyalty */
+        <div ref={containerRef} style={{ display: 'flex', flexDirection: 'row', gap, alignItems: 'flex-end', justifyContent: 'flex-start' }}>
+          {propinItem}
+          {demoItem}
+          {loyaltyItem}
+        </div>
+      )}
+
 
       {/* Ghost portal — floats above everything while dragging */}
       {dragging && ReactDOM.createPortal(
@@ -598,28 +611,25 @@ function WorkFolders() {
               </div>
             </>
           )}
-          {dragging === 'demo' && (() => {
-            const phoneW = Math.round(folderW * 0.62)
-            return (
-              <>
-                <div style={{ position: 'relative' }}>
-                  <img src="/propina-start.png" alt="Propina Demo" draggable={false} width={phoneW}
-                    style={{ width: phoneW, height: 'auto', display: 'block', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }} />
-                  <div style={{
-                    position: 'absolute', top: -4, left: -8, right: -8, bottom: -8,
-                    background: 'rgba(156,163,175,0.30)',
-                    backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
-                    borderRadius: 14, opacity: 1, pointerEvents: 'none', zIndex: -1,
-                  }} />
-                </div>
-                <div style={{ isolation: 'isolate', textAlign: 'center', background: '#0067EA', borderRadius: 6, padding: '4px 10px', width: 'fit-content', maxWidth: folderW }}>
-                  <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, whiteSpace: 'nowrap' }}>
-                    <span style={{ fontWeight: 500, color: '#ffffff' }}>Proina_demo.html</span>
-                  </p>
-                </div>
-              </>
-            )
-          })()}
+          {dragging === 'demo' && (
+            <>
+              <div style={{ position: 'relative' }}>
+                <img src="/propina-start.png" alt="Propina Demo" draggable={false} width={phoneW}
+                  style={{ width: phoneW, height: 'auto', display: 'block', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }} />
+                <div style={{
+                  position: 'absolute', top: -4, left: -8, right: -8, bottom: -8,
+                  background: 'rgba(156,163,175,0.30)',
+                  backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
+                  borderRadius: 14, opacity: 1, pointerEvents: 'none', zIndex: -1,
+                }} />
+              </div>
+              <div style={{ isolation: 'isolate', textAlign: 'center', background: '#0067EA', borderRadius: 6, padding: '4px 10px', width: 'fit-content', maxWidth: phoneW + 20 }}>
+                <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, whiteSpace: 'nowrap' }}>
+                  <span style={{ fontWeight: 500, color: '#ffffff' }}>Proina_demo.html</span>
+                </p>
+              </div>
+            </>
+          )}
         </div>,
         document.body
       )}
@@ -691,16 +701,6 @@ function PersonalSection() {
   return (
     <div>
       <SectionLabel>Personal</SectionLabel>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 0', alignItems: 'center', marginBottom: 16 }}>
-        {PERSONAL_FACTS.map((fact, i) => (
-          <span key={fact} style={{ display: 'inline-flex', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.875rem', color: 'rgba(0,0,0,0.55)' }}>{fact}</span>
-            {i < PERSONAL_FACTS.length - 1 && (
-              <span style={{ fontSize: '0.875rem', color: 'rgba(0,0,0,0.2)', margin: '0 10px' }}>·</span>
-            )}
-          </span>
-        ))}
-      </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         {PERSONAL_IMAGES.map((img) => (
           <div
@@ -919,7 +919,7 @@ export default function Home() {
   }, [])
 
   const pStyle: React.CSSProperties = {
-    fontSize: '1.15rem',
+    fontSize: '1rem',
     lineHeight: 1.7,
     fontWeight: 400,
     textWrap: 'pretty' as React.CSSProperties['textWrap'],
@@ -950,7 +950,7 @@ export default function Home() {
       {photoBlock}
       {/* Name */}
       <div style={{ margin: '0 0 32px' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 500, fontFamily: 'Barlow, sans-serif', color: '#0d0d0d', lineHeight: 1.2, margin: '0 0 4px' }}>
+        <h1 style={{ fontSize: '1rem', fontWeight: 500, fontFamily: 'Barlow, sans-serif', color: '#0d0d0d', lineHeight: 1.2, margin: '0 0 4px' }}>
           Cristobal Lemoine
         </h1>
         <p style={{ fontSize: '1rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
@@ -963,7 +963,7 @@ export default function Home() {
           Based in Buenos Aires. Currently at EY, previously at MODO, HeySam and Drixit. 9 years across fintech, AI and IoT, working with products that reach 6M+ people.
         </p>
         <p style={pStyle}>
-          Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link">uxbs</a>, a YouTube channel and lab about product design and what happens when designers start building. I'm in this because design is one of the few tools that can genuinely change how people experience the world.
+          Also building uxbs, a YouTube channel and lab about product design and what happens when designers start building. I'm in this because design is one of the few tools that can genuinely change how people experience the world.
         </p>
         <p style={pStyle}>
           If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link">let's talk</a>.
@@ -977,7 +977,7 @@ export default function Home() {
       {photoBlock}
       {/* Name */}
       <div style={{ margin: '0 0 24px' }}>
-        <h1 style={{ fontSize: '1.25rem', fontWeight: 500, fontFamily: 'Barlow, sans-serif', color: '#0d0d0d', lineHeight: 1.2, margin: '0 0 4px' }}>
+        <h1 style={{ fontSize: '0.875rem', fontWeight: 500, fontFamily: 'Barlow, sans-serif', color: '#0d0d0d', lineHeight: 1.2, margin: '0 0 4px' }}>
           Cristobal Lemoine
         </h1>
         <p style={{ fontSize: '0.875rem', fontWeight: 400, color: 'rgba(0,0,0,0.45)', lineHeight: 1.4, margin: 0 }}>
@@ -985,9 +985,17 @@ export default function Home() {
         </p>
       </div>
       {/* Bio — short */}
-      <p style={pStyleMobile}>
-        Based in Buenos Aires. Currently at EY, previously at MODO, HeySam and Drixit. 9 years across fintech, AI and IoT, working with products that reach 6M+ people.
-      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <p style={pStyleMobile}>
+          Based in Buenos Aires. Currently at EY, previously at MODO, HeySam and Drixit. 9 years across fintech, AI and IoT, working with products that reach 6M+ people.
+        </p>
+        <p style={pStyleMobile}>
+          Also building uxbs, a YouTube channel and lab about product design and what happens when designers start building. I'm in this because design is one of the few tools that can genuinely change how people experience the world.
+        </p>
+        <p style={pStyleMobile}>
+          If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link">let's talk</a>.
+        </p>
+      </div>
     </>
   )
 
@@ -1003,10 +1011,10 @@ export default function Home() {
           // ── Mobile: single card, stacked layout ──────────────────────────────
           <div className="home-main">
             <div className="mx-auto w-full max-w-6xl px-6">
-              <Card style={{ padding: '32px 24px', margin: '0 auto 100px', maxWidth: 680 }}>
+              <Card style={{ padding: '16px 24px 32px', margin: '0 auto 100px', maxWidth: 680 }}>
                 {bioPanelMobile}
                 <Divider />
-                <div id="work"><WorkFolders /></div>
+                <div id="work"><WorkFolders mobile /></div>
                 <Divider />
                 <GitHubActivitySection />
                 <Divider />
@@ -1017,41 +1025,29 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          // ── Desktop: 6-col split hero + card below ────────────────────────────
-          <>
-            {/* Hero: bio left (cols 2-3), folders right (cols 4-5) */}
+          // ── Desktop: content centered, folders + demo together ──────────────
+          <div style={{ position: 'relative', paddingTop: 'clamp(120px, 15vh, 180px)', paddingBottom: 100 }}>
+            {/* Main content — truly centered */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(6, 1fr)',
-              gap: 'clamp(32px, 4vw, 64px)',
-              padding: '0 20px',
-              alignItems: 'flex-start',
-              paddingTop: 'clamp(120px, 15vh, 180px)',
-              paddingBottom: 80,
-              boxSizing: 'border-box',
+              maxWidth: 560,
+              margin: '0 auto',
+              paddingTop: 0,
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingBottom: 100,
             }}>
-              {/* Bio panel */}
-              <div style={{ gridColumn: '2 / 4', display: 'flex', flexDirection: 'column' }}>
-                {bioPanelContent}
-              </div>
-
-              {/* Folders panel */}
-              <div id="work" style={{ gridColumn: '4 / 6', alignSelf: 'center' }}>
+              {bioPanelContent}
+              <Divider />
+              <div>
+                <SectionLabel>Selected projects</SectionLabel>
                 <WorkFolders />
               </div>
+              <Divider />
+              <GitHubActivitySection />
+              <Divider />
+              <PersonalSection />
             </div>
-
-            {/* Bottom sections */}
-            <div className="mx-auto w-full max-w-6xl px-6" style={{ paddingBottom: 100 }}>
-              <div style={{ margin: '0 auto', maxWidth: 680, padding: '40px 48px 0' }}>
-                <GitHubActivitySection />
-                <Divider />
-                <StackSection />
-                <Divider />
-                <PersonalSection />
-              </div>
-            </div>
-          </>
+          </div>
         )}
 
       </main>
