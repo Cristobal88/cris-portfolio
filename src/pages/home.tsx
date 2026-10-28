@@ -505,7 +505,7 @@ const visible = projects?.filter(p => !p.locked) ?? []
         </button>
         <div style={{ position: 'absolute', top: -4, left: -8, right: -8, bottom: -8, background: 'rgba(156,163,175,0.30)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', borderRadius: 14, opacity: demoActive ? 1 : 0, transition: 'opacity 0.15s ease', pointerEvents: 'none', zIndex: -1 }} />
       </div>
-      <div style={{ isolation: 'isolate', textAlign: 'center', background: demoActive ? '#0067EA' : 'transparent', borderRadius: demoActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', width: 'fit-content', maxWidth: phoneW + 20 }}>
+      <div style={{ isolation: 'isolate', textAlign: 'center', background: demoActive ? '#0067EA' : 'transparent', borderRadius: demoActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', width: 'fit-content', maxWidth: 'none' }}>
         <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, whiteSpace: 'nowrap' }}>
           <span style={{ fontWeight: 500, color: demoActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>Proina_demo.html</span>
         </p>
@@ -623,7 +623,7 @@ const visible = projects?.filter(p => !p.locked) ?? []
                   borderRadius: 14, opacity: 1, pointerEvents: 'none', zIndex: -1,
                 }} />
               </div>
-              <div style={{ isolation: 'isolate', textAlign: 'center', background: '#0067EA', borderRadius: 6, padding: '4px 10px', width: 'fit-content', maxWidth: phoneW + 20 }}>
+              <div style={{ isolation: 'isolate', textAlign: 'center', background: '#0067EA', borderRadius: 6, padding: '4px 10px', width: 'fit-content', maxWidth: 'none' }}>
                 <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, whiteSpace: 'nowrap' }}>
                   <span style={{ fontWeight: 500, color: '#ffffff' }}>Proina_demo.html</span>
                 </p>
@@ -924,13 +924,18 @@ export default function Home() {
     fontWeight: 400,
     textWrap: 'pretty' as React.CSSProperties['textWrap'],
     margin: 0,
-    color: 'rgba(0,0,0,0.65)',
+    color: 'rgba(0,0,0,0.35)',
   }
 
   const pStyleMobile: React.CSSProperties = {
     ...pStyle,
     fontSize: '0.9375rem',
   }
+
+  // Keyword highlight — dark on dimmed base
+  const kw = (text: string) => (
+    <span style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>{text}</span>
+  )
 
   const photoBlock = (
     <div style={{ marginBottom: 32 }}>
@@ -960,13 +965,13 @@ export default function Home() {
       {/* Bio — full */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <p style={pStyle}>
-          Based in Buenos Aires. Currently at EY, previously at MODO, HeySam and Drixit. 9 years across fintech, AI and IoT, working with products that reach 6M+ people.
+          Based in Buenos Aires. Currently at {kw('EY')}, previously at {kw('MODO')}, {kw('HeySam')} and {kw('Drixit')}. {kw('9 years')} across {kw('fintech, AI and IoT')}, working with products that reach {kw('6M+ people')}.
         </p>
         <p style={pStyle}>
-          Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link">uxbs</a>, a YouTube channel and lab about product design and what happens when designers start building. I'm in this because design is one of the few tools that can genuinely change how people experience the world.
+          Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>uxbs</a>, a YouTube channel and lab about {kw('product design')} and what happens when {kw('designers start building')}. I'm in this because {kw('design')} is one of the few tools that can genuinely {kw('change how people experience the world')}.
         </p>
         <p style={pStyle}>
-          If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link">let's talk</a>.
+          If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>let's talk</a>.
         </p>
       </div>
     </>
@@ -987,20 +992,20 @@ export default function Home() {
       {/* Bio — short */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <p style={pStyleMobile}>
-          Based in Buenos Aires. Currently at EY, previously at MODO, HeySam and Drixit. 9 years across fintech, AI and IoT, working with products that reach 6M+ people.
+          Based in Buenos Aires. Currently at {kw('EY')}, previously at {kw('MODO')}, {kw('HeySam')} and {kw('Drixit')}. {kw('9 years')} across {kw('fintech, AI and IoT')}, working with products that reach {kw('6M+ people')}.
         </p>
         <p style={pStyleMobile}>
-          Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link">uxbs</a>, a YouTube channel and lab about product design and what happens when designers start building. I'm in this because design is one of the few tools that can genuinely change how people experience the world.
+          Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>uxbs</a>, a YouTube channel and lab about {kw('product design')} and what happens when {kw('designers start building')}. I'm in this because {kw('design')} is one of the few tools that can genuinely {kw('change how people experience the world')}.
         </p>
         <p style={pStyleMobile}>
-          If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link">let's talk</a>.
+          If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>let's talk</a>.
         </p>
       </div>
     </>
   )
 
   return (
-    <div className="home-dot-bg" style={{ minHeight: '100vh', fontFamily: 'Barlow, sans-serif', color: '#0d0d0d' }}>
+    <div style={{ minHeight: '100vh', fontFamily: 'Barlow, sans-serif', color: '#0d0d0d', backgroundColor: '#ffffff' }}>
       <div className="gradient-blur" />
       <div className="gradient-blur-bottom" />
       <AppDock />
@@ -1029,7 +1034,7 @@ export default function Home() {
           <div style={{ position: 'relative', paddingTop: 'clamp(120px, 15vh, 180px)', paddingBottom: 100 }}>
             {/* Main content — truly centered */}
             <div style={{
-              maxWidth: 560,
+              maxWidth: 700,
               margin: '0 auto',
               paddingTop: 0,
               paddingLeft: 20,
