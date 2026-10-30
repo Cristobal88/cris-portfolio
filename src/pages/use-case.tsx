@@ -459,7 +459,7 @@ export default function CaseStudy() {
 
   return (
     <div style={{ background: '#050505', color: T1, fontFamily: 'Barlow, sans-serif', minHeight: '100vh', overflowX: 'clip' }}>
-      <div className="gradient-blur" />
+      <div className="gradient-blur gradient-blur--dark" />
       <div className="gradient-blur-bottom" />
       <AppDock variant="dark" />
       <CaseStudyTOC items={tocItems} />
