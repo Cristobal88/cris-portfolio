@@ -261,7 +261,7 @@ function MacWindow({ url, onClose }: { url: string; onClose: () => void }) {
             <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#28C840', flexShrink: 0 }} />
           </div>
           {/* Title */}
-          <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#0d0d0d', letterSpacing: '-0.01em' }}>Proina_demo.html</span>
+          <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: '#0d0d0d', letterSpacing: '-0.01em' }}>Propina_demo.html</span>
           {/* Spacer */}
           <div />
         </div>
@@ -508,7 +508,7 @@ const visible = projects?.filter(p => !p.locked) ?? []
       </div>
       <div style={{ isolation: 'isolate', textAlign: 'center', background: demoActive ? '#0067EA' : 'transparent', borderRadius: demoActive ? 6 : 0, padding: '4px 10px', transition: 'all 0.15s ease', width: 'fit-content', maxWidth: 'none' }}>
         <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, whiteSpace: 'nowrap' }}>
-          <span style={{ fontWeight: 500, color: demoActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>Proina_demo.html</span>
+          <span style={{ fontWeight: 500, color: demoActive ? '#ffffff' : '#0d0d0d', transition: 'color 0.15s ease' }}>Propina_demo.html</span>
         </p>
       </div>
     </div>
@@ -626,7 +626,7 @@ const visible = projects?.filter(p => !p.locked) ?? []
               </div>
               <div style={{ isolation: 'isolate', textAlign: 'center', background: '#0067EA', borderRadius: 6, padding: '4px 10px', width: 'fit-content', maxWidth: 'none' }}>
                 <p style={{ fontSize: '0.75rem', lineHeight: 1.4, margin: 0, whiteSpace: 'nowrap' }}>
-                  <span style={{ fontWeight: 500, color: '#ffffff' }}>Proina_demo.html</span>
+                  <span style={{ fontWeight: 500, color: '#ffffff' }}>Propina_demo.html</span>
                 </p>
               </div>
             </>
