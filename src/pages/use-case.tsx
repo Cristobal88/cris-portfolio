@@ -453,7 +453,7 @@ export default function CaseStudy() {
   const tocItems = [
     { id: 'cs-problem',  label: 'The problem' },
     { id: 'cs-work',     label: 'Process'     },
-    ...(hasLiveDemo ? [{ id: 'cs-live-demo', label: 'Live demo', scrollBlock: 'center' as ScrollLogicalPosition }] : []),
+    ...(hasLiveDemo ? [{ id: 'cs-live-demo', label: 'Live demo', scrollBlock: 'start' as ScrollLogicalPosition }] : []),
     { id: 'cs-results',  label: 'Results'     },
   ]
 
