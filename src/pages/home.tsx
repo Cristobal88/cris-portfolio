@@ -497,6 +497,7 @@ const visible = projects?.filter(p => !p.locked) ?? []
       onMouseEnter={() => setDemoHovered(true)}
       onMouseLeave={() => { if (dragging !== 'demo') setDemoHovered(false) }}
       onPointerDown={onItemPointerDown('demo')}
+      onClick={mobile ? () => setDemoOpen(true) : undefined}
       onClickCapture={(e) => { if (justDraggedRef.current) { justDraggedRef.current = false; e.preventDefault() } }}
     >
       <div style={{ position: 'relative' }}>
