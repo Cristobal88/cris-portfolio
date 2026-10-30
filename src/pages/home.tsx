@@ -811,7 +811,7 @@ function GitHubActivitySection() {
               </div>
             ))}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, marginTop: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, marginTop: 8, visibility: 'hidden', height: 0, overflow: 'hidden' }}>
             <span style={labelStyle}>Less</span>
             {GH_COLORS.map((color, i) => (
               <div key={i} style={{ width: cell, height: cell, borderRadius: Math.max(3, Math.round(cell * 0.3)), background: color, flexShrink: 0 }} />
