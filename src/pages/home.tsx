@@ -787,7 +787,7 @@ function GitHubActivitySection() {
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
         <a href="https://github.com/Cristobal88" target="_blank" rel="noopener noreferrer"
           style={{ fontSize: '0.875rem', fontWeight: 400, letterSpacing: '0.01em', color: 'rgba(0,0,0,0.40)', textDecoration: 'none', padding: '6px 0', display: 'inline-block' }}>
-          GitHub Activity
+          Shipping goodies
         </a>
         {total !== null && (
           <span style={{ fontSize: '0.875rem', color: 'rgba(0,0,0,0.40)', fontWeight: 400 }}>
