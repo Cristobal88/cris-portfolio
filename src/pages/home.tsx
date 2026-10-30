@@ -790,8 +790,8 @@ function GitHubActivitySection() {
           GitHub Activity
         </a>
         {total !== null && (
-          <span style={{ fontSize: '0.875rem', color: 'rgba(0,0,0,0.40)', fontWeight: 400 }}>
-            <span style={{ fontWeight: 700, color: 'rgba(0,0,0,0.70)' }}>{total.toLocaleString()}</span> contributions in the last year
+          <span style={{ fontSize: '0.875rem', color: 'rgba(0,0,0,0.40)', fontWeight: 700 }}>
+            <span style={{ color: 'rgba(0,0,0,0.70)' }}>{total.toLocaleString()}</span> contributions in the last year
           </span>
         )}
       </div>
