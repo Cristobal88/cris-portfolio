@@ -23,3 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+
+# Local AI context and scratch files
+.claude/
+.scratch/
+*-preview.html
+*-corrections.html
+*-review.html
