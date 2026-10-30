@@ -770,8 +770,11 @@ function GitHubActivitySection() {
     return () => ro.disconnect()
   }, [])
 
-  const weeks = allWeeks.slice(-WEEKS_TO_SHOW)
-  const cell = containerW > 0 ? Math.floor((containerW - (WEEKS_TO_SHOW - 1) * GAP) / WEEKS_TO_SHOW) : 10
+  // Target cell size matches desktop — on smaller containers show fewer weeks
+  const TARGET_CELL = 15
+  const visibleWeeks = containerW > 0 ? Math.min(WEEKS_TO_SHOW, Math.floor((containerW + GAP) / (TARGET_CELL + GAP))) : WEEKS_TO_SHOW
+  const weeks = allWeeks.slice(-visibleWeeks)
+  const cell = containerW > 0 && visibleWeeks > 0 ? Math.floor((containerW - (visibleWeeks - 1) * GAP) / visibleWeeks) : TARGET_CELL
   const labelStyle: React.CSSProperties = { fontSize: '0.625rem', color: 'rgba(0,0,0,0.38)', fontWeight: 500, userSelect: 'none' }
 
   type CellTooltip = { date: string; count: number; x: number; y: number }
@@ -784,9 +787,9 @@ function GitHubActivitySection() {
 
   return (
     <div ref={containerRef}>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 14 }}>
         <a href="https://github.com/Cristobal88" target="_blank" rel="noopener noreferrer"
-          style={{ fontSize: '0.875rem', fontWeight: 400, letterSpacing: '0.01em', color: 'rgba(0,0,0,0.40)', textDecoration: 'none', padding: '6px 0', display: 'inline-block' }}>
+          style={{ fontSize: '0.875rem', fontWeight: 400, letterSpacing: '0.01em', color: 'rgba(0,0,0,0.40)', textDecoration: 'none', display: 'inline-block' }}>
           Shipping goodies
         </a>
         {total !== null && (
