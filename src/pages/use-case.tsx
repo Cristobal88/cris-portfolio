@@ -724,16 +724,15 @@ export default function CaseStudy() {
           <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 48 }}>
             {project.decisionTitle ?? 'The decision'}
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          <div style={{ borderTop: `1px solid ${BORDER}` }}>
             {project.keyDecisions.map((decision, i) => (
-              <div key={i} className="decision-grid decision-row" style={{ padding: '48px 0', borderTop: `1px solid ${BORDER}`, alignItems: 'start' }}>
-                <div>
-                  <div style={{ marginBottom: 16 }}>
-                    <AnimatedNumber value={`0${i + 1}`} style={{ fontFamily: 'Barlow, sans-serif', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.09em', color: T4 }} />
-                  </div>
-                  <p style={{ fontSize: '0.9375rem', lineHeight: 1.6, color: T3, margin: 0 }}>{decision.challenge}</p>
-                </div>
-                <p style={{ fontSize: 'clamp(16px, 1.5vw, 19px)', lineHeight: 1.75, color: T2, margin: 0 }}>{decision.solution}</p>
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '48px 1fr 1.2fr', gap: '0 48px', padding: '36px 0', borderBottom: `1px solid ${BORDER}`, alignItems: 'start' }}>
+                {/* Number */}
+                <span style={{ fontSize: '1rem', fontWeight: 400, color: T4, paddingTop: 3 }}>{i + 1}</span>
+                {/* Title */}
+                <p style={{ fontSize: 'clamp(17px, 1.6vw, 20px)', fontWeight: 700, lineHeight: 1.35, color: T1, margin: 0 }}>{decision.challenge}</p>
+                {/* Description */}
+                <p style={{ fontSize: 'clamp(13px, 1.1vw, 15px)', lineHeight: 1.7, color: T3, margin: 0 }}>{decision.solution}</p>
               </div>
             ))}
           </div>
