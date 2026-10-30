@@ -738,7 +738,7 @@ const GAP  = 2
 const STEP = CELL + GAP
 const DAY_LABEL_W = 26
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-const GH_COLORS = ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39']
+const GH_COLORS = ['#ebedf0', '#dde8ff', '#92b4f8', '#4070e8', '#0044d4']
 
 type ContributionDay = { date: string; count: number; level: 0 | 1 | 2 | 3 | 4 }
 
