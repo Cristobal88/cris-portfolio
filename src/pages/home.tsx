@@ -225,21 +225,20 @@ function MacWindow({ url, onClose }: { url: string; onClose: () => void }) {
         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
         style={{
           borderRadius: 12,
-          overflow: 'hidden',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.35), 0 4px 16px rgba(0,0,0,0.15)',
+          boxShadow: '0 6px 40px rgba(0,0,0,0.38), 0 2px 10px rgba(0,0,0,0.14)',
           display: 'flex',
           flexDirection: 'column',
           width: 'fit-content',
         }}
       >
+        {/* clip-path clips everything — layout AND visual effects like backdrop-filter bleed */}
+        <div style={{ clipPath: 'inset(0 round 12px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Title bar — 3-col grid: lights | title | spacer */}
         <div
           onPointerDown={(e) => dragControls.start(e)}
           style={{
             height: TITLEBAR_H,
-            background: 'rgba(246,246,246,0.92)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            background: '#f2f2f2',
             borderBottom: '1px solid rgba(0,0,0,0.08)',
             display: 'grid',
             gridTemplateColumns: '1fr auto 1fr',
@@ -269,7 +268,7 @@ function MacWindow({ url, onClose }: { url: string; onClose: () => void }) {
         {/* Content: iframe scaled to fit viewport */}
         <div style={{ background: '#ffffff', padding: 16 }}>
           {/* Clip wrapper — sized to scaled dimensions */}
-          <div style={{ width: scaledW, height: scaledH, overflow: 'hidden', borderRadius: 50, clipPath: 'inset(0 round 50px)', position: 'relative' }}>
+          <div style={{ width: scaledW, height: scaledH, overflow: 'hidden', borderRadius: Math.round(50 * scale), position: 'relative' }}>
             <iframe
               src={url}
               title="Propina Demo"
@@ -284,6 +283,7 @@ function MacWindow({ url, onClose }: { url: string; onClose: () => void }) {
             />
           </div>
         </div>
+        </div>{/* end clip-path wrapper */}
       </motion.div>
     </div>
   )
@@ -924,7 +924,7 @@ export default function Home() {
     fontWeight: 400,
     textWrap: 'pretty' as React.CSSProperties['textWrap'],
     margin: 0,
-    color: 'rgba(0,0,0,0.35)',
+    color: 'rgba(0,0,0,0.52)',
   }
 
   const pStyleMobile: React.CSSProperties = {
@@ -934,7 +934,7 @@ export default function Home() {
 
   // Keyword highlight — dark on dimmed base
   const kw = (text: string) => (
-    <span style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>{text}</span>
+    <span style={{ color: 'rgba(0,0,0,0.78)', fontWeight: 500 }}>{text}</span>
   )
 
   const photoBlock = (
@@ -968,10 +968,10 @@ export default function Home() {
           Based in Buenos Aires. Currently at {kw('EY')}, previously at {kw('MODO')}, {kw('HeySam')} and {kw('Drixit')}. {kw('9 years')} across {kw('fintech, AI and IoT')}, working with products that reach {kw('6M+ people')}.
         </p>
         <p style={pStyle}>
-          Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>uxbs</a>, a YouTube channel and lab about {kw('product design')} and what happens when {kw('designers start building')}. I'm in this because {kw('design')} is one of the few tools that can genuinely {kw('change how people experience the world')}.
+          Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.78)', fontWeight: 500 }}>uxbs</a>, a YouTube channel and lab about {kw('product design')} and what happens when {kw('designers start building')}. I'm in this because {kw('design')} is one of the few tools that can genuinely {kw('change how people experience the world')}.
         </p>
         <p style={pStyle}>
-          If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>let's talk</a>.
+          If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.78)', fontWeight: 500 }}>let's talk</a>.
         </p>
       </div>
     </>
@@ -995,10 +995,10 @@ export default function Home() {
           Based in Buenos Aires. Currently at {kw('EY')}, previously at {kw('MODO')}, {kw('HeySam')} and {kw('Drixit')}. {kw('9 years')} across {kw('fintech, AI and IoT')}, working with products that reach {kw('6M+ people')}.
         </p>
         <p style={pStyleMobile}>
-          Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>uxbs</a>, a YouTube channel and lab about {kw('product design')} and what happens when {kw('designers start building')}. I'm in this because {kw('design')} is one of the few tools that can genuinely {kw('change how people experience the world')}.
+          Also building <a href="https://www.youtube.com/@UXBS-Cris" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.78)', fontWeight: 500 }}>uxbs</a>, a YouTube channel and lab about {kw('product design')} and what happens when {kw('designers start building')}. I'm in this because {kw('design')} is one of the few tools that can genuinely {kw('change how people experience the world')}.
         </p>
         <p style={pStyleMobile}>
-          If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.85)', fontWeight: 500 }}>let's talk</a>.
+          If any of that sounds like a fit, <a href="https://calendar.app.google/q37dZacRGpmM2wgy7" target="_blank" rel="noopener noreferrer" className="uxbs-link" style={{ color: 'rgba(0,0,0,0.78)', fontWeight: 500 }}>let's talk</a>.
         </p>
       </div>
     </>

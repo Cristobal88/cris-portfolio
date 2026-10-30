@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, useMotionValue, useTransform, useReducedMotion, AnimatePresence, useAnimationControls } from 'framer-motion'
 import {
-  BackArrowIcon, ReceiptIcon, ComprobanteIcon, MoneyIcon,
-  RewardsGemIcon, DiamondTrio,
+  BackArrowIcon, ComprobanteIcon,
+  ReceiptIcon, MoneyIcon, RewardsGemIcon, DiamondTrio,
   BankLogo, SuccessCheckmark,
   ConfirmSlider,
   COLOR,
@@ -107,7 +107,7 @@ export default function PropiDemo() {
   const lastTimeRef       = useRef<number | undefined>(undefined)
   const completionFiredRef = useRef(false)
 
-  // ── Phase 1: Success ────────────────────────────────────────────
+  // ── Phase 1: Success reveal ─────────────────────────────────────
   const ckOpacity    = useTransform(playhead, t => seg(t, 0.10, 0.50))
   const ckY          = useTransform(playhead, t => 12 * (1 - seg(t, 0.10, 0.50)))
   const merOpacity   = useTransform(playhead, t => seg(t, 0.30, 0.70))
@@ -118,6 +118,7 @@ export default function PropiDemo() {
   const cardY        = useTransform(playhead, t => 12 * (1 - seg(t, 0.55, 0.95)))
   const btnOpacity   = useTransform(playhead, t => seg(t, 0.65, 1.05))
   const btnY         = useTransform(playhead, t => 12 * (1 - seg(t, 0.65, 1.05)))
+
   // ── Phase 2: Bottom sheet ───────────────────────────────────────
   const overlayOpacity = useTransform(playhead, t => 0.75 * seg(t, 1.5, 1.85))
 
@@ -499,7 +500,7 @@ export default function PropiDemo() {
             </div>
           </motion.div>
 
-          {/* Te devolveremos */}
+          {/* Te devolveremos promo */}
           <motion.div style={{ opacity: promoOpacity, y: promoY, marginTop: 16 }}>
             <div style={{
               background: OVERLAY, borderRadius: '20px 0px 18px 20px',
@@ -515,7 +516,7 @@ export default function PropiDemo() {
             </div>
           </motion.div>
 
-          {/* Card selector — vertically centered in the empty space */}
+          {/* Card selector */}
           <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
             <motion.div style={{ opacity: cardOpacity, y: cardY, width: '100%' }}>
               <div style={{ color: '#fff', fontSize: 16, fontWeight: 500, lineHeight: '22px', marginBottom: 8 }}>Con tu tarjeta</div>
@@ -548,19 +549,24 @@ export default function PropiDemo() {
                       <div style={{ background: '#fff', borderRadius: 8, height: 34, padding: '0 12px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                         <span style={{ fontSize: 12, fontWeight: 500, color: '#121212', fontFamily: "'Red Hat Display', sans-serif", lineHeight: '17px' }}>Dejala con transferencia</span>
                       </div>
-                      {/* Arrow pointing down toward button */}
                       <svg width="42" height="6" viewBox="0 0 42 6" fill="none" style={{ transform: 'rotate(180deg)', display: 'block' }}>
                         <path fillRule="evenodd" clipRule="evenodd" d="M32 5.9991C31.1984 5.9991 30.3971 6.00303 29.5955 5.99449C28.8283 5.98618 27.9696 5.97441 27.223 5.69676C26.4165 5.39672 25.8825 4.87212 25.3453 4.25474C24.9586 3.81069 24.1989 2.86327 23.829 2.40583C23.5262 2.03078 22.9336 1.28946 22.61 0.930804C22.2026 0.479597 21.6991 1.00682e-06 20.9998 9.45678e-07C20.3004 8.84539e-07 19.7971 0.479597 19.39 0.930343C19.0664 1.28877 18.4738 2.03055 18.1708 2.40536C17.8014 2.8628 17.0416 3.81022 16.6547 4.25428C16.1165 4.87166 15.5835 5.39626 14.7773 5.6963C14.0304 5.97325 13.1715 5.98571 12.4048 5.99402C11.6029 6.00256 10.8016 5.99864 10 5.99864" fill="white"/>
                       </svg>
                     </motion.div>
                   )}
                 </AnimatePresence>
-                <button onClick={openSheet} style={{ width: '100%', background: OVERLAY, border: 'none', borderRadius: 20, padding: '10px 0', color: '#fff', fontSize: 16, fontWeight: 500, fontFamily: "'Red Hat Display', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                <button
+                  onClick={openSheet}
+                  style={{ width: '100%', background: OVERLAY, border: 'none', borderRadius: 20, padding: '10px 0', color: '#fff', fontSize: 16, fontWeight: 500, fontFamily: "'Red Hat Display', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                >
                   <MoneyIcon /><span>Propina</span>
                 </button>
               </div>
             </div>
-            <button style={{ width: '100%', background: 'transparent', border: 'none', padding: '9px 0', color: '#fff', fontSize: 16, fontWeight: 500, fontFamily: "'Red Hat Display', sans-serif", cursor: 'pointer' }}>
+            <button
+              onClick={handleGoHome}
+              style={{ width: '100%', background: 'transparent', border: 'none', padding: '9px 0', color: '#fff', fontSize: 16, fontWeight: 500, fontFamily: "'Red Hat Display', sans-serif", cursor: 'pointer' }}
+            >
               Ir al Inicio
             </button>
           </motion.div>
@@ -578,8 +584,6 @@ export default function PropiDemo() {
             position: 'absolute', inset: 0,
             background: '#121212',
             opacity: overlayOpacity,
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
             pointerEvents: isDone && !dismissed ? 'auto' : 'none',
             cursor: 'default',
           }}
