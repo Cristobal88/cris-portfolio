@@ -1036,8 +1036,6 @@ export default function Home() {
                 <Divider />
                 <GitHubActivitySection />
                 <Divider />
-                <StackSection />
-                <Divider />
                 <PersonalSection />
               </Card>
             </div>
