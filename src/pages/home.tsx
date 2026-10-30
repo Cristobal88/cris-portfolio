@@ -774,6 +774,14 @@ function GitHubActivitySection() {
   const cell = containerW > 0 ? Math.floor((containerW - (WEEKS_TO_SHOW - 1) * GAP) / WEEKS_TO_SHOW) : 10
   const labelStyle: React.CSSProperties = { fontSize: '0.625rem', color: 'rgba(0,0,0,0.38)', fontWeight: 500, userSelect: 'none' }
 
+  type CellTooltip = { date: string; count: number; x: number; y: number }
+  const [tooltip, setTooltip] = useState<CellTooltip | null>(null)
+
+  const formatTooltipDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+  const radius = Math.max(3, Math.round(cell * 0.3))
+
   return (
     <div ref={containerRef}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
@@ -788,6 +796,28 @@ function GitHubActivitySection() {
         )}
       </div>
 
+      {/* Custom tooltip */}
+      {tooltip && (
+        <div style={{
+          position: 'fixed',
+          left: tooltip.x,
+          top: tooltip.y - 8,
+          transform: 'translate(-50%, -100%)',
+          background: '#0d0d0d',
+          color: '#fff',
+          borderRadius: 8,
+          padding: '5px 10px',
+          fontSize: '0.75rem',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          zIndex: 9999,
+          lineHeight: 1.4,
+        }}>
+          <span style={{ fontWeight: 600 }}>{tooltip.count} contribution{tooltip.count !== 1 ? 's' : ''}</span>
+          <span style={{ color: 'rgba(255,255,255,0.55)' }}> on {formatTooltipDate(tooltip.date)}</span>
+        </div>
+      )}
+
       {loading ? (
         <div style={{ height: 104, borderRadius: 8, background: 'rgba(0,0,0,0.04)', animation: 'pulse 1.5s ease-in-out infinite' }} />
       ) : (
@@ -798,14 +828,24 @@ function GitHubActivitySection() {
                 {week.map((day) => (
                   <div
                     key={day.date}
-                    title={`${day.date}: ${day.count} contribution${day.count !== 1 ? 's' : ''}`}
                     style={{
-                      width: cell, height: cell, borderRadius: Math.max(3, Math.round(cell * 0.3)),
+                      width: cell, height: cell, borderRadius: radius,
                       background: GH_COLORS[day.level] ?? GH_COLORS[0],
-                      transition: 'transform 0.15s ease', flexShrink: 0,
+                      transition: 'transform 0.15s ease, box-shadow 0.15s ease', flexShrink: 0,
                     }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.4)' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)' }}
+                    onMouseEnter={e => {
+                      const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect()
+                      setTooltip({ date: day.date, count: day.count, x: rect.left + rect.width / 2, y: rect.top })
+                      const el = e.currentTarget as HTMLDivElement
+                      el.style.transform = 'scale(1.4)'
+                      el.style.boxShadow = `0 0 0 1.5px rgba(0,0,0,0.18)`
+                    }}
+                    onMouseLeave={e => {
+                      setTooltip(null)
+                      const el = e.currentTarget as HTMLDivElement
+                      el.style.transform = 'scale(1)'
+                      el.style.boxShadow = ''
+                    }}
                   />
                 ))}
               </div>
@@ -814,7 +854,7 @@ function GitHubActivitySection() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, marginTop: 8, visibility: 'hidden', height: 0, overflow: 'hidden' }}>
             <span style={labelStyle}>Less</span>
             {GH_COLORS.map((color, i) => (
-              <div key={i} style={{ width: cell, height: cell, borderRadius: Math.max(3, Math.round(cell * 0.3)), background: color, flexShrink: 0 }} />
+              <div key={i} style={{ width: cell, height: cell, borderRadius: radius, background: color, flexShrink: 0 }} />
             ))}
             <span style={labelStyle}>More</span>
           </div>
