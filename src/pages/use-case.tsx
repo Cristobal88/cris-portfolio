@@ -726,9 +726,9 @@ export default function CaseStudy() {
           </h2>
           <div style={{ borderTop: `1px solid ${BORDER}` }}>
             {project.keyDecisions.map((decision, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '48px 1fr 1.2fr', gap: '0 48px', padding: '36px 0', borderBottom: `1px solid ${BORDER}`, alignItems: 'start' }}>
+              <div key={i} className="decision-row-3col" style={{ display: 'grid', gridTemplateColumns: '48px 1fr 1.2fr', gap: '0 48px', padding: '36px 0', borderBottom: `1px solid ${BORDER}`, alignItems: 'start' }}>
                 {/* Number */}
-                <span style={{ fontSize: '1rem', fontWeight: 400, color: T4, paddingTop: 3 }}>{i + 1}</span>
+                <span className="decision-num" style={{ fontSize: '1rem', fontWeight: 400, color: T4, paddingTop: 3 }}>{i + 1}</span>
                 {/* Title */}
                 <p style={{ fontSize: 'clamp(17px, 1.6vw, 20px)', fontWeight: 700, lineHeight: 1.35, color: T1, margin: 0 }}>{decision.challenge}</p>
                 {/* Description */}

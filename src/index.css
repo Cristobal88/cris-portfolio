@@ -228,6 +228,8 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
   .cs-section { padding: 56px 0; }
   .cs-section--sm { padding: 48px 0; }
   .decision-row { padding-top: 32px !important; padding-bottom: 32px !important; }
+  .decision-row-3col { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .decision-row-3col .decision-num { display: none; }
   .navbar { top: 20px; width: calc(100% - 32px); padding: 8px 8px 8px 24px; border-radius: 100px; }
   .navbar.navbar--dark { top: 20px; }
   .logo { font-size: 1.125rem; }
