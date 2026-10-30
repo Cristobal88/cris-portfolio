@@ -734,7 +734,7 @@ function PersonalSection() {
 // ─── GitHub Activity ──────────────────────────────────────────────────────────
 
 const GITHUB_USERNAME = 'Cristobal88'
-const GAP  = 2
+const GAP  = 3
 const WEEKS_TO_SHOW = 39  // ~9 months
 const GH_COLORS = ['#ebedf0', '#dde8ff', '#92b4f8', '#4070e8', '#0044d4']
 
@@ -800,7 +800,7 @@ function GitHubActivitySection() {
                     key={day.date}
                     title={`${day.date}: ${day.count} contribution${day.count !== 1 ? 's' : ''}`}
                     style={{
-                      width: cell, height: cell, borderRadius: Math.max(2, Math.round(cell * 0.15)),
+                      width: cell, height: cell, borderRadius: Math.max(3, Math.round(cell * 0.3)),
                       background: GH_COLORS[day.level] ?? GH_COLORS[0],
                       transition: 'transform 0.15s ease', flexShrink: 0,
                     }}
@@ -814,7 +814,7 @@ function GitHubActivitySection() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, marginTop: 8 }}>
             <span style={labelStyle}>Less</span>
             {GH_COLORS.map((color, i) => (
-              <div key={i} style={{ width: cell, height: cell, borderRadius: Math.max(2, Math.round(cell * 0.15)), background: color, flexShrink: 0 }} />
+              <div key={i} style={{ width: cell, height: cell, borderRadius: Math.max(3, Math.round(cell * 0.3)), background: color, flexShrink: 0 }} />
             ))}
             <span style={labelStyle}>More</span>
           </div>
