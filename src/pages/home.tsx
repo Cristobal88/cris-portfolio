@@ -787,9 +787,9 @@ function GitHubActivitySection() {
 
   return (
     <div ref={containerRef}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 14 }}>
+      <div style={{ display: 'flex', flexDirection: containerW < 540 ? 'column' : 'row', alignItems: containerW < 540 ? 'flex-start' : 'baseline', justifyContent: 'space-between', gap: containerW < 540 ? 2 : 0, marginBottom: 14 }}>
         <a href="https://github.com/Cristobal88" target="_blank" rel="noopener noreferrer"
-          style={{ fontSize: '0.875rem', fontWeight: 400, letterSpacing: '0.01em', color: 'rgba(0,0,0,0.40)', textDecoration: 'none', display: 'inline-block' }}>
+          style={{ fontSize: '0.875rem', fontWeight: 400, letterSpacing: '0.01em', color: 'rgba(0,0,0,0.40)', textDecoration: 'none', padding: '6px 0', display: 'inline-block' }}>
           Shipping goodies
         </a>
         {total !== null && (
