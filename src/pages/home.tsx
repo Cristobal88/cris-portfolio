@@ -734,11 +734,8 @@ function PersonalSection() {
 // ─── GitHub Activity ──────────────────────────────────────────────────────────
 
 const GITHUB_USERNAME = 'Cristobal88'
-const CELL = 10
 const GAP  = 2
-const STEP = CELL + GAP
-const DAY_LABEL_W = 26
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+const WEEKS_TO_SHOW = 39  // ~9 months
 const GH_COLORS = ['#ebedf0', '#dde8ff', '#92b4f8', '#4070e8', '#0044d4']
 
 type ContributionDay = { date: string; count: number; level: 0 | 1 | 2 | 3 | 4 }
@@ -773,22 +770,8 @@ function GitHubActivitySection() {
     return () => ro.disconnect()
   }, [])
 
-  const gridW = containerW - DAY_LABEL_W
-  const visibleCount = gridW > 0 ? Math.floor(gridW / STEP) : allWeeks.length
-  const weeks = allWeeks.slice(-visibleCount)
-
-  const monthLabels: { label: string; x: number }[] = []
-  weeks.forEach((week, wi) => {
-    if (!week[0]) return
-    const month = new Date(week[0].date).getMonth()
-    const prev  = wi > 0 && weeks[wi - 1][0] ? new Date(weeks[wi - 1][0].date).getMonth() : -1
-    if (month !== prev) {
-      const x = DAY_LABEL_W + wi * STEP
-      const last = monthLabels[monthLabels.length - 1]
-      if (!last || x - last.x >= 28) monthLabels.push({ label: MONTHS[month], x })
-    }
-  })
-
+  const weeks = allWeeks.slice(-WEEKS_TO_SHOW)
+  const cell = containerW > 0 ? Math.floor((containerW - (WEEKS_TO_SHOW - 1) * GAP) / WEEKS_TO_SHOW) : 10
   const labelStyle: React.CSSProperties = { fontSize: '0.625rem', color: 'rgba(0,0,0,0.38)', fontWeight: 500, userSelect: 'none' }
 
   return (
@@ -809,43 +792,29 @@ function GitHubActivitySection() {
         <div style={{ height: 104, borderRadius: 8, background: 'rgba(0,0,0,0.04)', animation: 'pulse 1.5s ease-in-out infinite' }} />
       ) : (
         <div style={{ overflow: 'hidden' }}>
-          <div style={{ position: 'relative', height: 16, marginBottom: 4 }}>
-            {monthLabels.map(({ label, x }) => (
-              <span key={`${label}-${x}`} style={{ ...labelStyle, position: 'absolute', left: x }}>{label}</span>
+          <div style={{ display: 'flex', gap: GAP }}>
+            {weeks.map((week, wi) => (
+              <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: GAP }}>
+                {week.map((day) => (
+                  <div
+                    key={day.date}
+                    title={`${day.date}: ${day.count} contribution${day.count !== 1 ? 's' : ''}`}
+                    style={{
+                      width: cell, height: cell, borderRadius: Math.max(2, Math.round(cell * 0.15)),
+                      background: GH_COLORS[day.level] ?? GH_COLORS[0],
+                      transition: 'transform 0.15s ease', flexShrink: 0,
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.4)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)' }}
+                  />
+                ))}
+              </div>
             ))}
-          </div>
-          <div style={{ display: 'flex' }}>
-            <div style={{ width: DAY_LABEL_W, display: 'flex', flexDirection: 'column', gap: GAP, flexShrink: 0 }}>
-              {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d, i) => (
-                <div key={d} style={{ height: CELL, display: 'flex', alignItems: 'center' }}>
-                  {(i === 1 || i === 3 || i === 5) && <span style={labelStyle}>{d}</span>}
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: GAP }}>
-              {weeks.map((week, wi) => (
-                <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: GAP }}>
-                  {week.map((day) => (
-                    <div
-                      key={day.date}
-                      title={`${day.date}: ${day.count} contribution${day.count !== 1 ? 's' : ''}`}
-                      style={{
-                        width: CELL, height: CELL, borderRadius: 2,
-                        background: GH_COLORS[day.level] ?? GH_COLORS[0],
-                        transition: 'transform 0.15s ease', flexShrink: 0,
-                      }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.4)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)' }}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, marginTop: 8 }}>
             <span style={labelStyle}>Less</span>
             {GH_COLORS.map((color, i) => (
-              <div key={i} style={{ width: CELL, height: CELL, borderRadius: 2, background: color, flexShrink: 0 }} />
+              <div key={i} style={{ width: cell, height: cell, borderRadius: Math.max(2, Math.round(cell * 0.15)), background: color, flexShrink: 0 }} />
             ))}
             <span style={labelStyle}>More</span>
           </div>
