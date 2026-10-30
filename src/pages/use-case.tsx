@@ -533,7 +533,7 @@ export default function CaseStudy() {
 
         {/* Hero image */}
         <div style={{ padding: '64px 12px 0', position: 'relative' }}>
-          <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', border: `1px solid ${BORDER}`, boxShadow: '0 48px 120px rgba(0,0,0,0.6)', aspectRatio: '21/9' }}>
+          <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', boxShadow: '0 48px 120px rgba(0,0,0,0.6)', aspectRatio: '21/9' }}>
             <img src={project.heroImage} alt={project.label} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
           </div>
           <div style={{
