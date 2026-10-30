@@ -506,9 +506,9 @@ export default function CaseStudy() {
             Back
           </a>
 
-          {/* Scope pill */}
+          {/* Scope tags */}
           <div style={{ marginBottom: 28 }}>
-            <span style={{ display: 'inline-block', fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.027em', color: T4, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, padding: '5px 14px' }}>
+            <span style={{ display: 'inline-block', fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.027em', color: T4 }}>
               {project.scopePill}
             </span>
           </div>
