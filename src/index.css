@@ -207,6 +207,14 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
   .gradient-blur-bottom { display: block; }
 }
 
+/* ── Results section centering (desktop only) ── */
+.cs-results-title { text-align: center; }
+.cs-results-body  { max-width: 860px; margin: 0 auto; }
+@media (max-width: 640px) {
+  .cs-results-title { text-align: left; }
+  .cs-results-body  { max-width: none; margin: 0; }
+}
+
 .uxbs-link { color: inherit; text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s ease; }
 .uxbs-link:hover { color: var(--brand-blue); }
 

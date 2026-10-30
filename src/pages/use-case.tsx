@@ -742,21 +742,23 @@ export default function CaseStudy() {
       {/* ── Results ── */}
       <section id="cs-results" className="cs-section" style={{ background: '#080808', borderTop: `1px solid rgba(255,255,255,0.05)` }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 32px' }}>
-          <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 48 }}>
+          <h2 className="cs-results-title" style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 500, letterSpacing: '-0.03em', textWrap: 'balance', color: T1, marginBottom: 48 }}>
             {project.proofTitle ?? 'The proof'}
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 48, marginBottom: 48 }}>
-            {project.results.map((result, i) => (
-              <div key={i}>
-                <div style={{ marginBottom: 10 }}>
-                  <AnimatedNumber value={result.value} style={{ fontFamily: 'Barlow, sans-serif', fontSize: 'clamp(34px, 3.5vw, 52px)', fontWeight: 700, letterSpacing: '-0.06em', fontVariantNumeric: 'tabular-nums', color: T1, lineHeight: 1 }} />
+          <div className="cs-results-body">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 48, marginBottom: 48 }}>
+              {project.results.map((result, i) => (
+                <div key={i}>
+                  <div style={{ marginBottom: 10 }}>
+                    <AnimatedNumber value={result.value} style={{ fontFamily: 'Barlow, sans-serif', fontSize: 'clamp(34px, 3.5vw, 52px)', fontWeight: 700, letterSpacing: '-0.06em', fontVariantNumeric: 'tabular-nums', color: T1, lineHeight: 1 }} />
+                  </div>
+                  <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: T3, marginBottom: 10 }}>{result.label}</div>
+                  <p style={{ fontSize: '0.8125rem', lineHeight: 1.6, color: T4, margin: 0 }}>{result.context}</p>
                 </div>
-                <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: T3, marginBottom: 10 }}>{result.label}</div>
-                <p style={{ fontSize: '0.8125rem', lineHeight: 1.6, color: T4, margin: 0 }}>{result.context}</p>
-              </div>
-            ))}
+              ))}
+            </div>
+            <p style={{ fontSize: '1.0625rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: 0 }}>{project.resultsParagraph}</p>
           </div>
-          <p style={{ fontSize: '1.0625rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, maxWidth: 680 }}>{project.resultsParagraph}</p>
         </div>
       </section>
 
