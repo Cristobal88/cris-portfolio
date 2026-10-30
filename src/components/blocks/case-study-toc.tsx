@@ -52,7 +52,7 @@ export function CaseStudyTOC({ items }: { items: TOCItem[] }) {
   }, [items])
 
   const scrollTo = (item: TOCItem) => {
-    document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: item.scrollBlock ?? 'start' })
+    document.getElementById(item.id)?.scrollIntoView({ behavior: 'instant', block: item.scrollBlock ?? 'start' })
   }
 
   const toggle = (id: string) => {
