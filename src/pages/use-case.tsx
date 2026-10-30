@@ -757,7 +757,7 @@ export default function CaseStudy() {
                 </div>
               ))}
             </div>
-            <p style={{ fontSize: '1.0625rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: 0 }}>{project.resultsParagraph}</p>
+            <p className="cs-results-paragraph" style={{ fontSize: '1.0625rem', lineHeight: 1.75, textWrap: 'pretty', color: T2, margin: 0 }}>{project.resultsParagraph}</p>
           </div>
         </div>
       </section>
