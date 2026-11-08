@@ -136,38 +136,49 @@ export const SCENE_DEFAULTS: SceneCfg = {
   shoreZ: 10,
   waterWaveSpeed: 0.85, waterWaveScale: 5.2, waterWaveNoise: 3.0,
   waterNoiseScale: 0.26, waterFoamWidth: 0.30, waterFoamAmt: 0.60,
-  waterFoamRange: 5.0, waterSparkle: 1.0, waterDepthNear: 3.0, waterDepthFar: 12.0,
+  waterFoamRange: 5.0, waterSparkle: 2.2, waterDepthNear: 3.0, waterDepthFar: 12.0,
   pathOffsetZ: 5.5, pathAngle: 0.018, pathCurve: 1.8,
   mtnNearZ: 40, mtnFarZ: 58,
   mtnNearH: 14, mtnFarH: 20,
-  mtnNearSnow: 0.22, mtnFarSnow: 0.55,
+  mtnNearSnow: 0.22, mtnFarSnow: 0.62,
   waterFar: 80,
   showMountains: true,
-  mtnWaviness: 1.0,
-  mtnLightDir: 0.6,
-  mtnShadowDepth: 0.42,
-  mtnCouloirs: 0.55,
-  colMtnNearShadow: _h(0.04, 0.05, 0.10),
-  colMtnFarShadow:  _h(0.18, 0.26, 0.38),
-  colWaterShallow: _h(0.08, 0.80, 0.82),
-  colWaterMid:     _h(0.04, 0.58, 0.72),
-  colWaterDeep:    _h(0.02, 0.30, 0.52),
-  colGround:       _h(0.60, 0.44, 0.20),
-  colMtnNear:      _h(0.12, 0.16, 0.28),
-  colMtnNearBase:  _h(0.04, 0.18, 0.38),  // blends into deep water
-  colMtnFar:       _h(0.40, 0.55, 0.72),
-  colMtnFarBase:   _h(0.20, 0.42, 0.64),  // blends into mid water / sky low
-  colSnow:         _h(0.90, 0.94, 0.98),
-  colSkyLow:       _h(0.56, 0.76, 0.94),
-  colSkyHigh:      _h(0.24, 0.50, 0.84),
+  mtnWaviness: 1.2,
+  // Strong directional light from the right (low-angle golden hour sun).
+  // mtnLightDir 0.88 pushes adjacent slopes hard to opposite sides of the
+  // ASCII character threshold — lit faces land on '=' / '%', shadows on ':'.
+  mtnLightDir: 0.88,
+  mtnShadowDepth: 0.80,
+  mtnCouloirs: 0.72,
+  // Near mountains: warm dark golden-brown lit face vs very dark cool shadow.
+  // Lit L ≈ 0.32 → '%' glyph. Shadow L ≈ 0.03 → ':' glyph. 2-step jump.
+  colMtnNear:       _h(0.48, 0.28, 0.09),  // warm golden-brown lit face
+  colMtnNearShadow: _h(0.02, 0.03, 0.06),  // near-black cool blue shadow
+  colMtnNearBase:   _h(0.16, 0.08, 0.02),  // dark warm base, blends into water
+  // Far mountains: warm atmospheric tan lit face vs cool purple shadow.
+  // Lit L ≈ 0.57 → '#' glyph. Shadow L ≈ 0.18 → '=' glyph. 2-step jump.
+  colMtnFar:        _h(0.70, 0.56, 0.36),  // warm tan / khaki lit face
+  colMtnFarShadow:  _h(0.19, 0.16, 0.28),  // cool purple shadow
+  colMtnFarBase:    _h(0.32, 0.22, 0.10),  // warm dark base
+  // Snow picks up warm golden tint from the low sun
+  colSnow:          _h(0.98, 0.91, 0.78),
+  // Water reflects the warm golden sky near shore, fades to deep blue far out
+  colWaterShallow:  _h(0.78, 0.47, 0.22),  // warm amber / golden
+  colWaterMid:      _h(0.22, 0.38, 0.44),  // warm teal transition
+  colWaterDeep:     _h(0.09, 0.16, 0.28),  // deep blue
+  colGround:        _h(0.56, 0.38, 0.14),  // warmer sandy earth
+  // Sky: warm orange-gold at horizon, deep blue at zenith
+  colSkyLow:        _h(0.94, 0.60, 0.28),  // orange-amber horizon
+  colSkyHigh:       _h(0.12, 0.22, 0.47),  // deep blue zenith
+  // Clouds lit by low warm sun
   cloudAmt: 0.70, cloudThreshold: 0.50,
   cloudScaleX: 1.6, cloudScaleY: 4.0,
   cloudSpeed: 0.008,
   cloudYLow: 0.30, cloudYHigh: 0.72,
-  colCloud: _h(0.92, 0.96, 1.00),
-  skyFadeStart: 0.55, skyFadeEnd: 0.90,
+  colCloud:         _h(0.96, 0.72, 0.50),  // warm peach-gold clouds
+  skyFadeStart: 0.50, skyFadeEnd: 0.88,
   inkMulSky: 1.04, inkMulDefault: 1.18, inkMulSnow: 1.02,
-  bgMulSky: 0.78, bgMulDefault: 0.68, bgMulSnow: 0.88,
+  bgMulSky: 0.72, bgMulDefault: 0.68, bgMulSnow: 0.88,
 }
 
 // ─── Mount ───────────────────────────────────────────────────────────────────
