@@ -178,12 +178,21 @@ export default function AsciiFooterPreview() {
     borderRadius: `${vig.vigCorner}px`,
     overflow: 'hidden',
   }
+  const r = vig.vigCorner
   const overlayStyle: React.CSSProperties = {
     position: 'absolute', inset: 0, pointerEvents: 'none',
-    borderRadius: `${vig.vigCorner}px`,
-    // box-shadow inset: smooth glow right at the border, no invasion
-    boxShadow: vig.vigEdge > 0 ? `inset 0 0 ${vig.vigEdge}px ${Math.round(vig.vigEdge * 0.3)}px white` : 'none',
+    boxShadow: vig.vigEdge > 0 ? `inset 0 0 ${vig.vigEdge}px 0px white` : 'none',
     background: [
+      // Radial gradients at each corner: solid white up to the border-radius,
+      // then a 3px fade to transparent. This covers the 1px aliasing artifact
+      // that overflow:hidden + border-radius leaves behind in every browser/GPU.
+      ...(r > 0 ? [
+        `radial-gradient(circle at 0px 0px,         white ${r - 1}px, transparent ${r + 2}px)`,
+        `radial-gradient(circle at 100% 0px,        white ${r - 1}px, transparent ${r + 2}px)`,
+        `radial-gradient(circle at 0px 100%,        white ${r - 1}px, transparent ${r + 2}px)`,
+        `radial-gradient(circle at 100% 100%,       white ${r - 1}px, transparent ${r + 2}px)`,
+      ] : []),
+      // Edge fades
       `linear-gradient(to bottom, white 0%, transparent ${vig.vigTop}%)`,
       `linear-gradient(to top,    white 0%, transparent ${vig.vigBottom}%)`,
       `linear-gradient(to right,  white 0%, transparent ${vig.vigSides}%)`,
