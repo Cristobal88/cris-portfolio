@@ -735,6 +735,7 @@ function PersonalSection() {
 // ─── ASCII Footer ─────────────────────────────────────────────────────────────
 
 function AsciiFooter() {
+  return null
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
