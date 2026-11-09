@@ -125,14 +125,16 @@ export default function AsciiFooterPreview() {
       H:             { value: D.H,             min: 300, max: 900, step: 10,   label: 'Canvas height (px)' },
       cols:          { value: D.cols,          min: 60,  max: 320, step: 2,    label: 'Columns' },
       rows:          { value: D.rows,          min: 20,  max: 120, step: 1,    label: 'Rows' },
-      inkMulDefault: { value: D.inkMulDefault, min: 0.5, max: 2,   step: 0.01, label: 'Ink default' },
+      inkMulDefault: { value: D.inkMulDefault, min: 0.5, max: 2,   step: 0.01, label: 'Ink (other)' },
+      inkMulMtn:     { value: D.inkMulMtn,     min: 0.5, max: 2.5, step: 0.01, label: 'Ink mountains' },
       inkMulSnow:    { value: D.inkMulSnow,    min: 0.5, max: 2,   step: 0.01, label: 'Ink snow' },
-      bgMulDefault:  { value: D.bgMulDefault,  min: 0.3, max: 1.5, step: 0.01, label: 'BG default' },
+      bgMulDefault:  { value: D.bgMulDefault,  min: 0.3, max: 1.5, step: 0.01, label: 'BG (other)' },
+      bgMulMtn:      { value: D.bgMulMtn,      min: 0.3, max: 1.5, step: 0.01, label: 'BG mountains' },
       bgMulSnow:     { value: D.bgMulSnow,     min: 0.3, max: 1.5, step: 0.01, label: 'BG snow' },
       'Reset ASCII': button(() => setRef.current({
         H: D.H, cols: D.cols, rows: D.rows,
-        inkMulDefault: D.inkMulDefault, inkMulSnow: D.inkMulSnow,
-        bgMulDefault: D.bgMulDefault, bgMulSnow: D.bgMulSnow,
+        inkMulDefault: D.inkMulDefault, inkMulMtn: D.inkMulMtn, inkMulSnow: D.inkMulSnow,
+        bgMulDefault: D.bgMulDefault, bgMulMtn: D.bgMulMtn, bgMulSnow: D.bgMulSnow,
       })),
     }),
 
@@ -230,8 +232,8 @@ export default function AsciiFooterPreview() {
     mtnWaviness: v.mtnWaviness, mtnLightDir: v.mtnLightDir, mtnShadowDepth: v.mtnShadowDepth, mtnCouloirs: v.mtnCouloirs,
     cols: v.cols, rows: v.rows,
     skyFadeStart: v.skyFadeStart, skyFadeEnd: v.skyFadeEnd,
-    inkMulSky: v.inkMulSky, inkMulDefault: v.inkMulDefault, inkMulSnow: v.inkMulSnow,
-    bgMulSky: v.bgMulSky, bgMulDefault: v.bgMulDefault, bgMulSnow: v.bgMulSnow,
+    inkMulSky: v.inkMulSky, inkMulDefault: v.inkMulDefault, inkMulMtn: v.inkMulMtn, inkMulSnow: v.inkMulSnow,
+    bgMulSky: v.bgMulSky, bgMulDefault: v.bgMulDefault, bgMulMtn: v.bgMulMtn, bgMulSnow: v.bgMulSnow,
     colWaterShallow:  toHex(v.colWaterShallow),
     colWaterMid:      toHex(v.colWaterMid),
     colWaterDeep:     toHex(v.colWaterDeep),
@@ -304,8 +306,8 @@ export default function AsciiFooterPreview() {
       `  cloudScaleX: ${cfg.cloudScaleX}, cloudScaleY: ${cfg.cloudScaleY}, cloudSpeed: ${cfg.cloudSpeed},`,
       `  cloudYLow: ${cfg.cloudYLow}, cloudYHigh: ${cfg.cloudYHigh}, colCloud: '${cfg.colCloud}',`,
       `  skyFadeStart: ${cfg.skyFadeStart}, skyFadeEnd: ${cfg.skyFadeEnd},`,
-      `  inkMulSky: ${cfg.inkMulSky}, inkMulDefault: ${cfg.inkMulDefault}, inkMulSnow: ${cfg.inkMulSnow},`,
-      `  bgMulSky: ${cfg.bgMulSky}, bgMulDefault: ${cfg.bgMulDefault}, bgMulSnow: ${cfg.bgMulSnow},`,
+      `  inkMulSky: ${cfg.inkMulSky}, inkMulDefault: ${cfg.inkMulDefault}, inkMulMtn: ${cfg.inkMulMtn}, inkMulSnow: ${cfg.inkMulSnow},`,
+      `  bgMulSky: ${cfg.bgMulSky}, bgMulDefault: ${cfg.bgMulDefault}, bgMulMtn: ${cfg.bgMulMtn}, bgMulSnow: ${cfg.bgMulSnow},`,
     ]
     navigator.clipboard.writeText(lines.join('\n'))
       .then(() => setCopied(true))
