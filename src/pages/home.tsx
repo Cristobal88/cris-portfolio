@@ -732,6 +732,132 @@ function PersonalSection() {
   )
 }
 
+// ─── Projects Carousel ────────────────────────────────────────────────────────
+
+const CAROUSEL_CARDS = [
+  {
+    slug: 'fintech-tipping-flow',
+    title: 'Propina',
+    services: 'Product Design · Fintech',
+    image: '/carousel-propina.jpg',
+    comingSoon: false,
+  },
+  {
+    slug: 'loyalty-club-payments',
+    title: 'Loyalty Club',
+    services: 'Product Design · Payments',
+    image: '/carousel-loyalty.jpg',
+    comingSoon: false,
+  },
+  {
+    slug: null,
+    title: 'Coming soon',
+    services: 'Product Design',
+    image: null,
+    comingSoon: true,
+  },
+]
+
+function ProjectsCarousel() {
+  const railRef = useRef<HTMLDivElement>(null)
+  const [dragging, setDragging] = useState(false)
+  const startX = useRef(0)
+  const startScroll = useRef(0)
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId)
+    startX.current = e.clientX
+    startScroll.current = railRef.current!.scrollLeft
+    setDragging(true)
+  }
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragging) return
+    railRef.current!.scrollLeft = startScroll.current - (e.clientX - startX.current)
+  }
+  const onPointerUp = () => setDragging(false)
+
+  return (
+    <div
+      ref={railRef}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 10,
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        scrollbarWidth: 'none',
+        WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'],
+        cursor: dragging ? 'grabbing' : 'grab',
+        userSelect: 'none',
+        paddingLeft: 'max(20px, calc((100vw - 700px) / 2 + 20px))',
+        paddingRight: 20,
+        paddingBottom: 4,
+      } as React.CSSProperties}
+    >
+      {CAROUSEL_CARDS.map((card) => {
+        const inner = (
+          <div>
+            {/* Thumbnail */}
+            <div style={{
+              aspectRatio: '3 / 2',
+              borderRadius: 12,
+              overflow: 'hidden',
+              background: card.comingSoon ? '#f0f0f0' : '#e8e8e8',
+              position: 'relative',
+            }}>
+              {card.image && !card.comingSoon && (
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  draggable={false}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
+                />
+              )}
+              {card.comingSoon && (
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  gap: 8,
+                }}>
+                  <span style={{ fontSize: '1.5rem', opacity: 0.25 }}>✦</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'rgba(0,0,0,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Coming soon</span>
+                </div>
+              )}
+            </div>
+            {/* Meta */}
+            <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ fontSize: '0.875rem', fontWeight: 500, color: card.comingSoon ? 'rgba(0,0,0,0.3)' : '#0d0d0d' }}>{card.title}</span>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.38)' }}>{card.services}</span>
+            </div>
+          </div>
+        )
+
+        return (
+          <article
+            key={card.title}
+            style={{
+              flex: '0 0 clamp(260px, 60vw, 440px)',
+              pointerEvents: card.comingSoon ? 'none' : 'auto',
+            }}
+          >
+            {card.slug ? (
+              <a href={`/work/${card.slug}`} draggable={false} style={{ display: 'block', textDecoration: 'none' }}>
+                {inner}
+              </a>
+            ) : inner}
+          </article>
+        )
+      })}
+      {/* trailing spacer so last card doesn't hug the edge */}
+      <div style={{ flex: '0 0 max(20px, calc((100vw - 700px) / 2))' }} />
+    </div>
+  )
+}
+
 // ─── ASCII Footer ─────────────────────────────────────────────────────────────
 
 function AsciiFooter() {
@@ -1066,7 +1192,13 @@ export default function Home() {
               <Card style={{ padding: '16px 24px 32px', margin: '0 auto 100px', maxWidth: 680 }}>
                 {bioPanelMobile}
                 <Divider />
-                <div id="work"><WorkFolders mobile /></div>
+                <div id="work">
+                  <SectionLabel>Selected projects</SectionLabel>
+                  {/* Carousel bleeds past card padding with negative margins */}
+                  <div style={{ margin: '0 -24px' }}>
+                    <ProjectsCarousel />
+                  </div>
+                </div>
                 <Divider />
                 <GitHubActivitySection />
                 <Divider />
@@ -1076,23 +1208,23 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          // ── Desktop: content centered, folders + demo together ──────────────
+          // ── Desktop: content centered, carousel full-bleed ──────────────────
           <div style={{ position: 'relative', paddingTop: 'clamp(120px, 15vh, 180px)', paddingBottom: 100 }}>
-            {/* Main content — truly centered */}
-            <div style={{
-              maxWidth: 700,
-              margin: '0 auto',
-              paddingTop: 0,
-              paddingLeft: 20,
-              paddingRight: 20,
-              paddingBottom: 100,
-            }}>
+            {/* Bio + section label in the constrained column */}
+            <div style={{ maxWidth: 700, margin: '0 auto', paddingLeft: 20, paddingRight: 20 }}>
               {bioPanelContent}
               <Divider />
-              <div>
-                <SectionLabel>Selected projects</SectionLabel>
-                <WorkFolders />
-              </div>
+              <SectionLabel>Selected projects</SectionLabel>
+            </div>
+            {/* Carousel — full viewport width, aligns left edge with content column */}
+            <div id="work" style={{ marginBottom: 32 }}>
+              <ProjectsCarousel />
+            </div>
+            {/* Rest of content back in column */}
+            <div style={{
+              maxWidth: 700, margin: '0 auto',
+              paddingLeft: 20, paddingRight: 20, paddingBottom: 100,
+            }}>
               <Divider />
               <GitHubActivitySection />
               <Divider />
