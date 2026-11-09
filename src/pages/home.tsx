@@ -769,7 +769,7 @@ function AsciiFooter() {
 
 const GITHUB_USERNAME = 'Cristobal88'
 const GAP  = 3
-const WEEKS_TO_SHOW = 39  // ~9 months
+const WEEKS_TO_SHOW = 52  // full year
 const GH_COLORS = ['#ebedf0', '#dde8ff', '#92b4f8', '#4070e8', '#0044d4']
 
 type ContributionDay = { date: string; count: number; level: 0 | 1 | 2 | 3 | 4 }
