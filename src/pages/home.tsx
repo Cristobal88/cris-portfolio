@@ -739,14 +739,14 @@ const CAROUSEL_CARDS = [
     slug: 'fintech-tipping-flow',
     title: 'Propina',
     services: 'Product Design · Fintech',
-    image: '/carousel-propina.jpg',
+    image: '/propina-start.png',
     comingSoon: false,
   },
   {
     slug: 'loyalty-club-payments',
     title: 'Loyalty Club',
     services: 'Product Design · Payments',
-    image: '/carousel-loyalty.jpg',
+    image: '/card-2.png',
     comingSoon: false,
   },
   {
@@ -763,6 +763,18 @@ function ProjectsCarousel() {
   const [dragging, setDragging] = useState(false)
   const startX = useRef(0)
   const startScroll = useRef(0)
+  const popSound = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    popSound.current = new Audio('/sounds/message-popin.mp3')
+    popSound.current.load()
+  }, [])
+
+  const playPop = useCallback(() => {
+    if (!popSound.current) return
+    popSound.current.currentTime = 0
+    popSound.current.play().catch(() => {})
+  }, [])
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId)
@@ -793,8 +805,8 @@ function ProjectsCarousel() {
         WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'],
         cursor: dragging ? 'grabbing' : 'grab',
         userSelect: 'none',
-        paddingLeft: 'max(20px, calc((100vw - 700px) / 2 + 20px))',
-        paddingRight: 20,
+        paddingLeft: 24,
+        paddingRight: 24,
         paddingBottom: 4,
       } as React.CSSProperties}
     >
@@ -839,8 +851,9 @@ function ProjectsCarousel() {
         return (
           <article
             key={card.title}
+            onMouseEnter={card.comingSoon ? undefined : playPop}
             style={{
-              flex: '0 0 clamp(260px, 60vw, 440px)',
+              flex: '0 0 clamp(300px, 72vw, 860px)',
               pointerEvents: card.comingSoon ? 'none' : 'auto',
             }}
           >
@@ -852,8 +865,8 @@ function ProjectsCarousel() {
           </article>
         )
       })}
-      {/* trailing spacer so last card doesn't hug the edge */}
-      <div style={{ flex: '0 0 max(20px, calc((100vw - 700px) / 2))' }} />
+      {/* trailing spacer */}
+      <div style={{ flex: '0 0 24px' }} />
     </div>
   )
 }
