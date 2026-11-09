@@ -743,11 +743,22 @@ function AsciiFooter() {
     return mountScene(el, SCENE_DEFAULTS)
   }, [])
 
+  const r = 24
   return (
-    <div ref={ref} style={{ position: 'relative', marginTop: 32, borderRadius: 12, overflow: 'hidden' }}>
+    <div ref={ref} style={{ position: 'relative', marginTop: 32, borderRadius: r, overflow: 'hidden' }}>
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
-        background: 'linear-gradient(to bottom, white 0%, transparent 18%)',
+        boxShadow: 'inset 0 0 16px 0px white',
+        background: [
+          `radial-gradient(circle at 0px 0px,   white ${r - 1}px, transparent ${r + 2}px)`,
+          `radial-gradient(circle at 100% 0px,  white ${r - 1}px, transparent ${r + 2}px)`,
+          `radial-gradient(circle at 0px 100%,  white ${r - 1}px, transparent ${r + 2}px)`,
+          `radial-gradient(circle at 100% 100%, white ${r - 1}px, transparent ${r + 2}px)`,
+          'linear-gradient(to bottom, white 0%, transparent 20%)',
+          'linear-gradient(to top,    white 0%, transparent 14%)',
+          'linear-gradient(to right,  white 0%, transparent 8%)',
+          'linear-gradient(to left,   white 0%, transparent 8%)',
+        ].join(', '),
       }} />
     </div>
   )
