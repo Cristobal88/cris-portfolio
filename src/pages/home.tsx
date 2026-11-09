@@ -9,6 +9,7 @@ import { useThemeColor } from '@/lib/useThemeColor'
 import { GlassFolder } from '@/components/ui/glass-folder'
 import { AvatarGroup } from '@/components/ui/avatar-group'
 import type { Project } from '@/types/content'
+import { mountScene, SCENE_DEFAULTS } from './ascii-footer-scene'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -731,6 +732,27 @@ function PersonalSection() {
   )
 }
 
+// ─── ASCII Footer ─────────────────────────────────────────────────────────────
+
+function AsciiFooter() {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    return mountScene(el, SCENE_DEFAULTS)
+  }, [])
+
+  return (
+    <div ref={ref} style={{ position: 'relative', marginTop: 32, borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
+        background: 'linear-gradient(to bottom, white 0%, transparent 18%)',
+      }} />
+    </div>
+  )
+}
+
 // ─── GitHub Activity ──────────────────────────────────────────────────────────
 
 const GITHUB_USERNAME = 'Cristobal88'
@@ -1037,6 +1059,7 @@ export default function Home() {
                 <GitHubActivitySection />
                 <Divider />
                 <PersonalSection />
+                <AsciiFooter />
               </Card>
             </div>
           </div>
@@ -1062,6 +1085,7 @@ export default function Home() {
               <GitHubActivitySection />
               <Divider />
               <PersonalSection />
+              <AsciiFooter />
             </div>
           </div>
         )}

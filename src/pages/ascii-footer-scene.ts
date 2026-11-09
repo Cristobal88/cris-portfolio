@@ -121,8 +121,8 @@ export interface SceneCfg {
   colCloud: string
   // ASCII tuning
   skyFadeStart: number; skyFadeEnd: number
-  inkMulSky: number; inkMulDefault: number; inkMulSnow: number
-  bgMulSky: number; bgMulDefault: number; bgMulSnow: number
+  inkMulSky: number; inkMulDefault: number; inkMulMtn: number; inkMulSnow: number
+  bgMulSky: number; bgMulDefault: number; bgMulMtn: number; bgMulSnow: number
 }
 
 // hex() converts [0-1] rgb triple → hex string for DEFAULTS table
@@ -132,7 +132,7 @@ const _h = (r: number, g: number, b: number) =>
 export const SCENE_DEFAULTS: SceneCfg = {
   W: 1440, H: 580, cols: 200, rows: 60,
   vegDensity: 28000, vegClusters: 70, vegClusterGap: 5.5, vegSizeVar: 0.75,
-  camFov: 52, camY: 7, camZ: -6, targetY: 0, targetZ: 36, skyExpand: 0.0,
+  camFov: 52, camY: 7, camZ: -6, targetY: 0, targetZ: 36, skyExpand: 0.85,
   shoreZ: 10,
   waterWaveSpeed: 0.85, waterWaveScale: 5.2, waterWaveNoise: 3.0,
   waterNoiseScale: 0.26, waterFoamWidth: 0.30, waterFoamAmt: 0.60,
@@ -144,41 +144,30 @@ export const SCENE_DEFAULTS: SceneCfg = {
   waterFar: 80,
   showMountains: true,
   mtnWaviness: 1.2,
-  // Strong directional light from the right (low-angle golden hour sun).
-  // mtnLightDir 0.88 pushes adjacent slopes hard to opposite sides of the
-  // ASCII character threshold — lit faces land on '=' / '%', shadows on ':'.
   mtnLightDir: 0.88,
   mtnShadowDepth: 0.80,
   mtnCouloirs: 0.72,
-  // Near mountains: warm dark golden-brown lit face vs very dark cool shadow.
-  // Lit L ≈ 0.32 → '%' glyph. Shadow L ≈ 0.03 → ':' glyph. 2-step jump.
-  colMtnNear:       _h(0.48, 0.28, 0.09),  // warm golden-brown lit face
-  colMtnNearShadow: _h(0.02, 0.03, 0.06),  // near-black cool blue shadow
-  colMtnNearBase:   _h(0.16, 0.08, 0.02),  // dark warm base, blends into water
-  // Far mountains: warm atmospheric tan lit face vs cool purple shadow.
-  // Lit L ≈ 0.57 → '#' glyph. Shadow L ≈ 0.18 → '=' glyph. 2-step jump.
-  colMtnFar:        _h(0.70, 0.56, 0.36),  // warm tan / khaki lit face
-  colMtnFarShadow:  _h(0.19, 0.16, 0.28),  // cool purple shadow
-  colMtnFarBase:    _h(0.32, 0.22, 0.10),  // warm dark base
-  // Snow picks up warm golden tint from the low sun
-  colSnow:          _h(0.98, 0.91, 0.78),
-  // Water reflects the warm golden sky near shore, fades to deep blue far out
-  colWaterShallow:  _h(0.78, 0.47, 0.22),  // warm amber / golden
-  colWaterMid:      _h(0.22, 0.38, 0.44),  // warm teal transition
-  colWaterDeep:     _h(0.09, 0.16, 0.28),  // deep blue
-  colGround:        _h(0.56, 0.38, 0.14),  // warmer sandy earth
-  // Sky: warm orange-gold at horizon, deep blue at zenith
-  colSkyLow:        _h(0.94, 0.60, 0.28),  // orange-amber horizon
-  colSkyHigh:       _h(0.12, 0.22, 0.47),  // deep blue zenith
-  // Clouds lit by low warm sun
+  colMtnNear:       '#7a4717',
+  colMtnNearShadow: '#05080f',
+  colMtnNearBase:   '#291405',
+  colMtnFar:        _h(0.70, 0.56, 0.36),
+  colMtnFarShadow:  '#302947',
+  colMtnFarBase:    _h(0.32, 0.22, 0.10),
+  colSnow:          '#fae8c7',
+  colWaterShallow:  '#c77838',
+  colWaterMid:      '#386170',
+  colWaterDeep:     '#172947',
+  colGround:        '#8f6124',
+  colSkyLow:        '#65cdf2',
+  colSkyHigh:       '#41a8d5',
   cloudAmt: 0.70, cloudThreshold: 0.50,
   cloudScaleX: 1.6, cloudScaleY: 4.0,
   cloudSpeed: 0.008,
   cloudYLow: 0.30, cloudYHigh: 0.72,
-  colCloud:         _h(0.96, 0.72, 0.50),  // warm peach-gold clouds
+  colCloud:         '#f5b880',
   skyFadeStart: 0.50, skyFadeEnd: 0.88,
-  inkMulSky: 1.04, inkMulDefault: 1.18, inkMulSnow: 1.02,
-  bgMulSky: 0.72, bgMulDefault: 0.68, bgMulSnow: 0.88,
+  inkMulSky: 1.04, inkMulDefault: 1.18, inkMulMtn: 1.22, inkMulSnow: 1.02,
+  bgMulSky: 0.72, bgMulDefault: 0.68, bgMulMtn: 1.03, bgMulSnow: 0.88,
 }
 
 // ─── Mount ───────────────────────────────────────────────────────────────────
@@ -682,9 +671,9 @@ void main(){
   vec2 gv=g-cell, dx=dFdx(g), dy=dFdy(g);
   float ink=smoothstep(.10,.82,textureGrad(uAtlas,vec2((gl+gv.x)/uN,1.-gv.y),dx/uN,dy).r);
 
-  float inkMul = cls<.5 ? ${cfg.inkMulSky.toFixed(2)} : (cls>6.5 ? ${cfg.inkMulSnow.toFixed(2)} : ${cfg.inkMulDefault.toFixed(2)});
+  float inkMul = cls<.5 ? ${cfg.inkMulSky.toFixed(2)} : (cls>6.5 ? ${cfg.inkMulSnow.toFixed(2)} : (cls>4.5 ? ${cfg.inkMulMtn.toFixed(2)} : ${cfg.inkMulDefault.toFixed(2)}));
   vec3 inkCol  = clamp(s.rgb * inkMul, 0., 1.);
-  float bgMul  = cls<.5 ? ${cfg.bgMulSky.toFixed(2)} : (cls>6.5 ? ${cfg.bgMulSnow.toFixed(2)} : ${cfg.bgMulDefault.toFixed(2)});
+  float bgMul  = cls<.5 ? ${cfg.bgMulSky.toFixed(2)} : (cls>6.5 ? ${cfg.bgMulSnow.toFixed(2)} : (cls>4.5 ? ${cfg.bgMulMtn.toFixed(2)} : ${cfg.bgMulDefault.toFixed(2)}));
   vec3 bgCol   = s.rgb * bgMul;
   vec3 mixed   = mix(bgCol, inkCol, ink);
 
