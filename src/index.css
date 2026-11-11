@@ -250,6 +250,17 @@ body { font-family: 'Barlow', sans-serif; color: #0d0d0d; -webkit-font-smoothing
   .navbar { padding: 0 44px; }
 }
 
+/* ── Carousel card image hover zoom ── */
+.carousel-thumb img {
+  transition: scale 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.carousel-card:hover .carousel-thumb img {
+  scale: 1.04;
+}
+@media (prefers-reduced-motion: reduce) {
+  .carousel-thumb img { transition: none; }
+}
+
 /* ── Text input caret blink ── */
 @keyframes caret-blink {
   0%, 49% { opacity: 1; }

@@ -879,7 +879,7 @@ function ProjectsCarousel() {
         const inner = (
           <div>
             {/* Thumbnail */}
-            <div style={{
+            <div className="carousel-thumb" style={{
               aspectRatio: '3 / 2',
               borderRadius: 12,
               overflow: 'hidden',
@@ -916,6 +916,7 @@ function ProjectsCarousel() {
         return (
           <article
             key={card.title}
+            className="carousel-card"
             onMouseEnter={card.comingSoon ? undefined : playPop}
             style={{
               flex: '0 0 clamp(300px, 72vw, 860px)',
