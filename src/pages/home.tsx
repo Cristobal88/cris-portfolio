@@ -758,23 +758,68 @@ const CAROUSEL_CARDS = [
   },
 ]
 
+// Synthesize a short mechanical click (highpass noise burst, ~9ms)
+// matching davemiye's "detent" Web Audio sound — no file needed.
+function playClick() {
+  try {
+    const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    const ctx = new AC()
+    const now = ctx.currentTime
+    const SR  = ctx.sampleRate
+
+    // Noise burst
+    const len = Math.ceil(SR * 0.009)
+    const buf = ctx.createBuffer(1, len, SR)
+    const dat = buf.getChannelData(0)
+    for (let i = 0; i < len; i++) dat[i] = Math.random() * 2 - 1
+    const noise = ctx.createBufferSource()
+    noise.buffer = buf
+
+    const hpf = ctx.createBiquadFilter()
+    hpf.type = 'highpass'; hpf.frequency.value = 3800; hpf.Q.value = 0.7
+
+    const noiseGain = ctx.createGain()
+    noiseGain.gain.setValueAtTime(0.0001, now)
+    noiseGain.gain.exponentialRampToValueAtTime(0.09, now + 0.002)
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.009)
+
+    noise.connect(hpf).connect(noiseGain).connect(ctx.destination)
+    noise.start(now)
+
+    // Tone click
+    const osc = ctx.createOscillator()
+    osc.frequency.value = 2100
+    const oscGain = ctx.createGain()
+    oscGain.gain.setValueAtTime(0.0001, now)
+    oscGain.gain.exponentialRampToValueAtTime(0.018, now + 0.012)
+    oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03)
+    osc.connect(oscGain).connect(ctx.destination)
+    osc.start(now); osc.stop(now + 0.04)
+
+    noise.onended = () => ctx.close()
+  } catch { /* silently ignore in restricted contexts */ }
+}
+
 function ProjectsCarousel() {
   const railRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
   const startX = useRef(0)
   const startScroll = useRef(0)
-  const popSound = useRef<HTMLAudioElement | null>(null)
 
+  // Wheel → horizontal scroll: down = swipe left, up = swipe right
   useEffect(() => {
-    popSound.current = new Audio('/sounds/message-popin.mp3')
-    popSound.current.load()
+    const rail = railRef.current
+    if (!rail) return
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return // already horizontal, ignore
+      e.preventDefault()
+      rail.scrollLeft += e.deltaY
+    }
+    rail.addEventListener('wheel', onWheel, { passive: false })
+    return () => rail.removeEventListener('wheel', onWheel)
   }, [])
 
-  const playPop = useCallback(() => {
-    if (!popSound.current) return
-    popSound.current.currentTime = 0
-    popSound.current.play().catch(() => {})
-  }, [])
+  const playPop = useCallback(() => { playClick() }, [])
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId)
