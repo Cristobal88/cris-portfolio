@@ -749,13 +749,6 @@ const CAROUSEL_CARDS = [
     image: '/card-2.png',
     comingSoon: false,
   },
-  {
-    slug: null,
-    title: 'Coming soon',
-    services: 'Product Design',
-    image: null,
-    comingSoon: true,
-  },
 ]
 
 // Single shared AudioContext — browsers cap at ~6 concurrent instances,
@@ -790,7 +783,7 @@ function playClick() {
     hpf.type = 'highpass'; hpf.frequency.value = 3800; hpf.Q.value = 0.7
     const nGain = ctx.createGain()
     nGain.gain.setValueAtTime(0.0001, now)
-    nGain.gain.exponentialRampToValueAtTime(0.09, now + 0.002)
+    nGain.gain.exponentialRampToValueAtTime(0.072, now + 0.002)
     nGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.009)
     noise.connect(hpf).connect(nGain).connect(ctx.destination)
     noise.start(now)
@@ -800,7 +793,7 @@ function playClick() {
     osc.frequency.value = 2100
     const oGain = ctx.createGain()
     oGain.gain.setValueAtTime(0.0001, now)
-    oGain.gain.exponentialRampToValueAtTime(0.018, now + 0.012)
+    oGain.gain.exponentialRampToValueAtTime(0.0144, now + 0.012)
     oGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03)
     osc.connect(oGain).connect(ctx.destination)
     osc.start(now); osc.stop(now + 0.04)
@@ -813,17 +806,37 @@ function ProjectsCarousel() {
   const startX = useRef(0)
   const startScroll = useRef(0)
 
-  // Wheel → horizontal scroll: down = swipe left, up = swipe right
+  // Intercept vertical scroll only while the rail is ≥50% visible in the viewport.
+  // At the scroll limits (first/last card) we let the page scroll resume so the
+  // section label and meta text stay fully in view before / after the carousel.
   useEffect(() => {
     const rail = railRef.current
     if (!rail) return
+    let centered = false
+
+    const io = new IntersectionObserver(
+      ([entry]) => { centered = entry.intersectionRatio >= 0.5 },
+      { threshold: [0, 0.5, 1] }
+    )
+    io.observe(rail)
+
     const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return // already horizontal, ignore
+      if (!centered) return
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return
+      const { scrollLeft, scrollWidth, clientWidth } = rail
+      const atStart = scrollLeft <= 0
+      const atEnd   = scrollLeft >= scrollWidth - clientWidth - 1
+      if (atStart && e.deltaY < 0) return  // already at first card — let page scroll up
+      if (atEnd   && e.deltaY > 0) return  // already at last card — let page scroll down
       e.preventDefault()
       rail.scrollLeft += e.deltaY
     }
-    rail.addEventListener('wheel', onWheel, { passive: false })
-    return () => rail.removeEventListener('wheel', onWheel)
+
+    document.addEventListener('wheel', onWheel, { passive: false })
+    return () => {
+      io.disconnect()
+      document.removeEventListener('wheel', onWheel)
+    }
   }, [])
 
   const playPop = useCallback(() => { playClick() }, [])
