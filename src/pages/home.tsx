@@ -758,46 +758,53 @@ const CAROUSEL_CARDS = [
   },
 ]
 
-// Synthesize a short mechanical click (highpass noise burst, ~9ms)
-// matching davemiye's "detent" Web Audio sound — no file needed.
-function playClick() {
+// Single shared AudioContext — browsers cap at ~6 concurrent instances,
+// so we reuse one and resume it after any browser-imposed suspension.
+let _clickCtx: AudioContext | null = null
+function getClickCtx(): AudioContext | null {
   try {
-    const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-    const ctx = new AC()
-    const now = ctx.currentTime
-    const SR  = ctx.sampleRate
+    type AnyWindow = Window & { webkitAudioContext?: typeof AudioContext }
+    const AC = window.AudioContext ?? (window as AnyWindow).webkitAudioContext
+    if (!AC) return null
+    if (!_clickCtx || _clickCtx.state === 'closed') _clickCtx = new AC()
+    if (_clickCtx.state === 'suspended') _clickCtx.resume()
+    return _clickCtx
+  } catch { return null }
+}
 
-    // Noise burst
-    const len = Math.ceil(SR * 0.009)
-    const buf = ctx.createBuffer(1, len, SR)
+// Synthesize a short mechanical click: highpass noise burst + tone, ~40ms total.
+function playClick() {
+  const ctx = getClickCtx()
+  if (!ctx) return
+  try {
+    const now = ctx.currentTime
+
+    // Noise burst through highpass filter
+    const len = Math.ceil(ctx.sampleRate * 0.009)
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate)
     const dat = buf.getChannelData(0)
     for (let i = 0; i < len; i++) dat[i] = Math.random() * 2 - 1
     const noise = ctx.createBufferSource()
     noise.buffer = buf
-
     const hpf = ctx.createBiquadFilter()
     hpf.type = 'highpass'; hpf.frequency.value = 3800; hpf.Q.value = 0.7
-
-    const noiseGain = ctx.createGain()
-    noiseGain.gain.setValueAtTime(0.0001, now)
-    noiseGain.gain.exponentialRampToValueAtTime(0.09, now + 0.002)
-    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.009)
-
-    noise.connect(hpf).connect(noiseGain).connect(ctx.destination)
+    const nGain = ctx.createGain()
+    nGain.gain.setValueAtTime(0.0001, now)
+    nGain.gain.exponentialRampToValueAtTime(0.09, now + 0.002)
+    nGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.009)
+    noise.connect(hpf).connect(nGain).connect(ctx.destination)
     noise.start(now)
 
-    // Tone click
+    // Short tone
     const osc = ctx.createOscillator()
     osc.frequency.value = 2100
-    const oscGain = ctx.createGain()
-    oscGain.gain.setValueAtTime(0.0001, now)
-    oscGain.gain.exponentialRampToValueAtTime(0.018, now + 0.012)
-    oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03)
-    osc.connect(oscGain).connect(ctx.destination)
+    const oGain = ctx.createGain()
+    oGain.gain.setValueAtTime(0.0001, now)
+    oGain.gain.exponentialRampToValueAtTime(0.018, now + 0.012)
+    oGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03)
+    osc.connect(oGain).connect(ctx.destination)
     osc.start(now); osc.stop(now + 0.04)
-
-    noise.onended = () => ctx.close()
-  } catch { /* silently ignore in restricted contexts */ }
+  } catch { /* ignore */ }
 }
 
 function ProjectsCarousel() {
@@ -850,7 +857,7 @@ function ProjectsCarousel() {
         WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'],
         cursor: dragging ? 'grabbing' : 'grab',
         userSelect: 'none',
-        paddingLeft: 24,
+        paddingLeft: 'max(20px, calc((100vw - 700px) / 2 + 20px))',
         paddingRight: 24,
         paddingBottom: 4,
       } as React.CSSProperties}
