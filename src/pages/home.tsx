@@ -806,37 +806,6 @@ function ProjectsCarousel() {
   const startX = useRef(0)
   const startScroll = useRef(0)
 
-  // Intercept vertical scroll only while the rail is ≥50% visible in the viewport.
-  // At the scroll limits (first/last card) we let the page scroll resume so the
-  // section label and meta text stay fully in view before / after the carousel.
-  useEffect(() => {
-    const rail = railRef.current
-    if (!rail) return
-
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return
-
-      // Live position check — no cached state that can go stale on load.
-      // The carousel only intercepts scroll when its vertical center sits
-      // inside the middle 60% of the viewport (between 20vh and 80vh).
-      const rect = rail.getBoundingClientRect()
-      const vh = window.innerHeight
-      const railMidY = rect.top + rect.height / 2
-      if (railMidY < vh * 0.2 || railMidY > vh * 0.8) return
-
-      const { scrollLeft, scrollWidth, clientWidth } = rail
-      const atStart = scrollLeft <= 0
-      const atEnd   = scrollLeft >= scrollWidth - clientWidth - 1
-      if (atStart && e.deltaY < 0) return  // first card — let page scroll up
-      if (atEnd   && e.deltaY > 0) return  // last card — let page scroll down
-
-      e.preventDefault()
-      rail.scrollLeft += e.deltaY
-    }
-
-    document.addEventListener('wheel', onWheel, { passive: false })
-    return () => document.removeEventListener('wheel', onWheel)
-  }, [])
 
   const playPop = useCallback(() => { playClick() }, [])
 
